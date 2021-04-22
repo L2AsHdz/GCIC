@@ -34,36 +34,37 @@ IDVAR = [:letter:][\w]*
 URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 
 %state TAG_CONTENT
+%state CLOSE_TAG
 
 %%
 
-//Etiquetas
+//*Etiquetas
 
-<YYINITIAL> [cC]_[gG][cC][iI][cC]                       { return symbol(C_GCIC); }
-<YYINITIAL> [cC]_[hH][eE][aA][dD]                       { return symbol(C_HEAD); }
-<YYINITIAL> [cC]_[tT][iI][tT][lL][eE]                   { return symbol(C_TITLE); }
-<YYINITIAL> [cC]_[lL][iI][nN][kk]                       { return symbol(C_LINK); }
-<YYINITIAL> [cC]_[bB][oO][dD][yY]                       { return symbol(C_BODY); }
-<YYINITIAL> [cC]_[sS][pP][aA][mM]                       { return symbol(C_SPAM); }
-<YYINITIAL> [cC]_[iI][nN][pP][uU][tT]                   { return symbol(C_INPUT); }
-<YYINITIAL> [cC]_[tT][eE][xX][tT][aA][rR][eE][aA]       { return symbol(C_TEXTAREA); }
-<YYINITIAL> [cC]_[sS][eE][lL][eE][cC][tT]               { return symbol(C_SELECT); }
-<YYINITIAL> [cC]_[oO][pP][tT][iI][oO][nN]               { return symbol(C_OPTION); }
-<YYINITIAL> [cC]_[dD][iI][vV]                           { return symbol(C_DIV); }
-<YYINITIAL> [cC]_[iI][mM][gG]                           { return symbol(C_IMG); }
-<YYINITIAL> [cC]_[bB][rR]                               { return symbol(C_BR); }
-<YYINITIAL> [cC]_[bB][uU][tT][tT][oO][nN]               { return symbol(C_BUTTON); }
-<YYINITIAL> [cC]_[hH]1                                  { return symbol(C_H1); }
-<YYINITIAL> [cC]_[pP]                                   { return symbol(C_P); }
-<YYINITIAL> [cC]-[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { return symbol(C_SCRIPTING); }
+<YYINITIAL, CLOSE_TAG> [cC]_[gG][cC][iI][cC]                       { return symbol(C_GCIC); }
+<YYINITIAL, CLOSE_TAG> [cC]_[hH][eE][aA][dD]                       { return symbol(C_HEAD); }
+<YYINITIAL, CLOSE_TAG> [cC]_[tT][iI][tT][lL][eE]                   { return symbol(C_TITLE); }
+<YYINITIAL, CLOSE_TAG> [cC]_[lL][iI][nN][kk]                       { return symbol(C_LINK); }
+<YYINITIAL, CLOSE_TAG> [cC]_[bB][oO][dD][yY]                       { return symbol(C_BODY); }
+<YYINITIAL, CLOSE_TAG> [cC]_[sS][pP][aA][mM]                       { return symbol(C_SPAM); }
+<YYINITIAL, CLOSE_TAG> [cC]_[iI][nN][pP][uU][tT]                   { return symbol(C_INPUT); }
+<YYINITIAL, CLOSE_TAG> [cC]_[tT][eE][xX][tT][aA][rR][eE][aA]       { return symbol(C_TEXTAREA); }
+<YYINITIAL, CLOSE_TAG> [cC]_[sS][eE][lL][eE][cC][tT]               { return symbol(C_SELECT); }
+<YYINITIAL, CLOSE_TAG> [cC]_[oO][pP][tT][iI][oO][nN]               { return symbol(C_OPTION); }
+<YYINITIAL, CLOSE_TAG> [cC]_[dD][iI][vV]                           { return symbol(C_DIV); }
+<YYINITIAL, CLOSE_TAG> [cC]_[iI][mM][gG]                           { return symbol(C_IMG); }
+<YYINITIAL, CLOSE_TAG> [cC]_[bB][rR]                               { return symbol(C_BR); }
+<YYINITIAL, CLOSE_TAG> [cC]_[bB][uU][tT][tT][oO][nN]               { return symbol(C_BUTTON); }
+<YYINITIAL, CLOSE_TAG> [cC]_[hH]1                                  { return symbol(C_H1); }
+<YYINITIAL, CLOSE_TAG> [cC]_[pP]                                   { return symbol(C_P); }
+<YYINITIAL, CLOSE_TAG> [cC]-[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { return symbol(C_SCRIPTING); }
 
-//Parametros
+//*Parametros
 
 <YYINITIAL> "href"          { return symbol(HREF); }
 <YYINITIAL> "background"    { return symbol(BACKGROUND); }
 <YYINITIAL> "color"         { return symbol(COLOR); }
-<YYINITIAL> "font-size"     { return symbol(FONT-SIZE); }
-<YYINITIAL> "font-family"   { return symbol(FONT-FAMILY); }
+<YYINITIAL> "font-size"     { return symbol(FONT_SIZE); }
+<YYINITIAL> "font-family"   { return symbol(FONT_FAMILY); }
 <YYINITIAL> "text-align"    { return symbol(TEXT_ALIGN); }
 <YYINITIAL> "type"          { return symbol(TYPE); }
 <YYINITIAL> "id"            { return symbol(ID); }
@@ -77,11 +78,11 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <YYINITIAL> "alt"           { return symbol(ALT); }
 <YYINITIAL> "onclick"       { return symbol(ONCLICK); }
 
-//CLC
+//*CLC
 <YYINITIAL> "ON_LOAD"       { return symbol(ON_LOAD); }
 <YYINITIAL> "@global"       { return symbol(GLOBAL_MODE); }
 
-//Tipos de datos
+//*Tipos de datos
 <YYINITIAL> "integer"       { return symbol(INTEGER); }
 <YYINITIAL> "decimal"       { return symbol(DECIMAL); }
 <YYINITIAL> "boolean"       { return symbol(BOOLEAN); }
@@ -90,7 +91,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <YYINITIAL> "true"          { return symbol(TRUE); }
 <YYINITIAL> "false"         { return symbol(FALSE); }
 
-//Funciones especiales
+//*Funciones especiales
 <YYINITIAL> "ASC"                   { return symbol(ASC); }
 <YYINITIAL> "DESC"                  { return symbol(DESC); }
 <YYINITIAL> "LETPAR_NUM"            { return symbol(LETPAR_NUM); }
@@ -102,7 +103,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <YYINITIAL> "EXIT"                  { return symbol(EXIT); }
 <YYINITIAL> "getElementById"
 
-//Bloques y estructuras de control
+//*Bloques y estructuras de control
 <YYINITIAL> "INIT"          { return symbol(INIT); }
 <YYINITIAL> "END"           { return symbol(END); }
 <YYINITIAL> "IF"            { return symbol(IF); }
@@ -128,20 +129,20 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
 
-    //Operadores relacionales
+    //*Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
     "!="            { return symbol(NOT_EQTUAL_TO); }
-    //"<"             { return symbol(LESS_THAN); }
+    "<"             { return symbol(LESS_THAN); }
     ">"             { yybegin(TAG_CONTENT); return symbol(GREATER_THAN); }
     "<="            { return symbol(LESS_THAN_OR_EQUAL_TO); }
     ">="            { return symbol(GREATER_THAN_OR_EQUAL_TO); }
 
-    //Operadores logicos
+    //*Operadores logicos
     "||"            { return symbol(OR); }
     "&&"            { return symbol(AND); }
     "!"             { return symbol(NOT); }
 
-    //Operadores aritmeticos
+    //*Operadores aritmeticos
     "+"             { return symbol(PLUS); }
     "-"             { return symbol(MINUS); }
     "*"             { return symbol(TIMES); }
@@ -156,8 +157,13 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <YYINITIAL> {URL}                   { return symbol(URL); }
 
 <TAG_CONTENT> {
-    "<"             { yybegin(YYINITIAL); return symbol(LESS_THAN); }
-    [^<]            { yybegin(YYINITIAL); return symbol(TEXT_TAG); }
+    "<"             { yybegin(CLOSE_TAG); return symbol(LESS_THAN); }
+    [^<]*           { return symbol(TEXT_TAG); }
 }
 
-[^]                                 { addLexicError(); }
+<CLOSE_TAG> {
+    ">"             { yybegin(YYINITIAL); return symbol(GREATER_THAN);}
+    "/"             { return symbol(SLASH); }
+}
+
+[^]                                 { addLexicError(); System.out.println('Error en: ' + yytext()); }

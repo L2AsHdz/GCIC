@@ -1,0 +1,43 @@
+
+
+parser code{:
+
+    private final List<Error> errores = new ArrayList();
+
+    public List<Error> getErrores() {
+        return this.errores;
+    }
+
+    public void syntax_error(Symbol s) {
+        Token t = (Token) s.value;
+        StringBuilder descripcion = new StringBuilder("Se esperaba: ");
+        expected_token_ids().forEach(x -> descripcion.append(symbl_name_from_id(x)).append(", "));
+        errores.add(new ErrorAnalisis(t.getLexema(), t.getLinea(), t.getColumna(), TipoError.SINTACTICO, descripcion.toString()));
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token){
+        Token t = (Token) cur_token.value;
+        System.out.println("Error irrecuperable " + t.getLexema());
+    }
+
+    protected int error_sync_size() {
+        return 1;
+    }
+:}
+
+//* Terminales
+
+terminal Token      C_GCIC, C_HEAD, C_TITLE, C_LINK, C_BODY, C_SPAM, C_INPUT, C_TEXTAREA, C_SELECT;
+terminal Token      C_OPTION, C_DIV, C_IMG, C_BR, C_BUTTON, C_H1, C_P, C_SCRIPTING;
+
+terminal Token      HREF, BACKGROUND, COLOR, FONT, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
+terminal TOken      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+
+terminal Token      ON_LOAD, GLOBAL_MODE;
+
+terminal Token      INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, TRUE, FALSE;
+
+terminal Token      ASC, DESC, LETPAR_NUM, LETIMPAR_NUM, REVERSE, CARACTER_ALEATORIO;
+terminal Token      NUM_ALEATORIO, ALERT_INFO, EXIT;
+
+terminal Token      INIT, END, IF, THEN, ELSE, REPEAT, HUNTIL, WHILE, THENWHILE, INSERT;
