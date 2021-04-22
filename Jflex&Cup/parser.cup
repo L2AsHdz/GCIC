@@ -59,7 +59,20 @@ terminal Token      PROCESS_NAME, ID_VAR, URL, TEXT_TAG;
 
 //* No terminales
 
-non terminal        gcic, head, body, link, title, contentTag, contentHead, tagHead, contentBody, span, input, textArea, select, div;
+non terminal            gcic, head, title;
+non terminal String     textTag;
+
+
+gcic
+    ::= LESS_THAN C_GCIC GREATER_THAN textTag:t1 LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:System.out.println("Texto entre etiquetas: " + t1);:}
+;
+
+textTag
+    ::= TEXT_TAG:t  {:RESULT = t.getLexema();:}
+    |               {:RESULT = "";:}
+;
+
+/*non terminal        gcic, head, body, link, title, contentTag, contentHead, tagHead, contentBody, span, input, textArea, select, div;
 non terminal        img, br, button, h1, p, options, option;
 
 gcic
@@ -125,7 +138,7 @@ select
 /*options
     ::= option GREATER_THAN options
     | option GREATER_THAN
-;*/
+;
 
 options
     ::= LESS_THAN C_OPTION GREATER_THAN contentTag LESS_THAN SLASH C_OPTION GREATER_THAN contentTag
@@ -158,4 +171,4 @@ p
 contentTag
     ::= TEXT_TAG
     |
-;
+;*/
