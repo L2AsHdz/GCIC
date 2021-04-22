@@ -1,0 +1,91 @@
+package analizadores.sintactico;
+
+import java.util.ArrayList;
+import java.util.List;
+import model.Token;
+import model.errores.ErrorAnalisis;
+import model.errores.TipoError;
+import java_cup.runtime.Symbol;
+
+parser code{:
+
+    private final List<ErrorAnalisis> errores = new ArrayList();
+
+    public List<ErrorAnalisis> getErrores() {
+        return this.errores;
+    }
+
+    public void syntax_error(Symbol s) {
+        Token t = (Token) s.value;
+        StringBuilder descripcion = new StringBuilder("Se esperaba: ");
+        expected_token_ids().forEach(x -> descripcion.append(symbl_name_from_id(x)).append(", "));
+        errores.add(new ErrorAnalisis(t.getLexema(), t.getLinea(), t.getColumna(), TipoError.SINTACTICO, descripcion.toString()));
+        System.out.println(t.getLexema() + ", linea: " + t.getLinea() + ", col: " + t.getColumna() + ", descripcion: " + descripcion.toString());
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token){
+        Token t = (Token) cur_token.value;
+        System.out.println("Error irrecuperable " + t.getLexema());
+    }
+
+    protected int error_sync_size() {
+        return 1;
+    }
+:}
+
+//* Terminales
+
+terminal Token      C_GCIC, C_HEAD, C_TITLE, C_LINK, C_BODY, C_SPAM, C_INPUT, C_TEXTAREA, C_SELECT;
+terminal Token      C_OPTION, C_DIV, C_IMG, C_BR, C_BUTTON, C_H1, C_P, C_SCRIPTING;
+
+terminal Token      HREF, BACKGROUND, COLOR, FONT, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
+terminal TOken      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+
+terminal Token      ON_LOAD, GLOBAL_MODE;
+
+terminal Token      INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, TRUE, FALSE;
+
+terminal Token      ASC, DESC, LETPAR_NUM, LETIMPAR_NUM, REVERSE, CARACTER_ALEATORIO;
+terminal Token      NUM_ALEATORIO, ALERT_INFO, EXIT, ELEMENT_BY_ID;
+
+terminal Token      INIT, END, IF, THEN, ELSE, REPEAT, HUNTIL, WHILE, THENWHILE, INSERT;
+
+terminal Token      OPEN_BRACKET, CLOSE_BRACKET, OPEN_ROUND_BRACKET, CLOSE_ROUND_BRACKET;
+terminal Token      OPEN_BRACE, CLOSE_BRACE, SLASH, ASSIGN, QOUTE_MARK, SINGLE_QUOTES, COLON, SEMI;
+
+terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN_OR_EQUAL_TO;
+
+terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES;
+
+terminal Token      PROCESS_NAME, ID_VAR, URL, TEXT_TAG;
+
+
+//* No terminales
+
+non terminal        gcic, head, body, link, title, contentTag;
+
+gcic
+    ::= LESS_THAN C_GCIC GREATER_THAN contentTag head body LESS_THAN SLASH C_GCIC GREATER_THAN contentTag
+    | error GREATER_THAN
+;
+
+head
+    ::= LESS_THAN C_HEAD GREATER_THAN contentTag link title LESS_THAN SLASH C_HEAD GREATER_THAN contentTag
+;
+
+link
+    ::= LESS_THAN C_LINK GREATER_THAN contentTag LESS_THAN SLASH C_LINK GREATER_THAN contentTag
+;
+
+title
+    ::= LESS_THAN C_TITLE GREATER_THAN contentTag LESS_THAN SLASH C_TITLE GREATER_THAN contentTag
+;
+
+body
+    ::= LESS_THAN C_BODY GREATER_THAN contentTag LESS_THAN SLASH C_BODY GREATER_THAN contentTag
+;
+
+contentTag
+    ::= TEXT_TAG
+    |
+;
