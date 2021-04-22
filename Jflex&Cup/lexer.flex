@@ -31,7 +31,9 @@ LINE_COMMENT = "!!"[^\n]*
 BLOCK_COMMENT = "<!--"[^EOF]*"-->"
 PROCESS_NAME = "PROCESS_"[\w]*
 IDVAR = [:letter:][\w]*
+URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 
+%state TAG_CONTENT
 
 %%
 
@@ -129,8 +131,8 @@ IDVAR = [:letter:][\w]*
     //Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
     "!="            { return symbol(NOT_EQTUAL_TO); }
-    "<"             { return symbol(LESS_THAN); }
-    ">"             { return symbol(GREATER_THAN); }
+    //"<"             { return symbol(LESS_THAN); }
+    ">"             { yybegin(TAG_CONTENT); return symbol(GREATER_THAN); }
     "<="            { return symbol(LESS_THAN_OR_EQUAL_TO); }
     ">="            { return symbol(GREATER_THAN_OR_EQUAL_TO); }
 
@@ -143,4 +145,19 @@ IDVAR = [:letter:][\w]*
     "+"             { return symbol(PLUS); }
     "-"             { return symbol(MINUS); }
     "*"             { return symbol(TIMES); }
+
+    (\s)*           { /**Ignorar*/ }
 }
+
+<YYINITIAL> {LINE_COMMENT}          { /**Ignorar*/ }
+<YYINITIAL> {BLOCK_COMMENT}         { /**Ignorar*/ }
+<YYINITIAL> {PROCESS_NAME}          { return symbol(PROCESS_NAME); }
+<YYINITIAL> {IDVAR}                 { return symbol(ID_VAR); }
+<YYINITIAL> {URL}                   { return symbol(URL); }
+
+<TAG_CONTENT> {
+    "<"             { yybegin(YYINITIAL); return symbol(LESS_THAN); }
+    [^<]            { yybegin(YYINITIAL); return symbol(TEXT_TAG); }
+}
+
+[^]                                 { addLexicError(); }
