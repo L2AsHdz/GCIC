@@ -28,9 +28,6 @@ parser code{:
         System.out.println("Error irrecuperable " + t.getLexema());
     }
 
-    protected int error_sync_size() {
-        return 1;
-    }
 :}
 
 //* Terminales
@@ -62,7 +59,8 @@ terminal Token      PROCESS_NAME, ID_VAR, URL, TEXT_TAG;
 
 //* No terminales
 
-non terminal        gcic, head, body, link, title, contentTag;
+non terminal        gcic, head, body, link, title, contentTag, contentHead, tagHead, contentBody, span, input, textArea, select, div;
+non terminal        img, br, button, h1, p, options, option;
 
 gcic
     ::= LESS_THAN C_GCIC GREATER_THAN contentTag head body LESS_THAN SLASH C_GCIC GREATER_THAN contentTag
@@ -70,19 +68,91 @@ gcic
 ;
 
 head
-    ::= LESS_THAN C_HEAD GREATER_THAN contentTag link title LESS_THAN SLASH C_HEAD GREATER_THAN contentTag
+    ::= LESS_THAN C_HEAD GREATER_THAN contentTag contentHead LESS_THAN SLASH C_HEAD GREATER_THAN contentTag
+;
+
+contentHead
+    ::=  LESS_THAN tagHead GREATER_THAN contentTag contentHead
+    | LESS_THAN tagHead GREATER_THAN contentTag
+;
+
+tagHead
+    ::= link
+    | title
 ;
 
 link
-    ::= LESS_THAN C_LINK GREATER_THAN contentTag LESS_THAN SLASH C_LINK GREATER_THAN contentTag
+    ::= C_LINK GREATER_THAN contentTag LESS_THAN SLASH C_LINK
 ;
 
 title
-    ::= LESS_THAN C_TITLE GREATER_THAN contentTag LESS_THAN SLASH C_TITLE GREATER_THAN contentTag
+    ::= C_TITLE GREATER_THAN contentTag LESS_THAN SLASH C_TITLE
 ;
 
 body
-    ::= LESS_THAN C_BODY GREATER_THAN contentTag LESS_THAN SLASH C_BODY GREATER_THAN contentTag
+    ::= LESS_THAN C_BODY GREATER_THAN contentTag contentBody LESS_THAN SLASH C_BODY GREATER_THAN contentTag
+;
+
+contentBody
+    ::= span
+    | input
+    | textArea
+    | select
+    | div
+    | img
+    | br
+    | button
+    | h1
+    | p
+;
+
+span
+    ::= LESS_THAN C_SPAM GREATER_THAN contentTag LESS_THAN SLASH C_SPAM GREATER_THAN contentTag
+;
+
+input
+    ::= LESS_THAN C_INPUT GREATER_THAN contentTag LESS_THAN SLASH C_INPUT GREATER_THAN contentTag
+;
+
+textArea
+    ::= LESS_THAN C_TEXTAREA GREATER_THAN contentTag LESS_THAN SLASH C_TEXTAREA GREATER_THAN contentTag
+;
+
+select
+    ::= LESS_THAN C_SELECT GREATER_THAN contentTag options LESS_THAN SLASH C_SELECT GREATER_THAN contentTag
+;
+
+/*options
+    ::= option GREATER_THAN options
+    | option GREATER_THAN
+;*/
+
+options
+    ::= LESS_THAN C_OPTION GREATER_THAN contentTag LESS_THAN SLASH C_OPTION GREATER_THAN contentTag
+;
+
+div
+    ::= LESS_THAN C_DIV GREATER_THAN contentTag LESS_THAN SLASH C_DIV GREATER_THAN contentTag
+;
+
+img
+    ::= LESS_THAN C_IMG GREATER_THAN contentTag LESS_THAN SLASH C_IMG GREATER_THAN contentTag
+;
+
+br
+    ::= LESS_THAN C_BR GREATER_THAN contentTag
+;
+
+button
+    ::= LESS_THAN C_BUTTON GREATER_THAN contentTag LESS_THAN SLASH C_BUTTON GREATER_THAN contentTag
+;
+
+h1
+    ::= LESS_THAN C_H1 GREATER_THAN contentTag LESS_THAN SLASH C_H1 GREATER_THAN contentTag
+;
+
+p
+    ::= LESS_THAN C_P GREATER_THAN contentTag LESS_THAN SLASH C_P GREATER_THAN contentTag
 ;
 
 contentTag

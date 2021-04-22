@@ -156,7 +156,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
     "-"             { return symbol(MINUS); }
     "*"             { return symbol(TIMES); }
 
-    (\s)*           { /**Ignorar*/ }
+    (\s)+           { /**Ignorar*/ }
 }
 
 <YYINITIAL> {LINE_COMMENT}          { /**Ignorar*/ }
@@ -166,7 +166,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <YYINITIAL> {URL}                   { return symbol(URL); }
 
 <TAG_CONTENT> {
-    [^<]*           { yybegin(YYINITIAL); return symbol(TEXT_TAG); }
+    [^<]*           { yybegin(YYINITIAL); System.out.println(yytext()); return symbol(TEXT_TAG); }
 }
 
 [^]                                 { addLexicError(); }
