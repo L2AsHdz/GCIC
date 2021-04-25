@@ -133,7 +133,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 
 <YYINITIAL> {
     "<"             { yybegin(TAG); return symbol(LESS_THAN); }
-    [^<]+           { System.out.println("Texttag: " + yytext()); return symbol(TEXT_TAG); }
+    [^<]+           { return symbol(TEXT_TAG); }
 }
 
 <TAG> {

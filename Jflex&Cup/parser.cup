@@ -59,116 +59,74 @@ terminal Token      PROCESS_NAME, ID_VAR, URL, TEXT_TAG;
 
 //* No terminales
 
-non terminal            gcic, head, title;
+non terminal            gcic, head, headTags, headTag, nameTagHead, body, bodyTags, bodyTag, nameTagBody;
+non terminal            optionsTag, optionTag;
 non terminal String     textTag;
 
 
 gcic
-    ::= LESS_THAN C_GCIC GREATER_THAN textTag:t1 LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:System.out.println("Texto entre etiquetas: " + t1);:}
+    ::= LESS_THAN C_GCIC GREATER_THAN textTag head body LESS_THAN SLASH C_GCIC GREATER_THAN textTag
+;
+
+head
+    ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag
+;
+
+headTags
+    ::= headTags headTag
+    |   headTag
+;
+
+headTag
+    ::= LESS_THAN nameTagHead GREATER_THAN textTag
+;
+
+nameTagHead
+    ::= C_LINK GREATER_THAN textTag LESS_THAN SLASH C_LINK
+    |   C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE {:
+        System.out.println("Titulo de la pagina: " + t);
+    :}
+;
+
+body
+    ::= LESS_THAN C_BODY GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag
+;
+
+bodyTags
+    ::= bodyTags bodyTag
+    |   bodyTag
+;
+
+bodyTag
+    ::= LESS_THAN nameTagBody GREATER_THAN textTag
+    |   LESS_THAN C_BR GREATER_THAN textTag
+;
+
+nameTagBody
+    ::= C_SPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
+    |   C_INPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
+    |   C_TEXTAREA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
+    |   C_SELECT GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
+    |   C_IMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
+    |   C_BUTTON GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
+    |   C_H1 GREATER_THAN textTag LESS_THAN SLASH C_H1
+    |   C_P GREATER_THAN textTag LESS_THAN SLASH C_P
+    |   C_DIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
+    |   C_DIV GREATER_THAN textTag bodyTags LESS_THAN SLASH C_DIV
+;
+
+optionsTag
+    ::= optionsTag optionTag
+    |   optionTag
+;
+
+optionTag
+    ::= LESS_THAN C_OPTION GREATER_THAN textTag:o LESS_THAN SLASH C_OPTION GREATER_THAN textTag {:
+        System.out.println("Option: " + o);
+    :}
 ;
 
 textTag
     ::= TEXT_TAG:t  {:RESULT = t.getLexema();:}
     |               {:RESULT = "";:}
 ;
-
-/*non terminal        gcic, head, body, link, title, contentTag, contentHead, tagHead, contentBody, span, input, textArea, select, div;
-non terminal        img, br, button, h1, p, options, option;
-
-gcic
-    ::= LESS_THAN C_GCIC GREATER_THAN contentTag head body LESS_THAN SLASH C_GCIC GREATER_THAN contentTag
-    | error GREATER_THAN
-;
-
-head
-    ::= LESS_THAN C_HEAD GREATER_THAN contentTag contentHead LESS_THAN SLASH C_HEAD GREATER_THAN contentTag
-;
-
-contentHead
-    ::=  LESS_THAN tagHead GREATER_THAN contentTag contentHead
-    | LESS_THAN tagHead GREATER_THAN contentTag
-;
-
-tagHead
-    ::= link
-    | title
-;
-
-link
-    ::= C_LINK GREATER_THAN contentTag LESS_THAN SLASH C_LINK
-;
-
-title
-    ::= C_TITLE GREATER_THAN contentTag LESS_THAN SLASH C_TITLE
-;
-
-body
-    ::= LESS_THAN C_BODY GREATER_THAN contentTag contentBody LESS_THAN SLASH C_BODY GREATER_THAN contentTag
-;
-
-contentBody
-    ::= span
-    | input
-    | textArea
-    | select
-    | div
-    | img
-    | br
-    | button
-    | h1
-    | p
-;
-
-span
-    ::= LESS_THAN C_SPAM GREATER_THAN contentTag LESS_THAN SLASH C_SPAM GREATER_THAN contentTag
-;
-
-input
-    ::= LESS_THAN C_INPUT GREATER_THAN contentTag LESS_THAN SLASH C_INPUT GREATER_THAN contentTag
-;
-
-textArea
-    ::= LESS_THAN C_TEXTAREA GREATER_THAN contentTag LESS_THAN SLASH C_TEXTAREA GREATER_THAN contentTag
-;
-
-select
-    ::= LESS_THAN C_SELECT GREATER_THAN contentTag options LESS_THAN SLASH C_SELECT GREATER_THAN contentTag
-;
-
-/*options
-    ::= option GREATER_THAN options
-    | option GREATER_THAN
-;
-
-options
-    ::= LESS_THAN C_OPTION GREATER_THAN contentTag LESS_THAN SLASH C_OPTION GREATER_THAN contentTag
-;
-
-div
-    ::= LESS_THAN C_DIV GREATER_THAN contentTag LESS_THAN SLASH C_DIV GREATER_THAN contentTag
-;
-
-img
-    ::= LESS_THAN C_IMG GREATER_THAN contentTag LESS_THAN SLASH C_IMG GREATER_THAN contentTag
-;
-
-br
-    ::= LESS_THAN C_BR GREATER_THAN contentTag
-;
-
-button
-    ::= LESS_THAN C_BUTTON GREATER_THAN contentTag LESS_THAN SLASH C_BUTTON GREATER_THAN contentTag
-;
-
-h1
-    ::= LESS_THAN C_H1 GREATER_THAN contentTag LESS_THAN SLASH C_H1 GREATER_THAN contentTag
-;
-
-p
-    ::= LESS_THAN C_P GREATER_THAN contentTag LESS_THAN SLASH C_P GREATER_THAN contentTag
-;
-
-contentTag
-    ::= TEXT_TAG
-    |
-;*/
