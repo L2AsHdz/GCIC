@@ -36,7 +36,15 @@ terminal Token      C_GCIC, C_HEAD, C_TITLE, C_LINK, C_BODY, C_SPAM, C_INPUT, C_
 terminal Token      C_OPTION, C_DIV, C_IMG, C_BR, C_BUTTON, C_H1, C_P, C_SCRIPTING;
 
 terminal Token      HREF, BACKGROUND, COLOR, FONT, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
-terminal TOken      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+terminal Token      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+
+terminal Token      BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, PURPLE;
+terminal Token      SILVER, YELLOW, AQUA;
+terminal Token      COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF;
+terminal Token      LEFT, CENTER, RIGHT, JUSTIFY;
+terminal Token      TEXT, NUMBER, RADIO, CHECKBOX;
+terminal Token      COLUMN, ROW;
+terminal Token      URL, COLOR_VALUE, SIZE, WIDTH_VAL, HEIGHT_VAL, ID_PARAM, NAME_PARAM;
 
 terminal Token      ON_LOAD, GLOBAL_MODE;
 
@@ -54,18 +62,34 @@ terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_
 
 terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES;
 
-terminal Token      PROCESS_NAME, ID_VAR, URL, TEXT_TAG;
+terminal Token      PROCESS_NAME, ID_VAR, TEXT_TAG;
 
 
 //* No terminales
 
 non terminal            gcic, head, headTags, headTag, nameTagHead, body, bodyTags, bodyTag, nameTagBody;
 non terminal            optionsTag, optionTag;
+non terminal            paramsGCIC, paramGCIC, optionParamGCIC, href;
+non terminal            background, color;
 non terminal String     textTag;
 
 
 gcic
-    ::= LESS_THAN C_GCIC GREATER_THAN textTag head body LESS_THAN SLASH C_GCIC GREATER_THAN textTag
+    ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head body LESS_THAN SLASH C_GCIC GREATER_THAN textTag
+;
+
+paramsGCIC
+    ::= paramsGCIC paramGCIC
+    |   paramGCIC
+;
+
+paramGCIC
+    ::= OPEN_BRACKET optionParamGCIC CLOSE_BRACKET
+;
+
+optionParamGCIC
+    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    |   NAME ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
 ;
 
 head
@@ -82,14 +106,18 @@ headTag
 ;
 
 nameTagHead
-    ::= C_LINK GREATER_THAN textTag LESS_THAN SLASH C_LINK
+    ::= C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK
     |   C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE {:
         System.out.println("Titulo de la pagina: " + t);
     :}
 ;
 
+href
+    ::= OPEN_BRACKET HREF ASSIGN QOUTE_MARK URL QOUTE_MARK CLOSE_BRACKET
+;
+
 body
-    ::= LESS_THAN C_BODY GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag
+    ::= LESS_THAN C_BODY background GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag
 ;
 
 bodyTags
@@ -126,7 +154,30 @@ optionTag
     :}
 ;
 
+background
+    ::= OPEN_BRACKET BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK CLOSE_BRACKET
+;
+
 textTag
     ::= TEXT_TAG:t  {:RESULT = t.getLexema();:}
     |               {:RESULT = "";:}
+;
+
+color
+    ::= COLOR_VALUE
+    |   BLACK
+    |   OLIVE
+    |   TEAL
+    |   RED
+    |   BLUE
+    |   MARRON
+    |   NAVY
+    |   GRAY
+    |   LIME
+    |   FUCHSIA
+    |   GREEN
+    |   PURPLE
+    |   SILVER
+    |   YELLOW
+    |   AQUA
 ;

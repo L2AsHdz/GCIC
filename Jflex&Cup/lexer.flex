@@ -48,7 +48,7 @@ COLOR = #([a-fA-F0-9]{6}|[a-fA-F0-9]{3})
 SIZE = {ENTERO}(px)
 WIDTH_VAL = ({ENTERO}(px) | {ENTERO}("%"))
 HEIGHT_VAL = ({ENTERO}(px) | {ENTERO}("%"))
-IDPARAM = ([\w$-][\w$-]*)
+IDPARAM = [_$-][\w$-]*
 NAMEPARAM = [:letter:][\w]*
 
 PROCESS_NAME = "PROCESS_"[\w]*
@@ -200,7 +200,7 @@ IDVAR = [:letter:][\w]*
 }
 
 <VALUE> {
-    "\""            { yybegin(TAG); return symbol(QOUTE_MARK); }
+    "\""            { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
 }
 
 <OTHER> {
@@ -235,10 +235,10 @@ IDVAR = [:letter:][\w]*
 <VALUE> {URL}                       { return symbol(URL); }
 <VALUE> {COLOR}                     { return symbol(COLOR_VALUE); }
 <VALUE> {SIZE}                      { return symbol(SIZE); }
-<VALUE> {WIDTH_VAL}              { return symbol(WIDTH_VAL); }
+<VALUE> {WIDTH_VAL}                 { return symbol(WIDTH_VAL); }
 <VALUE> {HEIGHT_VAL}                { return symbol(HEIGHT_VAL); }
-<VALUE> {IDPARAM}                   { return symbol(IDPARAM); }
-<VALUE> {NAMEPARAM}                 { return symbol(NAMEPARAM); }
+<VALUE> {IDPARAM}                   { return symbol(ID_PARAM); }
+<VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
 
 <OTHER> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <OTHER> {IDVAR}                     { return symbol(ID_VAR); }
