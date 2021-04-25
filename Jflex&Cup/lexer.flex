@@ -36,20 +36,32 @@ import java_cup.runtime.Symbol;
     return new Symbol(EOF, new Token(yyline, yycolumn, "Fin de linea"));
 %eofval}
 
-ENTERO = "\""(0|([1-9][0-9]*))"\""
+ENTERO = (0|([1-9][0-9]*))
+
+//* Regexs for comments
 LINE_COMMENT = "!!"[^\n]*
 BLOCK_COMMENT = "<!--"[^EOF]*"-->"
+
+//* Regexs for parameters
+URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
+COLOR = #([a-fA-F0-9]{6}|[a-fA-F0-9]{3})
+SIZE = {ENTERO}(px)
+WIDTH_VAL = ({ENTERO}(px) | {ENTERO}("%"))
+HEIGHT_VAL = ({ENTERO}(px) | {ENTERO}("%"))
+IDPARAM = ([\w$-][\w$-]*)
+NAMEPARAM = [:letter:][\w]*
+
 PROCESS_NAME = "PROCESS_"[\w]*
 IDVAR = [:letter:][\w]*
-URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 
 %state TAG
+%state PARAMETER
+%state VALUE
 %state OTHER
 
 %%
 
-//*Etiquetas
-
+//* Etiquetas
 <TAG> [cC]_[gG][cC][iI][cC]                       { return symbol(C_GCIC); }
 <TAG> [cC]_[hH][eE][aA][dD]                       { return symbol(C_HEAD); }
 <TAG> [cC]_[tT][iI][tT][lL][eE]                   { return symbol(C_TITLE); }
@@ -68,31 +80,70 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <TAG> [cC]_[pP]                                   { return symbol(C_P); }
 <TAG> [cC]-[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { return symbol(C_SCRIPTING); }
 
-//*Parametros
+//* Name parameters
+<PARAMETER> "href"          { return symbol(HREF); }
+<PARAMETER> "background"    { return symbol(BACKGROUND); }
+<PARAMETER> "color"         { return symbol(COLOR); }
+<PARAMETER> "font-size"     { return symbol(FONT_SIZE); }
+<PARAMETER> "font-family"   { return symbol(FONT_FAMILY); }
+<PARAMETER> "text-align"    { return symbol(TEXT_ALIGN); }
+<PARAMETER> "type"          { return symbol(TYPE); }
+<PARAMETER> "id"            { return symbol(ID); }
+<PARAMETER> "name"          { return symbol(NAME); }
+<PARAMETER> "cols"          { return symbol(COLS); }
+<PARAMETER> "rows"          { return symbol(ROWS); }
+<PARAMETER> "class"         { return symbol(CLASS); }
+<PARAMETER> "src"           { return symbol(SRC); }
+<PARAMETER> "width"         { return symbol(WIDTH); }
+<PARAMETER> "height"        { return symbol(HEIGHT); }
+<PARAMETER> "alt"           { return symbol(ALT); }
+<PARAMETER> "onclick"       { return symbol(ONCLICK); }
 
-<OTHER> "href"          { return symbol(HREF); }
-<OTHER> "background"    { return symbol(BACKGROUND); }
-<OTHER> "color"         { return symbol(COLOR); }
-<OTHER> "font-size"     { return symbol(FONT_SIZE); }
-<OTHER> "font-family"   { return symbol(FONT_FAMILY); }
-<OTHER> "text-align"    { return symbol(TEXT_ALIGN); }
-<OTHER> "type"          { return symbol(TYPE); }
-<OTHER> "id"            { return symbol(ID); }
-<OTHER> "name"          { return symbol(NAME); }
-<OTHER> "cols"          { return symbol(COLS); }
-<OTHER> "rows"          { return symbol(ROWS); }
-<OTHER> "class"         { return symbol(CLASS); }
-<OTHER> "src"           { return symbol(SRC); }
-<OTHER> "width"         { return symbol(WIDTH); }
-<OTHER> "height"        { return symbol(HEIGHT); }
-<OTHER> "alt"           { return symbol(ALT); }
-<OTHER> "onclick"       { return symbol(ONCLICK); }
+//* Color constants
+<VALUE> "black"         { return symbol(BLACK); }
+<VALUE> "olive"         { return symbol(OLIVE); }
+<VALUE> "teal"          { return symbol(TEAL); }
+<VALUE> "red"           { return symbol(RED); }
+<VALUE> "blue"          { return symbol(BLUE); }
+<VALUE> "marron"        { return symbol(MARRON); }
+<VALUE> "navy"          { return symbol(NAVY); }
+<VALUE> "gray"          { return symbol(GRAY); }
+<VALUE> "lime"          { return symbol(LIME); }
+<VALUE> "fuchsia"       { return symbol(FUCHSIA); }
+<VALUE> "green"         { return symbol(GREEN); }
+<VALUE> "purple"        { return symbol(PURPLE); }
+<VALUE> "silver"        { return symbol(SILVER); }
+<VALUE> "yellow"        { return symbol(YELLOW); }
+<VALUE> "aqua"          { return symbol(AQUA); }
 
-//*CLC
+//* Fonts
+<VALUE> "Courier"       { return symbol(COURIER); }
+<VALUE> "Verdana"       { return symbol(VERDANA); }
+<VALUE> "Arial"         { return symbol(ARIAL); }
+<VALUE> "Geneva"        { return symbol(GENEVA); }
+<VALUE> "sans-serif"    { return symbol(SANS_SERIF); }
+
+//* Aligns
+<VALUE> "left"          { return symbol(LEFT); }
+<VALUE> "center"        { return symbol(CENTER); }
+<VALUE> "right"         { return symbol(RIGHT); }
+<VALUE> "justify"       { return symbol(JUSTIFY); }
+
+//* Input types
+<VALUE> "text"          { return symbol(TEXT); }
+<VALUE> "number"        { return symbol(NUMBER); }
+<VALUE> "radio"         { return symbol(RADIO); }
+<VALUE> "checkbox"      { return symbol(CHECKBOX); }
+
+//* Div classes
+<VALUE> "column"        { return symbol(COLUMN); }
+<VALUE> "row"           { return symbol(ROW); }
+
+//* CLC
 <OTHER> "ON_LOAD"       { return symbol(ON_LOAD); }
 <OTHER> "@global"       { return symbol(GLOBAL_MODE); }
 
-//*Tipos de datos
+//* Tipos de datos
 <OTHER> "integer"       { return symbol(INTEGER); }
 <OTHER> "decimal"       { return symbol(DECIMAL); }
 <OTHER> "boolean"       { return symbol(BOOLEAN); }
@@ -101,7 +152,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <OTHER> "true"          { return symbol(TRUE); }
 <OTHER> "false"         { return symbol(FALSE); }
 
-//*Funciones especiales
+//* Funciones especiales
 <OTHER> "ASC"                   { return symbol(ASC); }
 <OTHER> "DESC"                  { return symbol(DESC); }
 <OTHER> "LETPAR_NUM"            { return symbol(LETPAR_NUM); }
@@ -113,7 +164,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <OTHER> "EXIT"                  { return symbol(EXIT); }
 <OTHER> "getElementById"        { return symbol(ELEMENT_BY_ID); }
 
-//*Bloques y estructuras de control
+//* Bloques y estructuras de control
 <OTHER> "INIT"          { return symbol(INIT); }
 <OTHER> "END"           { return symbol(END); }
 <OTHER> "IF"            { return symbol(IF); }
@@ -125,7 +176,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 <OTHER> "THENWHILE"     { return symbol(THENWHILE); }
 <OTHER> "INSERT"        { return symbol(INSERT);}
 
-<YYINITIAL, TAG, OTHER> {
+<YYINITIAL> {
     {LINE_COMMENT}          { /**Ignorar*/ }
     {BLOCK_COMMENT}         { /**Ignorar*/ }
     (\s)+                   { /**Ignorar*/ }
@@ -138,12 +189,18 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 
 <TAG> {
     ">"             { yybegin(YYINITIAL); return symbol(GREATER_THAN); }
+    "["             { yybegin(PARAMETER); return symbol(OPEN_BRACKET); }
     "/"             { return symbol(SLASH); }
-    "["             { return symbol(OPEN_BRACKET); }
-    "]"             { return symbol(CLOSE_BRACKET); }
-    "="             { return symbol(ASSIGN); }
-    "\""            { return symbol(QOUTE_MARK); }
+}
 
+<PARAMETER> {
+    "]"             { yybegin(TAG); return symbol(CLOSE_BRACKET); }
+    "\""            { yybegin(VALUE); return symbol(QOUTE_MARK); }
+    "="             { return symbol(ASSIGN); }
+}
+
+<VALUE> {
+    "\""            { yybegin(TAG); return symbol(QOUTE_MARK); }
 }
 
 <OTHER> {
@@ -156,7 +213,7 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
 
-    //*Operadores relacionales
+    //* Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
     "!="            { return symbol(NOT_EQTUAL_TO); }
     "<"             { return symbol(LESS_THAN); }
@@ -164,19 +221,26 @@ URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
     "<="            { return symbol(LESS_THAN_OR_EQUAL_TO); }
     ">="            { return symbol(GREATER_THAN_OR_EQUAL_TO); }
 
-    //*Operadores logicos
+    //* Operadores logicos
     "||"            { return symbol(OR); }
     "&&"            { return symbol(AND); }
     "!"             { return symbol(NOT); }
 
-    //*Operadores aritmeticos
+    //* Operadores aritmeticos
     "+"             { return symbol(PLUS); }
     "-"             { return symbol(MINUS); }
     "*"             { return symbol(TIMES); }
 }
 
+<VALUE> {URL}                       { return symbol(URL); }
+<VALUE> {COLOR}                     { return symbol(COLOR_VALUE); }
+<VALUE> {SIZE}                      { return symbol(SIZE); }
+<VALUE> {WIDTH_VAL}              { return symbol(WIDTH_VAL); }
+<VALUE> {HEIGHT_VAL}                { return symbol(HEIGHT_VAL); }
+<VALUE> {IDPARAM}                   { return symbol(IDPARAM); }
+<VALUE> {NAMEPARAM}                 { return symbol(NAMEPARAM); }
+
 <OTHER> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <OTHER> {IDVAR}                     { return symbol(ID_VAR); }
-<OTHER> {URL}                       { return symbol(URL); }
 
 [^]                                     { addLexicError(); }
