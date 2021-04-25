@@ -46,8 +46,7 @@ BLOCK_COMMENT = "<!--"[^EOF]*"-->"
 URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 COLOR = #([a-fA-F0-9]{6}|[a-fA-F0-9]{3})
 SIZE = {ENTERO}(px)
-WIDTH_VAL = ({ENTERO}(px) | {ENTERO}("%"))
-HEIGHT_VAL = ({ENTERO}(px) | {ENTERO}("%"))
+WH_VAL = ({ENTERO}(px) | {ENTERO}("%"))
 IDPARAM = [_$-][\w$-]*
 NAMEPARAM = [:letter:][\w]*
 
@@ -235,10 +234,10 @@ IDVAR = [:letter:][\w]*
 <VALUE> {URL}                       { return symbol(URL); }
 <VALUE> {COLOR}                     { return symbol(COLOR_VALUE); }
 <VALUE> {SIZE}                      { return symbol(SIZE); }
-<VALUE> {WIDTH_VAL}                 { return symbol(WIDTH_VAL); }
-<VALUE> {HEIGHT_VAL}                { return symbol(HEIGHT_VAL); }
+<VALUE> {WH_VAL}                    { return symbol(WH_VAL); }
 <VALUE> {IDPARAM}                   { return symbol(ID_PARAM); }
 <VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
+<VALUE> {ENTERO}                    { return symbol(ENTERO); }
 
 <OTHER> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <OTHER> {IDVAR}                     { return symbol(ID_VAR); }

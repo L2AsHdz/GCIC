@@ -44,7 +44,7 @@ terminal Token      COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF;
 terminal Token      LEFT, CENTER, RIGHT, JUSTIFY;
 terminal Token      TEXT, NUMBER, RADIO, CHECKBOX;
 terminal Token      COLUMN, ROW;
-terminal Token      URL, COLOR_VALUE, SIZE, WIDTH_VAL, HEIGHT_VAL, ID_PARAM, NAME_PARAM;
+terminal Token      URL, COLOR_VALUE, SIZE, WH_VAL, ID_PARAM, NAME_PARAM;
 
 terminal Token      ON_LOAD, GLOBAL_MODE;
 
@@ -62,15 +62,19 @@ terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_
 
 terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES;
 
-terminal Token      PROCESS_NAME, ID_VAR, TEXT_TAG;
+terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
 
 
 //* No terminales
 
 non terminal            gcic, head, headTags, headTag, nameTagHead, body, bodyTags, bodyTag, nameTagBody;
-non terminal            optionsTag, optionTag;
-non terminal            paramsGCIC, paramGCIC, optionParamGCIC, href;
-non terminal            background, color;
+non terminal            optionsTag, optionTag, optionTextParam;
+non terminal            paramsGCIC, paramGCIC, optionParamGCIC;
+non terminal            paramsSPAM, paramSPAM, optionParamSPAM;
+non terminal            paramsINPUT, paramINPUT, optionParamINPUT;
+non terminal            paramsTEXTA, paramTEXTA, optionParamTEXTA;
+non terminal            href, background;
+non terminal            color, font, align, type;
 non terminal String     textTag;
 
 
@@ -131,9 +135,9 @@ bodyTag
 ;
 
 nameTagBody
-    ::= C_SPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
-    |   C_INPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
-    |   C_TEXTAREA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
+    ::= C_SPAM paramsSPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
+    |   C_INPUT paramsINPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
+    |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
     |   C_SELECT GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
     |   C_IMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
     |   C_BUTTON GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
@@ -163,6 +167,59 @@ textTag
     |               {:RESULT = "";:}
 ;
 
+paramsSPAM
+    ::= paramsSPAM paramSPAM
+    |   paramSPAM
+;
+
+paramSPAM
+    ::= OPEN_BRACKET optionParamSPAM CLOSE_BRACKET
+;
+
+optionParamSPAM
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    |   optionTextParam
+;
+
+paramsINPUT
+    ::= paramsINPUT paramINPUT
+    |   paramINPUT
+;
+
+paramINPUT
+    ::= OPEN_BRACKET optionParamINPUT CLOSE_BRACKET
+;
+
+optionParamINPUT
+    ::= TYPE ASSIGN QOUTE_MARK type QOUTE_MARK
+    |   ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    |   COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   optionTextParam
+;
+
+paramsTEXTA
+    ::= paramsTEXTA paramTEXTA
+    |   paramTEXTA
+;
+
+paramTEXTA
+    ::= OPEN_BRACKET optionParamTEXTA CLOSE_BRACKET
+;
+
+optionParamTEXTA
+    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    |   COLS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
+    |   ROWS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
+    |   optionTextParam
+;
+
+optionTextParam
+    ::= FONT_SIZE ASSIGN QOUTE_MARK SIZE QOUTE_MARK
+    |   FONT_FAMILY ASSIGN QOUTE_MARK font QOUTE_MARK
+    |   TEXT_ALIGN ASSIGN QOUTE_MARK align QOUTE_MARK
+;
+
 color
     ::= COLOR_VALUE
     |   BLACK
@@ -180,4 +237,26 @@ color
     |   SILVER
     |   YELLOW
     |   AQUA
+;
+
+font
+    ::= COURIER
+    |   VERDANA
+    |   ARIAL
+    |   GENEVA
+    |   SANS_SERIF
+;
+
+align
+    ::= LEFT
+    |   CENTER
+    |   RIGHT
+    |   JUSTIFY
+;
+
+type
+    ::= TEXT
+    |   NUMBER
+    |   RADIO
+    |   CHECKBOX
 ;
