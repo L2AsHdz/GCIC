@@ -80,14 +80,15 @@ non terminal            paramsBTN, paramBTN, optionParamBTN;
 non terminal            paramsH1, paramH1, optionParamH1;
 non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
-non terminal            color, font, align, type, clase, id;
+non terminal            color, font, align, type, clase, paramId, paramColor;
 non terminal String     textTag;
 
-
+//**************************************** Etiqueta GCIC
 gcic
     ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head body LESS_THAN SLASH C_GCIC GREATER_THAN textTag
 ;
 
+//**************************************** Parametros GCIC
 paramsGCIC
     ::= paramsGCIC paramGCIC
     |   paramGCIC
@@ -99,9 +100,11 @@ paramGCIC
 
 optionParamGCIC
     ::= NAME ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
-    |   id
+    |   paramId
 ;
 
+
+//**************************************** Etiqueta HEAD
 head
     ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag
 ;
@@ -115,6 +118,7 @@ headTag
     ::= LESS_THAN nameTagHead GREATER_THAN textTag
 ;
 
+//**************************************** Etiquetas LINK y TITLE
 nameTagHead
     ::= C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK
     |   C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE {:
@@ -126,6 +130,8 @@ href
     ::= OPEN_BRACKET HREF ASSIGN QOUTE_MARK URL QOUTE_MARK CLOSE_BRACKET
 ;
 
+
+//**************************************** Etiqueta BODY
 body
     ::= LESS_THAN C_BODY background GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag
 ;
@@ -140,19 +146,23 @@ bodyTag
     |   LESS_THAN C_BR GREATER_THAN textTag
 ;
 
+
+//**************************************** Resto de etiquetas
 nameTagBody
     ::= C_SPAM paramsSPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
     |   C_INPUT paramsINPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
     |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
     |   C_SELECT paramsSEL GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
     |   C_IMG paramsIMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
-    |   C_BUTTON GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
-    |   C_H1 GREATER_THAN textTag LESS_THAN SLASH C_H1
-    |   C_P GREATER_THAN textTag LESS_THAN SLASH C_P
+    |   C_BUTTON paramsBTN GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
+    |   C_H1 paramsH1 GREATER_THAN textTag LESS_THAN SLASH C_H1
+    |   C_P paramsP GREATER_THAN textTag LESS_THAN SLASH C_P
     |   C_DIV paramsDIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
     |   C_DIV paramsDIV GREATER_THAN textTag bodyTags LESS_THAN SLASH C_DIV
 ;
 
+
+//**************************************** Etiqueta OPTION
 optionsTag
     ::= optionsTag optionTag
     |   optionTag
@@ -164,15 +174,21 @@ optionTag
     :}
 ;
 
+
+//**************************************** Parametro BODY
 background
     ::= OPEN_BRACKET BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK CLOSE_BRACKET
 ;
 
+
+//**************************************** Texto entre etiquetas
 textTag
     ::= TEXT_TAG:t  {:RESULT = t.getLexema();:}
     |               {:RESULT = "";:}
 ;
 
+
+//**************************************** Parametros SPAM
 paramsSPAM
     ::= paramsSPAM paramSPAM
     |   paramSPAM
@@ -183,11 +199,13 @@ paramSPAM
 ;
 
 optionParamSPAM
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    ::= paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros INPUT
 paramsINPUT
     ::= paramsINPUT paramINPUT
     |   paramINPUT
@@ -199,11 +217,13 @@ paramINPUT
 
 optionParamINPUT
     ::= TYPE ASSIGN QOUTE_MARK type QOUTE_MARK
-    |   COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    |   paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros TEXT_AREA
 paramsTEXTA
     ::= paramsTEXTA paramTEXTA
     |   paramTEXTA
@@ -216,10 +236,12 @@ paramTEXTA
 optionParamTEXTA
     ::= ROWS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
     |   COLS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
-    |   id
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros SELECT
 paramsSEL
     ::= paramsSEL paramSEL
     |   paramSEL
@@ -230,11 +252,13 @@ paramSEL
 ;
 
 optionParamSEL
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    ::= paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros DIV
 paramsDIV
     ::= paramsDIV paramDIV
     |   paramDIV
@@ -247,11 +271,13 @@ paramDIV
 optionParamDIV
     ::= BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
     |   CLASS ASSIGN QOUTE_MARK clase QOUTE_MARK
-    |   COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    |   paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros IMG
 paramsIMG
     ::= paramsIMG paramIMG
     |   paramIMG
@@ -266,9 +292,11 @@ optionParamIMG
     |   HEIGHT ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
     |   WIDTH ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
     |   SRC ASSIGN QOUTE_MARK URL QOUTE_MARK
-    |   id
+    |   paramId
 ;
 
+
+//****************************************Parametros BUTTON
 paramsBTN
     ::= paramsBTN paramBTN
     |   paramBTN
@@ -279,27 +307,31 @@ paramBTN
 ;
 
 optionParamBTN//Falta onclick
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    ::= BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros H1
 paramsH1
     ::= paramsH1 paramH1
     |   paramH1
 ;
 
-paramH
+paramH1
     ::= OPEN_BRACKET optionParamH1 CLOSE_BRACKET
 ;
 
 optionParamH1
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
-    |  optionTextParam
+    ::= paramColor
+    |   paramId
+    |   optionTextParam
 ;
 
+
+//**************************************** Parametros P
 paramsP
     ::= paramsP paramP
     |   paramP
@@ -310,21 +342,31 @@ paramP
 ;
 
 optionParamP
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   id
+    ::= paramColor
+    |   paramId
     |   optionTextParam
 ;
 
+
+//**************************************** Parametros relacionados a texto
 optionTextParam
     ::= FONT_SIZE ASSIGN QOUTE_MARK SIZE QOUTE_MARK
     |   FONT_FAMILY ASSIGN QOUTE_MARK font QOUTE_MARK
     |   TEXT_ALIGN ASSIGN QOUTE_MARK align QOUTE_MARK
 ;
 
-id
+
+//**************************************** Parametros frecuentes
+paramId
     ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
 ;
 
+paramColor
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+;
+
+
+//**************************************** Colores
 color
     ::= COLOR_VALUE
     |   BLACK
@@ -344,6 +386,8 @@ color
     |   AQUA
 ;
 
+
+//**************************************** Fuentes de texto
 font
     ::= COURIER
     |   VERDANA
@@ -352,6 +396,8 @@ font
     |   SANS_SERIF
 ;
 
+
+//**************************************** Alineacion de texto
 align
     ::= LEFT
     |   CENTER
@@ -359,6 +405,8 @@ align
     |   JUSTIFY
 ;
 
+
+//**************************************** Tipos de input
 type
     ::= TEXT
     |   NUMBER
