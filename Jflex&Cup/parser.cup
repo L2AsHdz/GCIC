@@ -73,8 +73,14 @@ non terminal            paramsGCIC, paramGCIC, optionParamGCIC;
 non terminal            paramsSPAM, paramSPAM, optionParamSPAM;
 non terminal            paramsINPUT, paramINPUT, optionParamINPUT;
 non terminal            paramsTEXTA, paramTEXTA, optionParamTEXTA;
+non terminal            paramsSEL, paramSEL, optionParamSEL;
+non terminal            paramsDIV, paramDIV, optionParamDIV;
+non terminal            paramsIMG, paramIMG, optionParamIMG;
+non terminal            paramsBTN, paramBTN, optionParamBTN;
+non terminal            paramsH1, paramH1, optionParamH1;
+non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
-non terminal            color, font, align, type;
+non terminal            color, font, align, type, clase, id;
 non terminal String     textTag;
 
 
@@ -92,8 +98,8 @@ paramGCIC
 ;
 
 optionParamGCIC
-    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
-    |   NAME ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
+    ::= NAME ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
+    |   id
 ;
 
 head
@@ -138,13 +144,13 @@ nameTagBody
     ::= C_SPAM paramsSPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
     |   C_INPUT paramsINPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
     |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
-    |   C_SELECT GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
-    |   C_IMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
+    |   C_SELECT paramsSEL GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
+    |   C_IMG paramsIMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
     |   C_BUTTON GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
     |   C_H1 GREATER_THAN textTag LESS_THAN SLASH C_H1
     |   C_P GREATER_THAN textTag LESS_THAN SLASH C_P
-    |   C_DIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
-    |   C_DIV GREATER_THAN textTag bodyTags LESS_THAN SLASH C_DIV
+    |   C_DIV paramsDIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
+    |   C_DIV paramsDIV GREATER_THAN textTag bodyTags LESS_THAN SLASH C_DIV
 ;
 
 optionsTag
@@ -178,7 +184,7 @@ paramSPAM
 
 optionParamSPAM
     ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    |   id
     |   optionTextParam
 ;
 
@@ -193,8 +199,8 @@ paramINPUT
 
 optionParamINPUT
     ::= TYPE ASSIGN QOUTE_MARK type QOUTE_MARK
-    |   ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
     |   COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
     |   optionTextParam
 ;
 
@@ -208,9 +214,104 @@ paramTEXTA
 ;
 
 optionParamTEXTA
-    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    ::= ROWS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
     |   COLS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
-    |   ROWS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
+    |   id
+    |   optionTextParam
+;
+
+paramsSEL
+    ::= paramsSEL paramSEL
+    |   paramSEL
+;
+
+paramSEL
+    ::= OPEN_BRACKET optionParamSEL CLOSE_BRACKET
+;
+
+optionParamSEL
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
+    |   optionTextParam
+;
+
+paramsDIV
+    ::= paramsDIV paramDIV
+    |   paramDIV
+;
+
+paramDIV
+    ::= OPEN_BRACKET optionParamDIV CLOSE_BRACKET
+;
+
+optionParamDIV
+    ::= BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   CLASS ASSIGN QOUTE_MARK clase QOUTE_MARK
+    |   COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
+    |   optionTextParam
+;
+
+paramsIMG
+    ::= paramsIMG paramIMG
+    |   paramIMG
+;
+
+paramIMG
+    ::= OPEN_BRACKET optionParamIMG CLOSE_BRACKET
+;
+
+optionParamIMG
+    ::= ALT ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
+    |   HEIGHT ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
+    |   WIDTH ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
+    |   SRC ASSIGN QOUTE_MARK URL QOUTE_MARK
+    |   id
+;
+
+paramsBTN
+    ::= paramsBTN paramBTN
+    |   paramBTN
+;
+
+paramBTN
+    ::= OPEN_BRACKET optionParamBTN CLOSE_BRACKET
+;
+
+optionParamBTN//Falta onclick
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
+    |   optionTextParam
+;
+
+paramsH1
+    ::= paramsH1 paramH1
+    |   paramH1
+;
+
+paramH
+    ::= OPEN_BRACKET optionParamH1 CLOSE_BRACKET
+;
+
+optionParamH1
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
+    |  optionTextParam
+;
+
+paramsP
+    ::= paramsP paramP
+    |   paramP
+;
+
+paramP
+    ::= OPEN_BRACKET optionParamP CLOSE_BRACKET
+;
+
+optionParamP
+    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    |   id
     |   optionTextParam
 ;
 
@@ -218,6 +319,10 @@ optionTextParam
     ::= FONT_SIZE ASSIGN QOUTE_MARK SIZE QOUTE_MARK
     |   FONT_FAMILY ASSIGN QOUTE_MARK font QOUTE_MARK
     |   TEXT_ALIGN ASSIGN QOUTE_MARK align QOUTE_MARK
+;
+
+id
+    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
 ;
 
 color
