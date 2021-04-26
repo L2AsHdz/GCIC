@@ -24,7 +24,7 @@
                 <div class="col-1"></div>
                 <div class="col-4">
                     <div class="my-2">
-                        <input type="file" class="form-control-file border" name="archivoEntrada" id="archivoEntrada" accept=".txt" onchange="processFile(this.files);">
+                        <input type="file" class="form-control-file border" name="archivoEntrada" id="archivoEntrada" accept=".gcic" onchange="processFile(this.files);">
                     </div>
                 </div>
                 <div class="col-2">
@@ -38,13 +38,13 @@
                     </button>
                 </div>
                 <div class="col-2">
-                    <button type="submit" class="btn btn-success btn-block" form="exportForm">
+                    <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#saveFileModal" onclick="$('#nameFile').val('');">
                         <i class="fas fa-file-download"></i> Guardar archivo
                     </button>
                 </div>
             </div>
 
-            <form id="exportForm" action="${pageContext.request.contextPath}/textEditor?accion=export" method="POST">
+            <form id="exportForm" action="${pageContext.request.contextPath}/textEditor?accion=export" method="POST" class="was-validated">
                 <textarea rows="10" class="d-none" name="inputText" id="inputText"></textarea>
             </form>
             <form id="inputForm" action="${pageContext.request.contextPath}/analizar" method="POST">
@@ -57,18 +57,42 @@
                 <div class="row">
                     <div class="col-8"></div>
                     <div class="col-2">
-                        <label id="position"></label>
+                        <label id="position">Current position: 1 - 1</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-1"></div>
                     <div class="col-10">
-                        <div class="form-group">
+                        <div class="form-group border">
                             <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>Aqui se mostrara informacion sobre el estado del analisis del codigo GCIC</textarea>
                         </div>
                     </div>
                 </div>
             </form>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal" id="saveFileModal" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title text-center">Guardar archivo</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nameFile">Nombre del archivo:</label>
+                            <input type="text" class="form-control bg-light" name="nameFile" id="nameFile" placeholder="nombre del archivo" form="exportForm" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success" form="exportForm">Guardar</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Ace Editor Libraries -->

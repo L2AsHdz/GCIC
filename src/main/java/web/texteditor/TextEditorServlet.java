@@ -38,8 +38,9 @@ public class TextEditorServlet extends HttpServlet {
         switch (accion) {
             case "export" -> {
                 String inputText = request.getParameter("inputText");
+                String nameFile = request.getParameter("nameFile");
                 response.setContentType("application/octet-stream");
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=captcha.gcic");
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nameFile + ".gcic");
 
                 File form = new File("temp.gcic");
                 FileWriter fileWriter = new FileWriter(form);
