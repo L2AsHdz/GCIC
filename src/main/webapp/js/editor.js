@@ -1,7 +1,6 @@
 'use strict';
 
 const btnReset = document.querySelector('#reset');
-const btnPrint = document.querySelector('#print');
 const inputFile = document.querySelector('#archivoEntrada');
 
 let codeEditor = ace.edit("textEditor");
@@ -11,15 +10,15 @@ let editorLib = {
         codeEditor.setValue('');
         
         //Tema
-        codeEditor.setTheme("ace/theme/dreamweaver");
+        codeEditor.setTheme("ace/theme/merbivore");
         
         //Language
-        codeEditor.session.setMode("ace/mode/text");
+        codeEditor.session.setMode("ace/mode/html_ruby");
         
         //Options
         codeEditor.setOptions({
             fontFamily: 'Inconsolata',
-            fontSize: '12pt'
+            fontSize: '14pt'
         });
     }
 };
@@ -27,10 +26,6 @@ let editorLib = {
 btnReset.addEventListener('click', () => {
     codeEditor.setValue('');
     inputFile.value = '';
-});
-
-btnPrint.addEventListener('click', () => {
-    console.log(codeEditor.getValue());
 });
 
 editorLib.init();
