@@ -28,16 +28,25 @@
                     </div>
                 </div>
                 <div class="col-2">
-                    <button type="submit" class="btn btn-info btn-block">Analizar</button>
+                    <button type="submit" class="btn btn-info btn-block">
+                        <i class="fas fa-chevron-circle-right"></i> Analizar
+                    </button>
                 </div>
                 <div class="col-2">
-                    <button type="reset" class="btn btn-danger btn-block" id="reset">Limpiar</button>
+                    <button type="reset" class="btn btn-danger btn-block" id="reset">
+                        <i class="fas fa-trash"></i> Limpiar
+                    </button>
                 </div>
                 <div class="col-2">
-                    <button type="button" class="btn btn-success btn-block">Guardar archivo</button>
+                    <button type="submit" class="btn btn-success btn-block" form="exportForm">
+                        <i class="fas fa-file-download"></i> Guardar archivo
+                    </button>
                 </div>
             </div>
 
+            <form id="exportForm" action="${pageContext.request.contextPath}/textEditor?accion=export" method="POST">
+                <textarea rows="10" class="d-none" name="inputText" id="inputText"></textarea>
+            </form>
             <form id="inputForm" action="${pageContext.request.contextPath}/analizar" method="POST">
                 <div class="row">
                     <div class="col-1"></div>
