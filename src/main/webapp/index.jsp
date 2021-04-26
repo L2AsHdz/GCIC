@@ -18,9 +18,9 @@
         <!-- Barra de navegacion -->
         <jsp:include page="/WEB-INF/gcic/navBar.jsp"/>
 
-        <div class="container-fluid">
+        <div class="container-fluid pt-4 mt-3">
 
-            <div class="row pt-5">
+            <div class="row">
                 <div class="col-1"></div>
                 <div class="col-4">
                     <div class="my-2">
@@ -54,12 +54,17 @@
                         <div id="textEditor" class="border my-3" style="height: 480px; width: 100%"></div>
                     </div>
                 </div>
-
-                <div class="row pt-3">
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-2">
+                        <label id="position"></label>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-1"></div>
                     <div class="col-10">
                         <div class="form-group">
-                            <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly></textarea>
+                            <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>Aqui se mostrara informacion sobre el estado del analisis del codigo GCIC</textarea>
                         </div>
                     </div>
                 </div>
