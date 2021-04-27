@@ -5,14 +5,22 @@ import java.util.List;
 import model.Token;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
+import model.Parametro;
+import model.Tag;
 import java_cup.runtime.Symbol;
 
 parser code{:
 
     private final List<ErrorAnalisis> errores = new ArrayList();
+    private List<Parametro> parametros = new ArrayList();
+    private final Tag gcicTag = null;
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
+    }
+
+    public Tag getGCIC() {
+        return this.gcicTag;
     }
 
     public void syntax_error(Symbol s) {
@@ -67,21 +75,21 @@ terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
 
 //* No terminales
 
-non terminal            gcic, head, headTags, headTag, nameTagHead, body, bodyTags, bodyTag, nameTagBody;
+non terminal            gcic, head, headTags, link, title, body, bodyTags, bodyTag, nameTagBody;
 non terminal            optionsTag, optionTag, optionTextParam;
 non terminal            paramsGCIC, paramGCIC, optionParamGCIC;
 non terminal            paramsSPAM, paramSPAM, optionParamSPAM;
 non terminal            paramsINPUT, paramINPUT, optionParamINPUT;
 non terminal            paramsTEXTA, paramTEXTA, optionParamTEXTA;
 non terminal            paramsSEL, paramSEL, optionParamSEL;
-non terminal            paramsDIV, paramDIV, optionParamDIV;
+non terminal            paramsDIV, paramDIV, optionParamDIV, endDIV;
 non terminal            paramsIMG, paramIMG, optionParamIMG;
 non terminal            paramsBTN, paramBTN, optionParamBTN;
 non terminal            paramsH1, paramH1, optionParamH1;
 non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
-non terminal            color, font, align, type, clase, paramId, paramColor;
-non terminal String     textTag;
+non terminal            paramColor;
+non terminal String     textTag, color, font, align, type, clase, paramId;
 
 //**************************************** Etiqueta GCIC
 gcic
@@ -99,7 +107,9 @@ paramGCIC
 ;
 
 optionParamGCIC
-    ::= NAME ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
+    ::= NAME:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
     |   paramId
 ;
 
@@ -110,24 +120,25 @@ head
 ;
 
 headTags
-    ::= headTags headTag
-    |   headTag
-;
-
-headTag
-    ::= LESS_THAN nameTagHead GREATER_THAN textTag
+    ::= link title
+    |   title link
 ;
 
 //**************************************** Etiquetas LINK y TITLE
-nameTagHead
-    ::= C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK
-    |   C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE {:
+title
+    ::= LESS_THAN C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE GREATER_THAN textTag {:
         System.out.println("Titulo de la pagina: " + t);
     :}
 ;
 
+link
+    ::= LESS_THAN C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK GREATER_THAN textTag
+;
+
 href
-    ::= OPEN_BRACKET HREF ASSIGN QOUTE_MARK URL QOUTE_MARK CLOSE_BRACKET
+    ::= OPEN_BRACKET HREF:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK CLOSE_BRACKET {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
 ;
 
 
@@ -158,7 +169,11 @@ nameTagBody
     |   C_H1 paramsH1 GREATER_THAN textTag LESS_THAN SLASH C_H1
     |   C_P paramsP GREATER_THAN textTag LESS_THAN SLASH C_P
     |   C_DIV paramsDIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
-    |   C_DIV paramsDIV GREATER_THAN textTag bodyTags LESS_THAN SLASH C_DIV
+    |   C_DIV paramsDIV GREATER_THAN textTag bodyTags endDIV {:System.out.println("Inicio de etiqueta div");:}
+;
+
+endDIV
+    ::= LESS_THAN SLASH C_DIV {:System.out.println("Fin de etiqueta div");:}
 ;
 
 
@@ -177,7 +192,9 @@ optionTag
 
 //**************************************** Parametro BODY
 background
-    ::= OPEN_BRACKET BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK CLOSE_BRACKET
+    ::= OPEN_BRACKET BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK CLOSE_BRACKET {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
 ;
 
 
@@ -216,7 +233,9 @@ paramINPUT
 ;
 
 optionParamINPUT
-    ::= TYPE ASSIGN QOUTE_MARK type QOUTE_MARK
+    ::= TYPE:n ASSIGN QOUTE_MARK type:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
     |   paramColor
     |   paramId
     |   optionTextParam
@@ -234,8 +253,12 @@ paramTEXTA
 ;
 
 optionParamTEXTA
-    ::= ROWS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
-    |   COLS ASSIGN QOUTE_MARK ENTERO QOUTE_MARK
+    ::= ROWS:n ASSIGN QOUTE_MARK ENTERO:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   COLS:n ASSIGN QOUTE_MARK ENTERO:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
     |   paramId
     |   optionTextParam
 ;
@@ -269,8 +292,12 @@ paramDIV
 ;
 
 optionParamDIV
-    ::= BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
-    |   CLASS ASSIGN QOUTE_MARK clase QOUTE_MARK
+    ::= BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   CLASS:n ASSIGN QOUTE_MARK clase:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
     |   paramColor
     |   paramId
     |   optionTextParam
@@ -288,10 +315,18 @@ paramIMG
 ;
 
 optionParamIMG
-    ::= ALT ASSIGN QOUTE_MARK NAME_PARAM QOUTE_MARK
-    |   HEIGHT ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
-    |   WIDTH ASSIGN QOUTE_MARK WH_VAL QOUTE_MARK
-    |   SRC ASSIGN QOUTE_MARK URL QOUTE_MARK
+    ::= ALT:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   HEIGHT:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   WIDTH:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   SRC:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
     |   paramId
 ;
 
@@ -307,7 +342,9 @@ paramBTN
 ;
 
 optionParamBTN//Falta onclick
-    ::= BACKGROUND ASSIGN QOUTE_MARK color QOUTE_MARK
+    ::= BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
     |   paramColor
     |   paramId
     |   optionTextParam
@@ -350,66 +387,76 @@ optionParamP
 
 //**************************************** Parametros relacionados a texto
 optionTextParam
-    ::= FONT_SIZE ASSIGN QOUTE_MARK SIZE QOUTE_MARK
-    |   FONT_FAMILY ASSIGN QOUTE_MARK font QOUTE_MARK
-    |   TEXT_ALIGN ASSIGN QOUTE_MARK align QOUTE_MARK
+    ::= FONT_SIZE:n ASSIGN QOUTE_MARK SIZE:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   FONT_FAMILY:n ASSIGN QOUTE_MARK font:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   TEXT_ALIGN:n ASSIGN QOUTE_MARK align:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
 ;
 
 
 //**************************************** Parametros frecuentes
 paramId
-    ::= ID ASSIGN QOUTE_MARK ID_PARAM QOUTE_MARK
+    ::= ID:n ASSIGN QOUTE_MARK ID_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
 ;
 
 paramColor
-    ::= COLOR ASSIGN QOUTE_MARK color QOUTE_MARK
+    ::= COLOR:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
 ;
 
 
 //**************************************** Colores
 color
-    ::= COLOR_VALUE
-    |   BLACK
-    |   OLIVE
-    |   TEAL
-    |   RED
-    |   BLUE
-    |   MARRON
-    |   NAVY
-    |   GRAY
-    |   LIME
-    |   FUCHSIA
-    |   GREEN
-    |   PURPLE
-    |   SILVER
-    |   YELLOW
-    |   AQUA
+    ::= COLOR_VALUE:c       {:RESULT = c.getLexema();:}
+    |   BLACK:c             {:RESULT = c.getLexema();:}
+    |   OLIVE:c             {:RESULT = c.getLexema();:}
+    |   TEAL:c              {:RESULT = c.getLexema();:}
+    |   RED:c               {:RESULT = c.getLexema();:}
+    |   BLUE:c              {:RESULT = c.getLexema();:}
+    |   MARRON:c            {:RESULT = c.getLexema();:}
+    |   NAVY:c              {:RESULT = c.getLexema();:}
+    |   GRAY:c              {:RESULT = c.getLexema();:}
+    |   LIME:c              {:RESULT = c.getLexema();:}
+    |   FUCHSIA:c           {:RESULT = c.getLexema();:}
+    |   GREEN:c             {:RESULT = c.getLexema();:}
+    |   PURPLE:c            {:RESULT = c.getLexema();:}
+    |   SILVER:c            {:RESULT = c.getLexema();:}
+    |   YELLOW:c            {:RESULT = c.getLexema();:}
+    |   AQUA:c              {:RESULT = c.getLexema();:}
 ;
 
 
 //**************************************** Fuentes de texto
 font
-    ::= COURIER
-    |   VERDANA
-    |   ARIAL
-    |   GENEVA
-    |   SANS_SERIF
+    ::= COURIER:f           {:RESULT = f.getLexema();:}
+    |   VERDANA:f           {:RESULT = f.getLexema();:}
+    |   ARIAL:f             {:RESULT = f.getLexema();:}
+    |   GENEVA:f            {:RESULT = f.getLexema();:}
+    |   SANS_SERIF:f        {:RESULT = f.getLexema();:}
 ;
 
 
 //**************************************** Alineacion de texto
 align
-    ::= LEFT
-    |   CENTER
-    |   RIGHT
-    |   JUSTIFY
+    ::= LEFT:a              {:RESULT = a.getLexema();:}
+    |   CENTER:a            {:RESULT = a.getLexema();:}
+    |   RIGHT:a             {:RESULT = a.getLexema();:}
+    |   JUSTIFY:a           {:RESULT = a.getLexema();:}
 ;
 
 
 //**************************************** Tipos de input
 type
-    ::= TEXT
-    |   NUMBER
-    |   RADIO
-    |   CHECKBOX
+    ::= TEXT:t              {:RESULT = t.getLexema();:}
+    |   NUMBER:t            {:RESULT = t.getLexema();:}
+    |   RADIO:t             {:RESULT = t.getLexema();:}
+    |   CHECKBOX:t          {:RESULT = t.getLexema();:}
 ;
