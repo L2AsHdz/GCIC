@@ -1,0 +1,552 @@
+package analizadores.sintactico;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import model.Body;
+import model.Br;
+import model.Button;
+import model.Div;
+import model.errores.ErrorAnalisis;
+import model.errores.TipoError;
+import model.GCIC;
+import model.H1;
+import model.Head;
+import model.Img;
+import model.Input;
+import model.Link;
+import model.Option;
+import model.P;
+import model.Parametro;
+import model.Select;
+import model.Span;
+import model.Tag;
+import model.TextArea;
+import model.Title;
+import model.Token;
+import java_cup.runtime.Symbol;
+
+parser code{:
+
+    private final List<ErrorAnalisis> errores = new ArrayList();
+    private List<Parametro> parametros = new ArrayList();
+    private List<Tag> etiquetas = new ArrayList();
+    private List<Tag> etiquetasHead = new ArrayList();
+    private Stack<List<Tag>> pilaEtiquetas = new Stack();
+    private Tag gcicTag;
+
+    public List<ErrorAnalisis> getErrores() {
+        return this.errores;
+    }
+
+    public Tag getGCIC() {
+        return this.gcicTag;
+    }
+
+    public void syntax_error(Symbol s) {
+        Token t = (Token) s.value;
+        StringBuilder descripcion = new StringBuilder("Se esperaba: ");
+        expected_token_ids().forEach(x -> descripcion.append(symbl_name_from_id(x)).append(", "));
+        errores.add(new ErrorAnalisis(t.getLexema(), t.getLinea(), t.getColumna(), TipoError.SINTACTICO, descripcion.toString()));
+        System.out.println(t.getLexema() + ", linea: " + t.getLinea() + ", col: " + t.getColumna() + ", descripcion: " + descripcion.toString());
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token){
+        Token t = (Token) cur_token.value;
+        System.out.println("Error irrecuperable " + t.getLexema());
+    }
+
+:}
+
+//* Terminales
+
+terminal Token      C_GCIC, C_HEAD, C_TITLE, C_LINK, C_BODY, C_SPAM, C_INPUT, C_TEXTAREA, C_SELECT;
+terminal Token      C_OPTION, C_DIV, C_IMG, C_BR, C_BUTTON, C_H1, C_P, C_SCRIPTING;
+
+terminal Token      HREF, BACKGROUND, COLOR, FONT, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
+terminal Token      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+
+terminal Token      BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, PURPLE;
+terminal Token      SILVER, YELLOW, AQUA;
+terminal Token      COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF;
+terminal Token      LEFT, CENTER, RIGHT, JUSTIFY;
+terminal Token      TEXT, NUMBER, RADIO, CHECKBOX;
+terminal Token      COLUMN, ROW;
+terminal Token      URL, COLOR_VALUE, SIZE, WH_VAL, ID_PARAM, NAME_PARAM;
+
+terminal Token      ON_LOAD, GLOBAL_MODE;
+
+terminal Token      INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, TRUE, FALSE;
+
+terminal Token      ASC, DESC, LETPAR_NUM, LETIMPAR_NUM, REVERSE, CARACTER_ALEATORIO;
+terminal Token      NUM_ALEATORIO, ALERT_INFO, EXIT, ELEMENT_BY_ID;
+
+terminal Token      INIT, END, IF, THEN, ELSE, REPEAT, HUNTIL, WHILE, THENWHILE, INSERT;
+
+terminal Token      OPEN_BRACKET, CLOSE_BRACKET, OPEN_ROUND_BRACKET, CLOSE_ROUND_BRACKET;
+terminal Token      OPEN_BRACE, CLOSE_BRACE, SLASH, ASSIGN, QOUTE_MARK, SINGLE_QUOTES, COLON, SEMI;
+
+terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN_OR_EQUAL_TO;
+
+terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES;
+
+terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
+
+
+//* No terminales
+
+non terminal            gcic, headTags, link, title, bodyTags, bodyTag, nameTagBody;
+non terminal            optionsTag, optionTag, optionTextParam;
+non terminal            paramsGCIC, paramGCIC, optionParamGCIC;
+non terminal            paramsSPAM, paramSPAM, optionParamSPAM;
+non terminal            paramsINPUT, paramINPUT, optionParamINPUT;
+non terminal            paramsTEXTA, paramTEXTA, optionParamTEXTA;
+non terminal            paramsSEL, paramSEL, optionParamSEL, inicioSelect;
+non terminal            paramsDIV, paramDIV, optionParamDIV, inicioDIV;
+non terminal            paramsIMG, paramIMG, optionParamIMG;
+non terminal            paramsBTN, paramBTN, optionParamBTN;
+non terminal            paramsH1, paramH1, optionParamH1;
+non terminal            paramsP, paramP, optionParamP;
+non terminal            href, background;
+non terminal            paramColor;
+non terminal Tag        head, body;
+non terminal String     textTag, color, font, align, type, clase, paramId;
+
+//**************************************** Etiqueta GCIC
+gcic
+    ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head:h body:b LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:
+        gcicTag = new GCIC(h, b, parametros);
+        parametros = new ArrayList();
+    :}
+;
+
+//**************************************** Parametros GCIC
+paramsGCIC
+    ::= paramsGCIC paramGCIC
+    |   paramGCIC
+;
+
+paramGCIC
+    ::= OPEN_BRACKET optionParamGCIC CLOSE_BRACKET
+;
+
+optionParamGCIC
+    ::= NAME:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   paramId
+;
+
+
+//**************************************** Etiqueta HEAD
+head
+    ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag {:
+        RESULT = new Head(etiquetasHead);
+        etiquetasHead = new ArrayList();
+    :}
+;
+
+headTags
+    ::= link title
+    |   title link
+;
+
+//**************************************** Etiquetas LINK y TITLE
+title
+    ::= LESS_THAN C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE GREATER_THAN textTag {:
+        etiquetasHead.add(new Title(t.trim()));
+    :}
+;
+
+link
+    ::= LESS_THAN C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK GREATER_THAN textTag {:
+        etiquetasHead.add(new Link(parametros));
+        parametros = new ArrayList();
+    :}
+;
+
+href
+    ::= OPEN_BRACKET HREF:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK CLOSE_BRACKET {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+;
+
+
+//**************************************** Etiqueta BODY
+body
+    ::= LESS_THAN C_BODY background GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag {:
+        RESULT = new Body(etiquetas, parametros);
+        parametros = new ArrayList();
+    :}
+;
+
+bodyTags
+    ::= bodyTags bodyTag
+    |   bodyTag
+;
+
+bodyTag
+    ::= LESS_THAN nameTagBody GREATER_THAN textTag
+    |   LESS_THAN C_BR GREATER_THAN textTag {:
+        etiquetas.add(new Br());
+    :}
+;
+
+
+//**************************************** Resto de etiquetas
+nameTagBody
+    ::= C_SPAM paramsSPAM GREATER_THAN textTag:t LESS_THAN SLASH C_SPAM {:
+            etiquetas.add(new Span(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_INPUT paramsINPUT GREATER_THAN textTag:t LESS_THAN SLASH C_INPUT {:
+            etiquetas.add(new Input(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag:t LESS_THAN SLASH C_TEXTAREA {:
+            etiquetas.add(new TextArea(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioSelect textTag:t optionsTag LESS_THAN SLASH C_SELECT {:
+            Select sel = new Select(etiquetas, t, parametros);
+            parametros = new ArrayList();
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(sel);
+        :}
+
+    |   C_IMG paramsIMG GREATER_THAN textTag LESS_THAN SLASH C_IMG {:
+            etiquetas.add(new Img(parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_BUTTON paramsBTN GREATER_THAN textTag:t LESS_THAN SLASH C_BUTTON {:
+            etiquetas.add(new Button(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_H1 paramsH1 GREATER_THAN textTag:t LESS_THAN SLASH C_H1 {:
+            etiquetas.add(new H1(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_P paramsP GREATER_THAN textTag:t LESS_THAN SLASH C_P {:
+            etiquetas.add(new P(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioDIV textTag:t LESS_THAN SLASH C_DIV {:
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(new Div(null, t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioDIV textTag:t bodyTags LESS_THAN SLASH C_DIV {:
+            Div div = new Div(etiquetas, t, parametros);
+            parametros = new ArrayList();
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(div);
+        :}
+;
+
+inicioSelect
+    ::= C_SELECT paramsSEL GREATER_THAN {:
+        pilaEtiquetas.push(etiquetas);
+        etiquetas = new ArrayList();
+    :}
+;
+
+
+inicioDIV
+    ::= C_DIV paramsDIV GREATER_THAN {:
+        pilaEtiquetas.push(etiquetas);
+        etiquetas = new ArrayList();
+    :}
+;
+
+
+//**************************************** Etiqueta OPTION
+optionsTag
+    ::= optionsTag optionTag
+    |   optionTag
+;
+
+optionTag
+    ::= LESS_THAN C_OPTION GREATER_THAN textTag:o LESS_THAN SLASH C_OPTION GREATER_THAN textTag {:
+        etiquetas.add(new Option(o));
+    :}
+;
+
+
+//**************************************** Parametro BODY
+background
+    ::= OPEN_BRACKET BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK CLOSE_BRACKET {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+;
+
+
+//**************************************** Texto entre etiquetas
+textTag
+    ::= TEXT_TAG:t  {:RESULT = t.getLexema();:}
+    |               {:RESULT = "";:}
+;
+
+
+//**************************************** Parametros SPAM
+paramsSPAM
+    ::= paramsSPAM paramSPAM
+    |   paramSPAM
+;
+
+paramSPAM
+    ::= OPEN_BRACKET optionParamSPAM CLOSE_BRACKET
+;
+
+optionParamSPAM
+    ::= paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros INPUT
+paramsINPUT
+    ::= paramsINPUT paramINPUT
+    |   paramINPUT
+;
+
+paramINPUT
+    ::= OPEN_BRACKET optionParamINPUT CLOSE_BRACKET
+;
+
+optionParamINPUT
+    ::= TYPE:n ASSIGN QOUTE_MARK type:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros TEXT_AREA
+paramsTEXTA
+    ::= paramsTEXTA paramTEXTA
+    |   paramTEXTA
+;
+
+paramTEXTA
+    ::= OPEN_BRACKET optionParamTEXTA CLOSE_BRACKET
+;
+
+optionParamTEXTA
+    ::= ROWS:n ASSIGN QOUTE_MARK ENTERO:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   COLS:n ASSIGN QOUTE_MARK ENTERO:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros SELECT
+paramsSEL
+    ::= paramsSEL paramSEL
+    |   paramSEL
+;
+
+paramSEL
+    ::= OPEN_BRACKET optionParamSEL CLOSE_BRACKET
+;
+
+optionParamSEL
+    ::= paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros DIV
+paramsDIV
+    ::= paramsDIV paramDIV
+    |   paramDIV
+;
+
+paramDIV
+    ::= OPEN_BRACKET optionParamDIV CLOSE_BRACKET
+;
+
+optionParamDIV
+    ::= BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   CLASS:n ASSIGN QOUTE_MARK clase:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros IMG
+paramsIMG
+    ::= paramsIMG paramIMG
+    |   paramIMG
+;
+
+paramIMG
+    ::= OPEN_BRACKET optionParamIMG CLOSE_BRACKET
+;
+
+optionParamIMG
+    ::= ALT:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   HEIGHT:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   WIDTH:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   SRC:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   paramId
+;
+
+
+//****************************************Parametros BUTTON
+paramsBTN
+    ::= paramsBTN paramBTN
+    |   paramBTN
+;
+
+paramBTN
+    ::= OPEN_BRACKET optionParamBTN CLOSE_BRACKET
+;
+
+optionParamBTN//Falta onclick
+    ::= BACKGROUND:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros H1
+paramsH1
+    ::= paramsH1 paramH1
+    |   paramH1
+;
+
+paramH1
+    ::= OPEN_BRACKET optionParamH1 CLOSE_BRACKET
+;
+
+optionParamH1
+    ::= paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros P
+paramsP
+    ::= paramsP paramP
+    |   paramP
+;
+
+paramP
+    ::= OPEN_BRACKET optionParamP CLOSE_BRACKET
+;
+
+optionParamP
+    ::= paramColor
+    |   paramId
+    |   optionTextParam
+;
+
+
+//**************************************** Parametros relacionados a texto
+optionTextParam
+    ::= FONT_SIZE:n ASSIGN QOUTE_MARK SIZE:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+    |   FONT_FAMILY:n ASSIGN QOUTE_MARK font:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+    |   TEXT_ALIGN:n ASSIGN QOUTE_MARK align:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+;
+
+
+//**************************************** Parametros frecuentes
+paramId
+    ::= ID:n ASSIGN QOUTE_MARK ID_PARAM:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    :}
+;
+
+paramColor
+    ::= COLOR:n ASSIGN QOUTE_MARK color:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
+    :}
+;
+
+
+//**************************************** Colores
+color
+    ::= COLOR_VALUE:c       {:RESULT = c.getLexema();:}
+    |   BLACK:c             {:RESULT = c.getLexema();:}
+    |   OLIVE:c             {:RESULT = c.getLexema();:}
+    |   TEAL:c              {:RESULT = c.getLexema();:}
+    |   RED:c               {:RESULT = c.getLexema();:}
+    |   BLUE:c              {:RESULT = c.getLexema();:}
+    |   MARRON:c            {:RESULT = c.getLexema();:}
+    |   NAVY:c              {:RESULT = c.getLexema();:}
+    |   GRAY:c              {:RESULT = c.getLexema();:}
+    |   LIME:c              {:RESULT = c.getLexema();:}
+    |   FUCHSIA:c           {:RESULT = c.getLexema();:}
+    |   GREEN:c             {:RESULT = c.getLexema();:}
+    |   PURPLE:c            {:RESULT = c.getLexema();:}
+    |   SILVER:c            {:RESULT = c.getLexema();:}
+    |   YELLOW:c            {:RESULT = c.getLexema();:}
+    |   AQUA:c              {:RESULT = c.getLexema();:}
+;
+
+
+//**************************************** Fuentes de texto
+font
+    ::= COURIER:f           {:RESULT = f.getLexema();:}
+    |   VERDANA:f           {:RESULT = f.getLexema();:}
+    |   ARIAL:f             {:RESULT = f.getLexema();:}
+    |   GENEVA:f            {:RESULT = f.getLexema();:}
+    |   SANS_SERIF:f        {:RESULT = f.getLexema();:}
+;
+
+
+//**************************************** Alineacion de texto
+align
+    ::= LEFT:a              {:RESULT = a.getLexema();:}
+    |   CENTER:a            {:RESULT = a.getLexema();:}
+    |   RIGHT:a             {:RESULT = a.getLexema();:}
+    |   JUSTIFY:a           {:RESULT = a.getLexema();:}
+;
+
+
+//**************************************** Tipos de input
+type
+    ::= TEXT:t              {:RESULT = t.getLexema();:}
+    |   NUMBER:t            {:RESULT = t.getLexema();:}
+    |   RADIO:t             {:RESULT = t.getLexema();:}
+    |   CHECKBOX:t          {:RESULT = t.getLexema();:}
+;

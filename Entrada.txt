@@ -1,0 +1,16 @@
+<C_GCIC>
+
+    <C_HEAD>
+    
+        <C_LINK>
+        </C_LINK/>
+        
+        <C_TITLE>Este es un titulo</C_TITLE>
+        
+    </C_HEAD>
+    
+    <C_BODY>
+    
+    </C_BODY>
+
+</C_GCIC>
