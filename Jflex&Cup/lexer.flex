@@ -175,7 +175,7 @@ IDVAR = [:letter:][\w]*
 <OTHER> "THENWHILE"     { return symbol(THENWHILE); }
 <OTHER> "INSERT"        { return symbol(INSERT);}
 
-<YYINITIAL> {
+<YYINITIAL, TAG, PARAMETER, VALUE> {
     {LINE_COMMENT}          { /**Ignorar*/ }
     {BLOCK_COMMENT}         { /**Ignorar*/ }
     (\s)+                   { /**Ignorar*/ }

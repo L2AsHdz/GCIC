@@ -2,18 +2,38 @@ package analizadores.sintactico;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.Token;
+import java.util.Stack;
+import model.Body;
+import model.Br;
+import model.Button;
+import model.Div;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
+import model.GCIC;
+import model.H1;
+import model.Head;
+import model.Img;
+import model.Input;
+import model.Link;
+import model.Option;
+import model.P;
 import model.Parametro;
+import model.Select;
+import model.Span;
 import model.Tag;
+import model.TextArea;
+import model.Title;
+import model.Token;
 import java_cup.runtime.Symbol;
 
 parser code{:
 
     private final List<ErrorAnalisis> errores = new ArrayList();
     private List<Parametro> parametros = new ArrayList();
-    private final Tag gcicTag = null;
+    private List<Tag> etiquetas = new ArrayList();
+    private List<Tag> etiquetasHead = new ArrayList();
+    private Stack<List<Tag>> pilaEtiquetas = new Stack();
+    private Tag gcicTag;
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
@@ -75,25 +95,29 @@ terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
 
 //* No terminales
 
-non terminal            gcic, head, headTags, link, title, body, bodyTags, bodyTag, nameTagBody;
+non terminal            gcic, headTags, link, title, bodyTags, bodyTag, nameTagBody;
 non terminal            optionsTag, optionTag, optionTextParam;
 non terminal            paramsGCIC, paramGCIC, optionParamGCIC;
 non terminal            paramsSPAM, paramSPAM, optionParamSPAM;
 non terminal            paramsINPUT, paramINPUT, optionParamINPUT;
 non terminal            paramsTEXTA, paramTEXTA, optionParamTEXTA;
-non terminal            paramsSEL, paramSEL, optionParamSEL;
-non terminal            paramsDIV, paramDIV, optionParamDIV, endDIV;
+non terminal            paramsSEL, paramSEL, optionParamSEL, inicioSelect;
+non terminal            paramsDIV, paramDIV, optionParamDIV, inicioDIV;
 non terminal            paramsIMG, paramIMG, optionParamIMG;
 non terminal            paramsBTN, paramBTN, optionParamBTN;
 non terminal            paramsH1, paramH1, optionParamH1;
 non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
 non terminal            paramColor;
+non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId;
 
 //**************************************** Etiqueta GCIC
 gcic
-    ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head body LESS_THAN SLASH C_GCIC GREATER_THAN textTag
+    ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head:h body:b LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:
+        gcicTag = new GCIC(h, b, parametros);
+        parametros = new ArrayList();
+    :}
 ;
 
 //**************************************** Parametros GCIC
@@ -116,7 +140,10 @@ optionParamGCIC
 
 //**************************************** Etiqueta HEAD
 head
-    ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag
+    ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag {:
+        RESULT = new Head(etiquetasHead);
+        etiquetasHead = new ArrayList();
+    :}
 ;
 
 headTags
@@ -127,12 +154,15 @@ headTags
 //**************************************** Etiquetas LINK y TITLE
 title
     ::= LESS_THAN C_TITLE GREATER_THAN textTag:t LESS_THAN SLASH C_TITLE GREATER_THAN textTag {:
-        System.out.println("Titulo de la pagina: " + t);
+        etiquetasHead.add(new Title(t.trim()));
     :}
 ;
 
 link
-    ::= LESS_THAN C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK GREATER_THAN textTag
+    ::= LESS_THAN C_LINK href GREATER_THAN textTag LESS_THAN SLASH C_LINK GREATER_THAN textTag {:
+        etiquetasHead.add(new Link(parametros));
+        parametros = new ArrayList();
+    :}
 ;
 
 href
@@ -144,7 +174,10 @@ href
 
 //**************************************** Etiqueta BODY
 body
-    ::= LESS_THAN C_BODY background GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag
+    ::= LESS_THAN C_BODY background GREATER_THAN textTag bodyTags LESS_THAN SLASH C_BODY GREATER_THAN textTag {:
+        RESULT = new Body(etiquetas, parametros);
+        parametros = new ArrayList();
+    :}
 ;
 
 bodyTags
@@ -154,26 +187,83 @@ bodyTags
 
 bodyTag
     ::= LESS_THAN nameTagBody GREATER_THAN textTag
-    |   LESS_THAN C_BR GREATER_THAN textTag
+    |   LESS_THAN C_BR GREATER_THAN textTag {:
+        etiquetas.add(new Br());
+    :}
 ;
 
 
 //**************************************** Resto de etiquetas
 nameTagBody
-    ::= C_SPAM paramsSPAM GREATER_THAN textTag LESS_THAN SLASH C_SPAM
-    |   C_INPUT paramsINPUT GREATER_THAN textTag LESS_THAN SLASH C_INPUT
-    |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag LESS_THAN SLASH C_TEXTAREA
-    |   C_SELECT paramsSEL GREATER_THAN textTag optionsTag LESS_THAN SLASH C_SELECT
-    |   C_IMG paramsIMG GREATER_THAN textTag LESS_THAN SLASH C_IMG
-    |   C_BUTTON paramsBTN GREATER_THAN textTag LESS_THAN SLASH C_BUTTON
-    |   C_H1 paramsH1 GREATER_THAN textTag LESS_THAN SLASH C_H1
-    |   C_P paramsP GREATER_THAN textTag LESS_THAN SLASH C_P
-    |   C_DIV paramsDIV GREATER_THAN textTag LESS_THAN SLASH C_DIV
-    |   C_DIV paramsDIV GREATER_THAN textTag bodyTags endDIV {:System.out.println("Inicio de etiqueta div");:}
+    ::= C_SPAM paramsSPAM GREATER_THAN textTag:t LESS_THAN SLASH C_SPAM {:
+            etiquetas.add(new Span(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_INPUT paramsINPUT GREATER_THAN textTag:t LESS_THAN SLASH C_INPUT {:
+            etiquetas.add(new Input(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_TEXTAREA paramsTEXTA GREATER_THAN textTag:t LESS_THAN SLASH C_TEXTAREA {:
+            etiquetas.add(new TextArea(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioSelect textTag:t optionsTag LESS_THAN SLASH C_SELECT {:
+            Select sel = new Select(etiquetas, t, parametros);
+            parametros = new ArrayList();
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(sel);
+        :}
+
+    |   C_IMG paramsIMG GREATER_THAN textTag LESS_THAN SLASH C_IMG {:
+            etiquetas.add(new Img(parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_BUTTON paramsBTN GREATER_THAN textTag:t LESS_THAN SLASH C_BUTTON {:
+            etiquetas.add(new Button(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_H1 paramsH1 GREATER_THAN textTag:t LESS_THAN SLASH C_H1 {:
+            etiquetas.add(new H1(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   C_P paramsP GREATER_THAN textTag:t LESS_THAN SLASH C_P {:
+            etiquetas.add(new P(t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioDIV textTag:t LESS_THAN SLASH C_DIV {:
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(new Div(null, t, parametros));
+            parametros = new ArrayList();
+        :}
+
+    |   inicioDIV textTag:t bodyTags LESS_THAN SLASH C_DIV {:
+            Div div = new Div(etiquetas, t, parametros);
+            parametros = new ArrayList();
+            etiquetas = pilaEtiquetas.pop();
+            etiquetas.add(div);
+        :}
 ;
 
-endDIV
-    ::= LESS_THAN SLASH C_DIV {:System.out.println("Fin de etiqueta div");:}
+inicioSelect
+    ::= C_SELECT paramsSEL GREATER_THAN {:
+        pilaEtiquetas.push(etiquetas);
+        etiquetas = new ArrayList();
+    :}
+;
+
+
+inicioDIV
+    ::= C_DIV paramsDIV GREATER_THAN {:
+        pilaEtiquetas.push(etiquetas);
+        etiquetas = new ArrayList();
+    :}
 ;
 
 
@@ -185,7 +275,7 @@ optionsTag
 
 optionTag
     ::= LESS_THAN C_OPTION GREATER_THAN textTag:o LESS_THAN SLASH C_OPTION GREATER_THAN textTag {:
-        System.out.println("Option: " + o);
+        etiquetas.add(new Option(o));
     :}
 ;
 
