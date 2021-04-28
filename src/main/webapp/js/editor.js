@@ -43,4 +43,8 @@ btnReset.addEventListener('click', () => {
     inputFile.value = '';
 });
 
+function loadText () {
+    codeEditor.setValue(analyzeText.value);
+}
+
 editorLib.init();

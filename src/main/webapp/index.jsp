@@ -15,7 +15,7 @@
         <!--CSS-->
         <jsp:include page="/WEB-INF/extras/extrasCSS.jsp"/>
     </head>
-    <body>
+    <body onload="loadText();">
         <!-- Barra de navegacion -->
         <jsp:include page="/WEB-INF/gcic/navBar.jsp"/>
 
@@ -46,7 +46,7 @@
             </div>
 
             <form id="analyzeForm" action="${pageContext.request.contextPath}/analizador" method="POST">
-                <textarea rows="10" class="d-none" name="inputText" id="analyzeText"></textarea>
+                <textarea rows="10" class="d-none" name="inputText" id="analyzeText">${inputText}</textarea>
             </form>
             <form id="exportForm" action="${pageContext.request.contextPath}/textEditor?accion=export" method="POST" class="was-validated">
                 <textarea rows="10" class="d-none" name="inputText" id="inputText"></textarea>
