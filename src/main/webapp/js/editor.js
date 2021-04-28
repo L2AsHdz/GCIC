@@ -3,6 +3,7 @@
 const btnReset = document.querySelector('#reset');
 const inputFile = document.querySelector('#archivoEntrada');
 const inputText = document.querySelector('#inputText');
+const analyzeText = document.querySelector('#analyzeText');
 const position = document.querySelector('#position');
 
 let codeEditor = ace.edit("textEditor");
@@ -28,6 +29,7 @@ let editorLib = {
 
 codeEditor.getSession().on('change', () => {
     inputText.innerHTML = codeEditor.getValue();
+    analyzeText.innerHTML = codeEditor.getValue();
 });
 
 codeEditor.session.selection.on('changeCursor', function(e) {

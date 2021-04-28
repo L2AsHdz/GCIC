@@ -4,6 +4,7 @@
    Author     : asael
 --%>
 
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -28,7 +29,7 @@
                     </div>
                 </div>
                 <div class="col-2">
-                    <button type="submit" class="btn btn-info btn-block">
+                    <button type="submit" class="btn btn-info btn-block" form="analyzeForm">
                         <i class="fas fa-chevron-circle-right"></i> Analizar
                     </button>
                 </div>
@@ -44,6 +45,9 @@
                 </div>
             </div>
 
+            <form id="analyzeForm" action="${pageContext.request.contextPath}/analizador" method="POST">
+                <textarea rows="10" class="d-none" name="inputText" id="analyzeText"></textarea>
+            </form>
             <form id="exportForm" action="${pageContext.request.contextPath}/textEditor?accion=export" method="POST" class="was-validated">
                 <textarea rows="10" class="d-none" name="inputText" id="inputText"></textarea>
             </form>
@@ -64,7 +68,14 @@
                     <div class="col-1"></div>
                     <div class="col-10">
                         <div class="form-group border">
+                            <c:choose>
+                                <c:when test="${!empty(info)}">
+                            <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>${info}</textarea>
+                                </c:when>
+                                <c:otherwise>
                             <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>Aqui se mostrara informacion sobre el estado del analisis del codigo GCIC</textarea>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>
@@ -72,7 +83,7 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal" id="saveFileModal" data-backdrop="static">
+        <div class="modal" id="saveFileModal">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
