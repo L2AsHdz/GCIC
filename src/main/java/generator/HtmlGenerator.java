@@ -1,6 +1,8 @@
 package generator;
 
+import generator.body.BodyGenerator;
 import model.tags.GCIC;
+import model.tags.body.Body;
 import model.tags.head.Head;
 
 /**
@@ -33,20 +35,22 @@ public class HtmlGenerator extends Generator {
         //extras css
         addLine("<link rel=\"stylesheet\" href=\"/GCIC/css/bootstrap.css\">", 2);
         addLine("<link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.8.2/css/all.css\">", 2);
-        addLine("<link rel=\"stylesheet\" href=\"/GCIC/css/styles.css\">", 2);
         addLine("</head>", 1);
         //fin head
 
         //body
-        addLine("<body>", 1);
-        addLine("<div class=\"container-fluid\">", 2);
-        addLine("<div class=\"row\">", 3);
-        addLine("<div class=\"col-2\"></div>", 4);
-        addLine("<div class=\"col-8\">", 4);
+        addLine("<body style=\"background:"+((Body) gcic.getBody()).getParameterValue("background")+"\">", 1);
+        //addLine("<div class=\"container-fluid\">", 2);
+        //addLine("<div class=\"row\">", 3);
+        //addLine("<div class=\"col-2\"></div>", 4);
+        //addLine("<div class=\"col-8\">", 4);
         
-        addLine("</div>", 4);
-        addLine("</div>", 3);
-        addLine("</div>", 2);
+        Generator bodyG = new BodyGenerator((Body) gcic.getBody());
+        addLine(bodyG.generate(), 2);
+        
+        //addLine("</div>", 4);
+        //addLine("</div>", 3);
+        //addLine("</div>", 2);
 
         //extras js
         addLine("<script src=\"/GCIC/js/jquery-3.6.0.js\"></script>", 2);

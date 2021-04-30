@@ -32,4 +32,15 @@ public abstract class Tag {
     public void setParametros(List<Parametro> parametros) {
         this.parametros = parametros;
     }
+    
+    public String getParameterValue(String name) {
+        String value = null;
+        for (Parametro p: parametros) {
+            if (p.getName().equals(name)) {
+                value = p.getValue();
+            }
+        }
+        
+        return value;
+    }
 }

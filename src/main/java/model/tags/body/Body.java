@@ -30,7 +30,7 @@ public class Body extends Tag {
 
     private void initParameters(List<Parametro> parametros) {
         super.parametros = new ArrayList();
-        super.parametros.add(new Parametro("background", "black"));
+        super.parametros.add(new Parametro("background", "white"));
         
         parametros.forEach(p -> {
             Parametro aux = find(p.getName());
