@@ -1,6 +1,8 @@
 package web.analyzer;
 
 import analyzer.GCICAnalyzer;
+import generator.Generator;
+import generator.HtmlGenerator;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -25,6 +27,8 @@ import model.tags.body.TextArea;
 import model.tags.head.Head;
 import model.tags.head.Link;
 import model.tags.head.Title;
+import static controller.FileController.saveFile;
+import static controller.FileController.createDirectory;
 
 /**
  *
@@ -39,16 +43,16 @@ public class AnalyzerServlet extends HttpServlet {
     StringBuilder text;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse responsep) throws ServletException, IOException {
-        processRequest(request, responsep);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse responsep) throws ServletException, IOException {
-        processRequest(request, responsep);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
     }
     
-    private void processRequest(HttpServletRequest request, HttpServletResponse responsep) throws ServletException, IOException {
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String inputText = request.getParameter("inputText");
         analyzer = new GCICAnalyzer(inputText);
         analyzer.analyze();
@@ -77,10 +81,17 @@ public class AnalyzerServlet extends HttpServlet {
         Body body = (Body) gcic.getBody();
         printTags(body.getEtiquetas());
         
+        String PATH_CAPTCHAS = "/home/asael/NetBeansProjects/GCIC/src/main/webapp/captchas/";
+        Generator htmlGenerator = new HtmlGenerator(gcic);
+        createDirectory(PATH_CAPTCHAS);
+        saveFile(PATH_CAPTCHAS + "prueba.html", htmlGenerator.generate());
+        
         request.setAttribute("inputText", inputText);
         request.setAttribute("info", text.toString());
         
-        request.getRequestDispatcher("index.jsp").forward(request, responsep);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
+        
+        
     }
     
     private void printTags(List<Tag> tags){
