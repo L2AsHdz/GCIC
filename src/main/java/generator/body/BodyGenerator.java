@@ -51,6 +51,8 @@ public class BodyGenerator extends Generator {
                 addLine(inputG.generate(), 0);
             } else if (e instanceof TextArea) {
                 TextArea ta = (TextArea) e;
+                Generator textAG = new TextAreaGenerator(ta);
+                addLine(textAG.generate(), 0);
             } else if (e instanceof Select) {
                 Select s = (Select) e;
                 s.getOptions().forEach(o -> {
