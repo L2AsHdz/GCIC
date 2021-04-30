@@ -9,9 +9,12 @@ import model.tags.body.Span;
  * @author asael
  */
 public class SpanGenerator extends TextTagGenerator {
+    
+    private Span span;
 
     public SpanGenerator(Span span) {
         super(span);
+        this.span = span;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class SpanGenerator extends TextTagGenerator {
     protected String getStyles() {
         StringBuilder styles = new StringBuilder(super.getStyles());
         
-        styles.append(" color:").append(((Span)textTag).getParameterValue("color")).append(";");
+        styles.append(" color:").append(span.getParameterValue("color")).append(";");
         
         return styles.toString();
     }

@@ -55,11 +55,8 @@ public class BodyGenerator extends Generator {
                 addLine(textAG.generate(), 0);
             } else if (e instanceof Select) {
                 Select s = (Select) e;
-                s.getOptions().forEach(o -> {
-                    if (o instanceof Option) {
-                        Option op = (Option) o;
-                    }
-                });
+                Generator selectG = new SelectGenerator(s);
+                addLine(selectG.generate(), 0);
             } else if (e instanceof Div) {
                 Div d = (Div) e;
             } else if (e instanceof Img) {
