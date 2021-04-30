@@ -47,7 +47,7 @@ public class BodyGenerator extends Generator {
                 addLine(spanG.generate(), 0);
             } else if (e instanceof Input) {
                 Input i = (Input) e;
-                Generator inputG = new inputGenerator(i);
+                Generator inputG = new InputGenerator(i);
                 addLine(inputG.generate(), 0);
             } else if (e instanceof TextArea) {
                 TextArea ta = (TextArea) e;

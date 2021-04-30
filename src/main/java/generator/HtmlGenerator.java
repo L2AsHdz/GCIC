@@ -13,7 +13,7 @@ import model.tags.head.Head;
  */
 public class HtmlGenerator extends Generator {
     
-    private GCIC gcic;
+    private final GCIC gcic;
 
     public HtmlGenerator(GCIC gcic) {
         this.gcic = gcic;
@@ -29,7 +29,7 @@ public class HtmlGenerator extends Generator {
         addLine("<head>", 1);
         addLine("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">", 2);
 
-        HeadGenerator headG = new HeadGenerator((Head) gcic.getHead());
+        Generator headG = new HeadGenerator((Head) gcic.getHead());
         addLine(headG.generate(), 2);
         
         //extras css
