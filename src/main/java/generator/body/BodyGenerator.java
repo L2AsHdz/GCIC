@@ -75,6 +75,8 @@ public class BodyGenerator extends Generator {
                 addLine(h1G.generate(), 0);
             } else if (e instanceof P) {
                 P pp = (P) e;
+                Generator pG = new PGenerator(pp);
+                addLine(pG.generate(), 0);
             }
         });
     }
