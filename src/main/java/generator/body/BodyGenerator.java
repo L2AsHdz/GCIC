@@ -71,6 +71,8 @@ public class BodyGenerator extends Generator {
                 addLine(buttonG.generate(), 0);
             } else if (e instanceof H1) {
                 H1 h = (H1) e;
+                Generator h1G = new H1Generator(h);
+                addLine(h1G.generate(), 0);
             } else if (e instanceof P) {
                 P pp = (P) e;
             }

@@ -17,7 +17,8 @@ public class H1 extends TextTag {
     }
 
     private void initParameters(List<Parametro> parametros) {
-        super.parametros.add(new Parametro("color", "white"));
+        super.parametros.add(new Parametro("color", "black"));
+        getParameter("font-size").setValue("20px");
         
         parametros.forEach(p -> {
             Parametro aux = find(p.getName());

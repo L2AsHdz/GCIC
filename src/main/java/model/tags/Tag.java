@@ -43,4 +43,15 @@ public abstract class Tag {
         
         return value;
     }
+    
+    public Parametro getParameter(String name) {
+        Parametro value = null;
+        for (Parametro p: parametros) {
+            if (p.getName().equals(name)) {
+                value = p;
+            }
+        }
+        
+        return value;
+    }
 }
