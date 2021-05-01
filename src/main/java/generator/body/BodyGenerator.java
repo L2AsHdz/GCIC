@@ -10,7 +10,6 @@ import model.tags.body.Div;
 import model.tags.body.H1;
 import model.tags.body.Img;
 import model.tags.body.Input;
-import model.tags.body.Option;
 import model.tags.body.P;
 import model.tags.body.Select;
 import model.tags.body.Span;

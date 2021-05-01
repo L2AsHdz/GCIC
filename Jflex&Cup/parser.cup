@@ -33,6 +33,7 @@ parser code{:
     private List<Tag> etiquetas = new ArrayList();
     private List<Tag> etiquetasHead = new ArrayList();
     private Stack<List<Tag>> pilaEtiquetas = new Stack();
+    private Stack<List<Parametro>> pilaParams = new Stack();
     private Tag gcicTag;
 
     public List<ErrorAnalisis> getErrores() {
@@ -110,7 +111,7 @@ non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
 non terminal            paramColor;
 non terminal Tag        head, body;
-non terminal String     textTag, color, font, align, type, clase, paramId, size;
+non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
 //**************************************** Etiqueta GCIC
 gcic
@@ -244,6 +245,7 @@ nameTagBody
         :}
 
     |   inicioDIV textTag:t bodyTags LESS_THAN SLASH C_DIV {:
+            parametros = pilaParams.pop();
             Div div = new Div(etiquetas, t, parametros);
             parametros = new ArrayList();
             etiquetas = pilaEtiquetas.pop();
@@ -263,6 +265,8 @@ inicioDIV
     ::= C_DIV paramsDIV GREATER_THAN {:
         pilaEtiquetas.push(etiquetas);
         etiquetas = new ArrayList();
+        pilaParams.push(parametros);
+        parametros = new ArrayList();
     :}
 ;
 
@@ -496,9 +500,14 @@ optionTextParam
 
 //**************************************** Parametros frecuentes
 paramId
-    ::= ID:n ASSIGN QOUTE_MARK ID_PARAM:v QOUTE_MARK {:
-        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    ::= ID:n ASSIGN QOUTE_MARK optionId:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
     :}
+;
+
+optionId
+    ::= ID_PARAM:i      {:RESULT = i.getLexema();:}
+    |   NAME_PARAM:i    {:RESULT = i.getLexema();:}
 ;
 
 paramColor
