@@ -59,6 +59,10 @@ public class BodyGenerator extends Generator {
                 addLine(selectG.generate(), 0);
             } else if (e instanceof Div) {
                 Div d = (Div) e;
+                Generator divG = new DivGenerator(d);
+                addLine(divG.generate(), 0);
+                generateTags(d.getEtiquetas());
+                addLine("</div>", 0);
             } else if (e instanceof Img) {
                 Img i = (Img) e;
                 Generator imgG = new ImgGenerator(i);

@@ -10,7 +10,7 @@ import model.tags.body.Span;
  */
 public class SpanGenerator extends TextTagGenerator {
     
-    private Span span;
+    private final Span span;
 
     public SpanGenerator(Span span) {
         super(span);
@@ -21,7 +21,7 @@ public class SpanGenerator extends TextTagGenerator {
     public String generate() {
         htmlCode = new StringBuilder();
 
-        addLine("<span style=\"" + getStyles() + "\" id=\"" + textTag.getParameterValue("id") + "\">" + textTag.getText() + "</span>", 0);
+        addLine("<span style=\"" + getStyles() + "\" id=\"" + textTag.getParameterValue("id") + "\">" + textTag.getText().trim() + "</span>", 0);
 
         return htmlCode.toString();
     }

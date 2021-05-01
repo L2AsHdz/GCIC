@@ -22,7 +22,8 @@ public class PGenerator extends TextTagGenerator {
     public String generate() {
         htmlCode = new StringBuilder();
 
-        htmlCode.append("<p style=\"").append(getStyles()).append("\">");
+        htmlCode.append("<p style=\"").append(getStyles()).append("\" ");
+        htmlCode.append("id=\"").append(p.getParameterValue("id")).append("\">");
         htmlCode.append(p.getText().trim());
         htmlCode.append("</p>");
 

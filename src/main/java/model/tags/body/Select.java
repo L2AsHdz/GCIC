@@ -29,7 +29,7 @@ public class Select extends TextTag {
     }
 
     private void initParameters(List<Parametro> parametros) {
-        super.parametros.add(new Parametro("color", "white"));
+        super.parametros.add(new Parametro("color", "black"));
         
         parametros.forEach(p -> {
             Parametro aux = find(p.getName());
