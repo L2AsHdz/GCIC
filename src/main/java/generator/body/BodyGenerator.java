@@ -61,6 +61,8 @@ public class BodyGenerator extends Generator {
                 Div d = (Div) e;
             } else if (e instanceof Img) {
                 Img i = (Img) e;
+                Generator imgG = new ImgGenerator(i);
+                addLine(imgG.generate(), 0);
             } else if (e instanceof Br) {
             } else if (e instanceof Button) {
                 Button b = (Button) e;

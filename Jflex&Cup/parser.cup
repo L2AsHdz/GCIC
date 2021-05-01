@@ -110,7 +110,7 @@ non terminal            paramsP, paramP, optionParamP;
 non terminal            href, background;
 non terminal            paramColor;
 non terminal Tag        head, body;
-non terminal String     textTag, color, font, align, type, clase, paramId;
+non terminal String     textTag, color, font, align, type, clase, paramId, size;
 
 //**************************************** Etiqueta GCIC
 gcic
@@ -408,16 +408,21 @@ optionParamIMG
     ::= ALT:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
         parametros.add(new Parametro(n.getLexema(), v.getLexema()));
     :}
-    |   HEIGHT:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
-        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    |   HEIGHT:n ASSIGN QOUTE_MARK size:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
     :}
-    |   WIDTH:n ASSIGN QOUTE_MARK WH_VAL:v QOUTE_MARK {:
-        parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+    |   WIDTH:n ASSIGN QOUTE_MARK size:v QOUTE_MARK {:
+        parametros.add(new Parametro(n.getLexema(), v));
     :}
     |   SRC:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK {:
         parametros.add(new Parametro(n.getLexema(), v.getLexema()));
     :}
     |   paramId
+;
+
+size
+    ::= SIZE:s    {:RESULT = s.getLexema();:}
+    |   WH_VAL:s  {:RESULT = s.getLexema();:}
 ;
 
 

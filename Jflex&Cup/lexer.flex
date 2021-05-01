@@ -46,7 +46,7 @@ BLOCK_COMMENT = "<!--"[^EOF]*"-->"
 URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
 COLOR = #([a-fA-F0-9]{6}|[a-fA-F0-9]{3})
 SIZE = {ENTERO}(px)
-WH_VAL = ({ENTERO}(px) | {ENTERO}("%"))
+WH_VAL = {ENTERO}("%")
 IDPARAM = [_$-][\w$-]*
 NAMEPARAM = [:letter:][\w]*
 
