@@ -56,6 +56,7 @@ IDVAR = [:letter:][\w]*
 %state TAG
 %state PARAMETER
 %state VALUE
+%state SCRIPTING
 %state OTHER
 
 %%
@@ -77,7 +78,8 @@ IDVAR = [:letter:][\w]*
 <TAG> [cC]_[bB][uU][tT][tT][oO][nN]               { return symbol(C_BUTTON); }
 <TAG> [cC]_[hH]1                                  { return symbol(C_H1); }
 <TAG> [cC]_[pP]                                   { return symbol(C_P); }
-<TAG> [cC]-[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { return symbol(C_SCRIPTING); }
+<TAG> [cC]_[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { yybegin(SCRIPTING); return symbol(C_SCRIPTING); }
+<SCRIPTING> [cC]_[sS][cC][rR][iI][pP][tT][iI][nN][gG]   { yybegin(TAG); return symbol(C_SCRIPTING); }
 
 //* Name parameters
 <PARAMETER> "href"          { return symbol(HREF); }
@@ -139,43 +141,43 @@ IDVAR = [:letter:][\w]*
 <VALUE> "row"           { return symbol(ROW); }
 
 //* CLC
-<OTHER> "ON_LOAD"       { return symbol(ON_LOAD); }
-<OTHER> "@global"       { return symbol(GLOBAL_MODE); }
+<SCRIPTING> "ON_LOAD"       { return symbol(ON_LOAD); }
+<SCRIPTING> "@global"       { return symbol(GLOBAL_MODE); }
 
 //* Tipos de datos
-<OTHER> "integer"       { return symbol(INTEGER); }
-<OTHER> "decimal"       { return symbol(DECIMAL); }
-<OTHER> "boolean"       { return symbol(BOOLEAN); }
-<OTHER> "char"          { return symbol(CHAR); }
-<OTHER> "string"        { return symbol(STRING); }
-<OTHER> "true"          { return symbol(TRUE); }
-<OTHER> "false"         { return symbol(FALSE); }
+<SCRIPTING> "integer"       { return symbol(INTEGER); }
+<SCRIPTING> "decimal"       { return symbol(DECIMAL); }
+<SCRIPTING> "boolean"       { return symbol(BOOLEAN); }
+<SCRIPTING> "char"          { return symbol(CHAR); }
+<SCRIPTING> "string"        { return symbol(STRING); }
+<SCRIPTING> "true"          { return symbol(TRUE); }
+<SCRIPTING> "false"         { return symbol(FALSE); }
 
 //* Funciones especiales
-<OTHER> "ASC"                   { return symbol(ASC); }
-<OTHER> "DESC"                  { return symbol(DESC); }
-<OTHER> "LETPAR_NUM"            { return symbol(LETPAR_NUM); }
-<OTHER> "LETIMPAR_NUM"          { return symbol(LETIMPAR_NUM); }
-<OTHER> "REVERSE"               { return symbol(REVERSE); }
-<OTHER> "CARACTER_ALEATORIO"    { return symbol(CARACTER_ALEATORIO); }
-<OTHER> "NUM_ALEATORIO"         { return symbol(NUM_ALEATORIO); }
-<OTHER> "ALERT_INFO"            { return symbol(ALERT_INFO); }
-<OTHER> "EXIT"                  { return symbol(EXIT); }
-<OTHER> "getElementById"        { return symbol(ELEMENT_BY_ID); }
+<SCRIPTING> "ASC"                   { return symbol(ASC); }
+<SCRIPTING> "DESC"                  { return symbol(DESC); }
+<SCRIPTING> "LETPAR_NUM"            { return symbol(LETPAR_NUM); }
+<SCRIPTING> "LETIMPAR_NUM"          { return symbol(LETIMPAR_NUM); }
+<SCRIPTING> "REVERSE"               { return symbol(REVERSE); }
+<SCRIPTING> "CARACTER_ALEATORIO"    { return symbol(CARACTER_ALEATORIO); }
+<SCRIPTING> "NUM_ALEATORIO"         { return symbol(NUM_ALEATORIO); }
+<SCRIPTING> "ALERT_INFO"            { return symbol(ALERT_INFO); }
+<SCRIPTING> "EXIT"                  { return symbol(EXIT); }
+<SCRIPTING> "getElementById"        { return symbol(ELEMENT_BY_ID); }
 
 //* Bloques y estructuras de control
-<OTHER> "INIT"          { return symbol(INIT); }
-<OTHER> "END"           { return symbol(END); }
-<OTHER> "IF"            { return symbol(IF); }
-<OTHER> "THEN"          { return symbol(THEN); }
-<OTHER> "ELSE"          { return symbol(ELSE); }
-<OTHER> "REPEAT"        { return symbol(REPEAT); }
-<OTHER> "HUNTIL"        { return symbol(HUNTIL); }
-<OTHER> "WHILE"         { return symbol(WHILE); }
-<OTHER> "THENWHILE"     { return symbol(THENWHILE); }
-<OTHER> "INSERT"        { return symbol(INSERT);}
+<SCRIPTING> "INIT"          { return symbol(INIT); }
+<SCRIPTING> "END"           { return symbol(END); }
+<SCRIPTING> "IF"            { return symbol(IF); }
+<SCRIPTING> "THEN"          { return symbol(THEN); }
+<SCRIPTING> "ELSE"          { return symbol(ELSE); }
+<SCRIPTING> "REPEAT"        { return symbol(REPEAT); }
+<SCRIPTING> "HUNTIL"        { return symbol(HUNTIL); }
+<SCRIPTING> "WHILE"         { return symbol(WHILE); }
+<SCRIPTING> "THENWHILE"     { return symbol(THENWHILE); }
+<SCRIPTING> "INSERT"        { return symbol(INSERT);}
 
-<YYINITIAL, TAG, PARAMETER, VALUE> {
+<YYINITIAL, TAG, PARAMETER, VALUE, SCRIPTING> {
     {LINE_COMMENT}          { /**Ignorar*/ }
     {BLOCK_COMMENT}         { /**Ignorar*/ }
     (\s)+                   { /**Ignorar*/ }
@@ -200,6 +202,16 @@ IDVAR = [:letter:][\w]*
 
 <VALUE> {
     "\""            { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
+}
+
+<SCRIPTING> {
+    ">"             { return symbol(GREATER_THAN); }
+    "<"             { return symbol(LESS_THAN); }
+    "/"             { return symbol(SLASH); }
+    "("             { return symbol(OPEN_ROUND_BRACKET); }
+    ")"             { return symbol(CLOSE_ROUND_BRACKET); }
+    "["             { return symbol(OPEN_BRACKET); }
+    "]"             { return symbol(CLOSE_BRACKET); }
 }
 
 <OTHER> {
@@ -239,7 +251,7 @@ IDVAR = [:letter:][\w]*
 <VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
 <VALUE> {ENTERO}                    { return symbol(ENTERO); }
 
-<OTHER> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
-<OTHER> {IDVAR}                     { return symbol(ID_VAR); }
+<SCRIPTING> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
+<SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }
 
 [^]                                     { addLexicError(); }

@@ -113,6 +113,8 @@ non terminal            paramColor;
 non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
+non terminal            procesos, process, processBody;
+
 //**************************************** Etiqueta GCIC
 gcic
     ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head:h body:b LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:
@@ -251,6 +253,8 @@ nameTagBody
             etiquetas = pilaEtiquetas.pop();
             etiquetas.add(div);
         :}
+
+    |   C_SCRIPTING GREATER_THAN procesos LESS_THAN SLASH C_SCRIPTING
 ;
 
 inicioSelect
@@ -563,4 +567,18 @@ type
     |   NUMBER:t            {:RESULT = t.getLexema();:}
     |   RADIO:t             {:RESULT = t.getLexema();:}
     |   CHECKBOX:t          {:RESULT = t.getLexema();:}
+;
+
+procesos
+    ::= procesos process
+    |   process
+;
+
+process
+    ::= ON_LOAD processBody
+    |   PROCESS_NAME processBody
+;
+
+processBody
+    ::= OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET OPEN_BRACKET  CLOSE_BRACKET
 ;
