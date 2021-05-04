@@ -113,8 +113,8 @@ non terminal            paramColor;
 non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
-non terminal            procesos, process, processBody, instructions, instruction, statement;
-non terminal            tipo, variables, variable, assignmentExpr;
+non terminal            procesos, process, processBody, instructions, instruction, fullStatement;
+non terminal            tipo, variables, variable, statement, assignment, assignmentExpr;
 non terminal            valores, numero, literal, caracter, bool;
 
 //* Precedencias
@@ -601,13 +601,23 @@ instructions
 ;
 
 instruction
-    ::= statement
+    ::= fullStatement
+    |   statement
+    |   assignment
+;
+
+fullStatement
+    ::= tipo GLOBAL_MODE variables ASSIGN assignmentExpr SEMI
+    |   tipo variables ASSIGN assignmentExpr SEMI
 ;
 
 statement
-    ::= tipo GLOBAL_MODE variables ASSIGN assignmentExpr SEMI
-    |   tipo variables ASSIGN assignmentExpr SEMI
-    |   variable ASSIGN assignmentExpr SEMI
+    ::= tipo GLOBAL_MODE variables SEMI
+    |   tipo variables SEMI
+;
+
+assignment
+    ::= variable ASSIGN assignmentExpr SEMI
 ;
 
 tipo
