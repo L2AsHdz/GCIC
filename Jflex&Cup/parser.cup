@@ -113,8 +113,10 @@ non terminal            paramColor;
 non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
-non terminal            procesos, process, processBody, instructions, instruction, fullStatement;
-non terminal            tipo, variables, variable, statement, assignment, expr, mathExpr, logicExpr;
+non terminal            procesos, process, processBody, instructions, instruction, oneStatement;
+non terminal            fullStatement, statement, assignment, expr, mathExpr, logicExpr, instructionBlock;
+non terminal            ifStatement, simpleIf, ifTypes, condition;
+non terminal            tipo, variables, variable;
 non terminal            values, numero, literal, caracter, bool;
 
 //* Precedencias
@@ -601,23 +603,70 @@ instructions
 ;
 
 instruction
+    ::= oneStatement SEMI
+    |   ifStatement
+;
+
+oneStatement
     ::= fullStatement
     |   statement
     |   assignment
 ;
 
 fullStatement
-    ::= tipo GLOBAL_MODE variables ASSIGN expr SEMI
-    |   tipo variables ASSIGN expr SEMI
+    ::= tipo GLOBAL_MODE variables ASSIGN expr
+    |   tipo variables ASSIGN expr
 ;
 
 statement
-    ::= tipo GLOBAL_MODE variables SEMI
-    |   tipo variables SEMI
+    ::= tipo GLOBAL_MODE variables
+    |   tipo variables
 ;
 
 assignment
-    ::= variable ASSIGN expr SEMI
+    ::= variable ASSIGN expr
+;
+
+ifStatement
+    ::= simpleIf instructionBlock END ifTypes
+    |   simpleIf oneStatement SEMI ifTypes
+;
+
+simpleIf
+    ::= IF OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET THEN
+;
+
+condition
+    ::= condition EQUAL_TO condition
+    |   condition NOT_EQTUAL_TO condition
+    |   condition GREATER_THAN condition
+    |   condition LESS_THAN condition
+    |   condition GREATER_THAN_OR_EQUAL_TO condition
+    |   condition LESS_THAN_OR_EQUAL_TO condition
+    |   condition AND condition
+    |   condition OR condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET EQUAL_TO condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET NOT_EQTUAL_TO condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET GREATER_THAN condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET LESS_THAN condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET AND condition
+    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET OR condition
+    |   NOT condition
+    |   values
+    |   variable
+;
+
+ifTypes
+    ::= ELSE instructionBlock END
+    |   ELSE oneStatement SEMI
+    |
+;
+
+instructionBlock
+    ::= INIT OPEN_BRACE COLON instructions COLON CLOSE_BRACE
 ;
 
 tipo
