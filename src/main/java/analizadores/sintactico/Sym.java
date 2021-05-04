@@ -10,17 +10,17 @@ public class Sym {
   /* terminals */
   public static final int AQUA = 51;
   public static final int LEFT = 57;
-  public static final int TIMES = 125;
-  public static final int LESS_THAN = 116;
+  public static final int TIMES = 126;
+  public static final int LESS_THAN = 117;
   public static final int COLUMN = 65;
   public static final int C_P = 17;
   public static final int TYPE = 26;
   public static final int MARRON = 42;
-  public static final int GREATER_THAN = 117;
+  public static final int GREATER_THAN = 118;
   public static final int TEAL = 39;
   public static final int RIGHT = 59;
   public static final int ROWS = 30;
-  public static final int SEMI = 113;
+  public static final int SEMI = 114;
   public static final int ASC = 82;
   public static final int CHECKBOX = 64;
   public static final int NAME = 28;
@@ -29,12 +29,13 @@ public class Sym {
   public static final int SANS_SERIF = 56;
   public static final int INIT = 92;
   public static final int C_GCIC = 2;
+  public static final int COMMA = 106;
   public static final int BLUE = 41;
   public static final int ALT = 35;
   public static final int YELLOW = 50;
   public static final int FUCHSIA = 46;
   public static final int TEXT_ALIGN = 25;
-  public static final int PROCESS_NAME = 127;
+  public static final int PROCESS_NAME = 132;
   public static final int LETIMPAR_NUM = 85;
   public static final int INTEGER = 75;
   public static final int BLACK = 37;
@@ -43,20 +44,21 @@ public class Sym {
   public static final int C_LINK = 5;
   public static final int GRAY = 44;
   public static final int C_OPTION = 11;
-  public static final int NOT = 122;
+  public static final int LITERAL = 131;
+  public static final int NOT = 123;
   public static final int FALSE = 81;
   public static final int BACKGROUND = 20;
   public static final int CENTER = 58;
-  public static final int GREATER_THAN_OR_EQUAL_TO = 119;
+  public static final int GREATER_THAN_OR_EQUAL_TO = 120;
   public static final int TEXT = 61;
   public static final int THENWHILE = 100;
   public static final int C_SPAM = 7;
   public static final int THEN = 95;
-  public static final int ID_VAR = 128;
+  public static final int ID_VAR = 133;
   public static final int C_BODY = 6;
   public static final int PURPLE = 48;
   public static final int WIDTH = 33;
-  public static final int CLOSE_BRACE = 107;
+  public static final int CLOSE_BRACE = 108;
   public static final int REVERSE = 86;
   public static final int C_TEXTAREA = 9;
   public static final int OPEN_BRACKET = 102;
@@ -66,20 +68,21 @@ public class Sym {
   public static final int NUMBER = 62;
   public static final int C_HEAD = 3;
   public static final int NUM_ALEATORIO = 88;
-  public static final int ENTERO = 126;
+  public static final int ENTERO = 128;
   public static final int HUNTIL = 98;
-  public static final int SINGLE_QUOTES = 111;
+  public static final int SINGLE_QUOTES = 112;
   public static final int C_SCRIPTING = 18;
-  public static final int SLASH = 108;
+  public static final int SLASH = 109;
   public static final int OPEN_ROUND_BRACKET = 104;
   public static final int C_INPUT = 8;
   public static final int TRUE = 80;
-  public static final int LESS_THAN_OR_EQUAL_TO = 118;
-  public static final int PLUS = 123;
+  public static final int LESS_THAN_OR_EQUAL_TO = 119;
+  public static final int PLUS = 124;
+  public static final int DIVIDE = 127;
   public static final int OLIVE = 38;
   public static final int WHILE = 99;
   public static final int COLS = 29;
-  public static final int ASSIGN = 109;
+  public static final int ASSIGN = 110;
   public static final int CHAR = 78;
   public static final int DECIMAL = 76;
   public static final int BOOLEAN = 77;
@@ -95,18 +98,19 @@ public class Sym {
   public static final int C_TITLE = 4;
   public static final int REPEAT = 97;
   public static final int C_IMG = 13;
-  public static final int NOT_EQTUAL_TO = 115;
-  public static final int MINUS = 124;
+  public static final int NOT_EQTUAL_TO = 116;
+  public static final int MINUS = 125;
   public static final int VERDANA = 53;
-  public static final int QOUTE_MARK = 110;
+  public static final int QOUTE_MARK = 111;
   public static final int GENEVA = 55;
+  public static final int DECIMAL_VAL = 129;
   public static final int SRC = 32;
-  public static final int EQUAL_TO = 114;
+  public static final int EQUAL_TO = 115;
   public static final int HREF = 19;
-  public static final int OR = 120;
+  public static final int OR = 121;
   public static final int EXIT = 90;
   public static final int error = 1;
-  public static final int TEXT_TAG = 129;
+  public static final int TEXT_TAG = 134;
   public static final int IF = 94;
   public static final int DESC = 83;
   public static final int ID = 27;
@@ -116,13 +120,13 @@ public class Sym {
   public static final int COLOR_VALUE = 68;
   public static final int END = 93;
   public static final int WH_VAL = 70;
-  public static final int COLON = 112;
+  public static final int COLON = 113;
   public static final int SILVER = 49;
   public static final int C_H1 = 16;
   public static final int LIME = 45;
   public static final int RADIO = 63;
   public static final int HEIGHT = 34;
-  public static final int OPEN_BRACE = 106;
+  public static final int OPEN_BRACE = 107;
   public static final int RED = 40;
   public static final int ID_PARAM = 71;
   public static final int CARACTER_ALEATORIO = 87;
@@ -130,10 +134,11 @@ public class Sym {
   public static final int CLOSE_ROUND_BRACKET = 105;
   public static final int FONT_SIZE = 23;
   public static final int INSERT = 101;
+  public static final int CHAR_VAL = 130;
   public static final int STRING = 79;
   public static final int SIZE = 69;
   public static final int ONCLICK = 36;
-  public static final int AND = 121;
+  public static final int AND = 122;
   public static final int C_BUTTON = 15;
   public static final int LETPAR_NUM = 84;
   public static final int ELEMENT_BY_ID = 91;
@@ -245,6 +250,7 @@ public class Sym {
   "CLOSE_BRACKET",
   "OPEN_ROUND_BRACKET",
   "CLOSE_ROUND_BRACKET",
+  "COMMA",
   "OPEN_BRACE",
   "CLOSE_BRACE",
   "SLASH",
@@ -265,7 +271,11 @@ public class Sym {
   "PLUS",
   "MINUS",
   "TIMES",
+  "DIVIDE",
   "ENTERO",
+  "DECIMAL_VAL",
+  "CHAR_VAL",
+  "LITERAL",
   "PROCESS_NAME",
   "ID_VAR",
   "TEXT_TAG"

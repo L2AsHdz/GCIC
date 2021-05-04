@@ -20,6 +20,7 @@ import java_cup.runtime.Symbol;
 
 %{
     private List<ErrorAnalisis> errores = new ArrayList();
+    private StringBuilder literal = new StringBuilder();
 
     private Symbol symbol(int type){
         return new Symbol(type, new Token(yyline, yycolumn, yytext()));
@@ -37,6 +38,9 @@ import java_cup.runtime.Symbol;
 %eofval}
 
 ENTERO = (0|([1-9][0-9]*))
+ENTERO2 = (0|(-)?([1-9][0-9]*))
+DECIMAL = (0|(-)?([1-9][0-9]*)(\.(0|([0-9]*[1-9]){1,4})))
+CHAR = ("\'"[^"\'"]"\'")
 
 //* Regexs for comments
 LINE_COMMENT = "!!"[^\n]*
@@ -57,6 +61,7 @@ IDVAR = [:letter:][\w]*
 %state PARAMETER
 %state VALUE
 %state SCRIPTING
+%state LITERALS
 %state OTHER
 
 %%
@@ -205,24 +210,17 @@ IDVAR = [:letter:][\w]*
 }
 
 <SCRIPTING> {
-    ">"             { return symbol(GREATER_THAN); }
-    "<"             { return symbol(LESS_THAN); }
-    "/"             { return symbol(SLASH); }
     "("             { return symbol(OPEN_ROUND_BRACKET); }
     ")"             { return symbol(CLOSE_ROUND_BRACKET); }
     "["             { return symbol(OPEN_BRACKET); }
     "]"             { return symbol(CLOSE_BRACKET); }
-}
-
-<OTHER> {
-    "("             { return symbol(OPEN_ROUND_BRACKET); }
-    ")"             { return symbol(CLOSE_ROUND_BRACKET); }
     "{"             { return symbol(OPEN_BRACE); }
     "}"             { return symbol(CLOSE_BRACE); }
-    "/"             { return symbol(SLASH); }
-    "\'"            { return symbol(SINGLE_QUOTES); }
+    "="             { return symbol(ASSIGN); }
+    ","             { return symbol(COMMA); }
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
+    "\""            { yybegin(LITERALS); }
 
     //* Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
@@ -241,6 +239,12 @@ IDVAR = [:letter:][\w]*
     "+"             { return symbol(PLUS); }
     "-"             { return symbol(MINUS); }
     "*"             { return symbol(TIMES); }
+    "/"             { return symbol(DIVIDE); }
+}
+
+<LITERALS> {
+    "\""            { yybegin(SCRIPTING); }
+    [^'\"']+        { System.out.println("Se encontro literal: " + yytext()); return symbol(LITERAL); }
 }
 
 <VALUE> {URL}                       { return symbol(URL); }
@@ -253,5 +257,9 @@ IDVAR = [:letter:][\w]*
 
 <SCRIPTING> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }
+<SCRIPTING> {ENTERO2}                   { return symbol(ENTERO); }
+<SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL); }
+<SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL); }
+//<SCRIPTING> {LITERAL}                   { return symbol(LITERAL); }
 
 [^]                                     { addLexicError(); }

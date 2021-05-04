@@ -84,14 +84,14 @@ terminal Token      NUM_ALEATORIO, ALERT_INFO, EXIT, ELEMENT_BY_ID;
 
 terminal Token      INIT, END, IF, THEN, ELSE, REPEAT, HUNTIL, WHILE, THENWHILE, INSERT;
 
-terminal Token      OPEN_BRACKET, CLOSE_BRACKET, OPEN_ROUND_BRACKET, CLOSE_ROUND_BRACKET;
+terminal Token      OPEN_BRACKET, CLOSE_BRACKET, OPEN_ROUND_BRACKET, CLOSE_ROUND_BRACKET, COMMA;
 terminal Token      OPEN_BRACE, CLOSE_BRACE, SLASH, ASSIGN, QOUTE_MARK, SINGLE_QUOTES, COLON, SEMI;
 
 terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN_OR_EQUAL_TO;
 
-terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES;
+terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES, DIVIDE;
 
-terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
+terminal Token      ENTERO, DECIMAL_VAL, CHAR_VAL, LITERAL, PROCESS_NAME, ID_VAR, TEXT_TAG;
 
 
 //* No terminales
@@ -113,7 +113,18 @@ non terminal            paramColor;
 non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
-non terminal            procesos, process, processBody;
+non terminal            procesos, process, processBody, instructions, instruction, statement;
+non terminal            tipo, variables, variable, assignmentExpr;
+non terminal            valores, numero, literal, caracter, bool;
+
+//* Precedencias
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN, GREATER_THAN_OR_EQUAL_TO;
+precedence left OR;
+precedence left AND;
+precedence left NOT;
+
 
 //**************************************** Etiqueta GCIC
 gcic
@@ -254,7 +265,7 @@ nameTagBody
             etiquetas.add(div);
         :}
 
-    |   C_SCRIPTING GREATER_THAN procesos LESS_THAN SLASH C_SCRIPTING
+    |   C_SCRIPTING GREATER_THAN procesos LESS_THAN DIVIDE C_SCRIPTING
 ;
 
 inicioSelect
@@ -580,5 +591,77 @@ process
 ;
 
 processBody
-    ::= OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET OPEN_BRACKET  CLOSE_BRACKET
+    ::= OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET OPEN_BRACKET CLOSE_BRACKET
+    |   OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET OPEN_BRACKET instructions CLOSE_BRACKET
+;
+
+instructions
+    ::= instructions instruction
+    |   instruction
+;
+
+instruction
+    ::= statement
+;
+
+statement
+    ::= tipo GLOBAL_MODE variables ASSIGN assignmentExpr SEMI
+    |   tipo variables ASSIGN assignmentExpr SEMI
+    |   variable ASSIGN assignmentExpr SEMI
+;
+
+tipo
+    ::= INTEGER
+    |   STRING
+    |   BOOLEAN
+    |   CHAR
+    |   DECIMAL
+;
+
+variables
+    ::= variables COMMA variable
+    |   variable
+;
+
+variable
+    ::= ID_VAR
+;
+
+assignmentExpr
+    ::= assignmentExpr PLUS assignmentExpr
+    |   assignmentExpr MINUS assignmentExpr
+    |   assignmentExpr TIMES assignmentExpr
+    |   assignmentExpr DIVIDE assignmentExpr
+    |   OPEN_ROUND_BRACKET assignmentExpr CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET assignmentExpr CLOSE_ROUND_BRACKET PLUS assignmentExpr
+    |   OPEN_ROUND_BRACKET assignmentExpr CLOSE_ROUND_BRACKET MINUS assignmentExpr
+    |   OPEN_ROUND_BRACKET assignmentExpr CLOSE_ROUND_BRACKET TIMES assignmentExpr
+    |   OPEN_ROUND_BRACKET assignmentExpr CLOSE_ROUND_BRACKET DIVIDE assignmentExpr
+    |   valores
+    |   variable
+;
+
+valores
+    ::= numero
+    |   caracter
+    |   literal
+    |   bool
+;
+
+numero
+    ::= ENTERO
+    |   DECIMAL_VAL
+;
+
+caracter
+    ::= CHAR_VAL
+;
+
+literal
+    ::= LITERAL
+;
+
+bool
+    ::= TRUE
+    |   FALSE
 ;
