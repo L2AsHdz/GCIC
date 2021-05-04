@@ -16,22 +16,17 @@ import java.util.Scanner;
 public class FileController {
 
     public static String readFile(String path) {
-        String texto = "";
-        ArrayList<String> textos;
+        StringBuilder texto = new StringBuilder();
         try {
             File archivo = new File(path);
             Scanner lectura = new Scanner(archivo);
-            textos = new ArrayList<>();
             while (lectura.hasNext()) {
-                textos.add(lectura.nextLine());
-            }
-            for (String t : textos) {
-                texto += t + "\n";
+                texto.append(lectura.nextLine()).append("\n");
             }
         } catch (FileNotFoundException ex) {
             System.out.println("No se encontró el archivo");
         }
-        return texto;
+        return texto.toString();
     }
 
     public static void saveFile(String path, String texto) {

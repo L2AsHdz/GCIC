@@ -114,7 +114,7 @@ non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
 non terminal            procesos, process, processBody, instructions, instruction, fullStatement;
-non terminal            tipo, variables, variable, statement, assignment, expr;
+non terminal            tipo, variables, variable, statement, assignment, expr, mathExpr, logicExpr;
 non terminal            values, numero, literal, caracter, bool;
 
 //* Precedencias
@@ -638,11 +638,26 @@ variable
 ;
 
 expr
+    ::= mathExpr
+    |   logicExpr
+    |   values
+    |   variable
+;
+
+mathExpr
     ::= expr PLUS expr
     |   expr MINUS expr
     |   expr TIMES expr
     |   expr DIVIDE expr
-    |   expr EQUAL_TO expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET PLUS expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET MINUS expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET TIMES expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET DIVIDE expr
+;
+
+logicExpr
+    ::= expr EQUAL_TO expr
     |   expr NOT_EQTUAL_TO expr
     |   expr GREATER_THAN expr
     |   expr LESS_THAN expr
@@ -650,11 +665,6 @@ expr
     |   expr LESS_THAN_OR_EQUAL_TO expr
     |   expr AND expr
     |   expr OR expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET PLUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET MINUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET TIMES expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET DIVIDE expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET EQUAL_TO expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET GREATER_THAN expr
@@ -664,8 +674,6 @@ expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET AND expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET OR expr
     |   NOT expr
-    |   values
-    |   variable
 ;
 
 values
