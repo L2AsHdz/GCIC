@@ -114,8 +114,9 @@ non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
 non terminal            procesos, process, processBody, instructions, instruction, oneStatement;
-non terminal            fullStatement, statement, assignment, expr, mathExpr, logicExpr, instructionBlock;
+non terminal            fullStatement, statement, assignment, expr, mathExpr, instructionBlock;
 non terminal            ifStatement, simpleIf, ifTypes, condition;
+non terminal            repeatStatement, simpleRepeat, varInicio, limit;
 non terminal            tipo, variables, variable;
 non terminal            values, numero, literal, caracter, bool;
 
@@ -582,6 +583,7 @@ type
     |   CHECKBOX:t          {:RESULT = t.getLexema();:}
 ;
 
+//**************************************** Procesos
 procesos
     ::= procesos process
     |   process
@@ -597,6 +599,7 @@ processBody
     |   OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET OPEN_BRACKET instructions CLOSE_BRACKET
 ;
 
+//**************************************** Instrucciones
 instructions
     ::= instructions instruction
     |   instruction
@@ -605,6 +608,7 @@ instructions
 instruction
     ::= oneStatement SEMI
     |   ifStatement
+    |   repeatStatement
 ;
 
 oneStatement
@@ -613,6 +617,7 @@ oneStatement
     |   assignment
 ;
 
+//**************************************** Declaraciones y asignaciones
 fullStatement
     ::= tipo GLOBAL_MODE variables ASSIGN expr
     |   tipo variables ASSIGN expr
@@ -627,6 +632,7 @@ assignment
     ::= variable ASSIGN expr
 ;
 
+//**************************************** Sentencia if
 ifStatement
     ::= simpleIf instructionBlock END ifTypes
     |   simpleIf oneStatement SEMI ifTypes
@@ -666,10 +672,44 @@ condition
     |   variable
 ;
 
+//**************************************** Ciclo repeat
+repeatStatement
+    ::= simpleRepeat instructionBlock END
+    |   simpleRepeat oneStatement SEMI
+;
+
+simpleRepeat
+    ::= REPEAT OPEN_ROUND_BRACKET varInicio CLOSE_ROUND_BRACKET HUNTIL OPEN_ROUND_BRACKET limit CLOSE_ROUND_BRACKET
+;
+
+varInicio
+    ::= fullStatement
+    |   assignment
+;
+
+limit
+    ::= mathExpr
+    |   variable
+;
+
+mathExpr
+    ::= mathExpr PLUS mathExpr
+    |   mathExpr MINUS mathExpr
+    |   mathExpr TIMES mathExpr
+    |   mathExpr DIVIDE mathExpr
+    |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET PLUS mathExpr
+    |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET MINUS mathExpr
+    |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET TIMES mathExpr
+    |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET DIVIDE mathExpr
+    |   numero
+;
+
 instructionBlock
     ::= INIT OPEN_BRACE COLON instructions COLON CLOSE_BRACE
 ;
 
+//**************************************** Tipos
 tipo
     ::= INTEGER
     |   STRING
@@ -678,6 +718,7 @@ tipo
     |   DECIMAL
 ;
 
+//**************************************** Variables
 variables
     ::= variables COMMA variable
     |   variable
@@ -687,27 +728,13 @@ variable
     ::= ID_VAR
 ;
 
+//**************************************** Expresion de declaracion
 expr
-    ::= mathExpr
-    |   logicExpr
-    |   values
-    |   variable
-;
-
-mathExpr
     ::= expr PLUS expr
     |   expr MINUS expr
     |   expr TIMES expr
     |   expr DIVIDE expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET PLUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET MINUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET TIMES expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET DIVIDE expr
-;
-
-logicExpr
-    ::= expr EQUAL_TO expr
+    |   expr EQUAL_TO expr
     |   expr NOT_EQTUAL_TO expr
     |   expr GREATER_THAN expr
     |   expr LESS_THAN expr
@@ -715,6 +742,11 @@ logicExpr
     |   expr LESS_THAN_OR_EQUAL_TO expr
     |   expr AND expr
     |   expr OR expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET PLUS expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET MINUS expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET TIMES expr
+    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET DIVIDE expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET EQUAL_TO expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET GREATER_THAN expr
@@ -724,8 +756,11 @@ logicExpr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET AND expr
     |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET OR expr
     |   NOT expr
+    |   values
+    |   variable
 ;
 
+//**************************************** Valores de finales
 values
     ::= numero
     |   caracter
@@ -733,19 +768,23 @@ values
     |   bool
 ;
 
+//**************************************** Valores numericos
 numero
     ::= ENTERO
     |   DECIMAL_VAL
 ;
 
+//**************************************** Caracter
 caracter
     ::= CHAR_VAL
 ;
 
+//**************************************** Literal
 literal
     ::= LITERAL
 ;
 
+//**************************************** Valores booleanos
 bool
     ::= TRUE
     |   FALSE

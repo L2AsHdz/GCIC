@@ -94,6 +94,13 @@
                 numero3 = 25;
 
                 decimal deci;
+
+                REPEAT (integer i = 0) HUNTIL (2 + 10) holi = 23;
+
+                REPEAT (as = 33) HUNTIL (limite)
+                    INIT {:
+                        IF ( algo != otro) THEN asdasd = ss;
+                    :} END
             ]
         </C_SCRIPTING>
 
