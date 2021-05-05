@@ -1,0 +1,102 @@
+<C_GCIC [id="$Holi"] [name="Captcha1"] >
+
+    <C_HEAD>
+        <C_LINK [href="https://www.google.com"] ></C_LINK>
+        <C_TITLE>
+            Este es un titulo
+        </C_TITLE>
+    </C_HEAD>
+
+    <C_BODY [background="red"] >
+
+        <C_SPAM [id="$span1"] [color="red"] [font-size="20px"] >Texto span</C_SPAM>
+        <C_INPUT [type="text"] [id="_input1"] ></C_INPUT>
+        <C_TEXTAREA [cols="4"] [rows="10"] [id="$textA1"]>Holi perras</C_TEXTAREA>
+
+        <C_DIV [id="-div1"] [color="red"] >
+            <C_SPAM [font-family="Verdana"] [id="$span2"] >Este en un span</C_SPAM>
+            <C_INPUT [id="_input2"] ></C_INPUT>
+            <C_DIV [id="-div2"]>
+                <C_SELECT [id="-select2"] [color="yellow"] >
+                    <C_OPTION>Option1</C_OPTION>
+                    <C_OPTION>Option2</C_OPTION>
+                    <C_OPTION>Option3</C_OPTION>
+                    <C_OPTION>Option4</C_OPTION>
+                </C_SELECT>
+            </C_DIV>
+        </C_DIV>
+
+        <C_SCRIPTING>
+            ON_LOAD()[
+                integer numero1, numero2, numero3 = 3.25 + (caracter / float);
+                string palabra = "literal jj";
+            ]
+            !!Comenario
+            PROCESS_ASASAS () [
+                char @global caracter = 'a';
+                boolean isLogic = false + numero1 * (float - caracter);
+                decimal float = 5555;
+            ]
+        </C_SCRIPTING>
+
+        <C_IMG [id="-img1"] [src="https://images.unsplash.com/photo-1429042007245-890c9e2603af"] [width="300px"] [height="200px"] ></C_IMG>
+        <C_BUTTON [id="-button1"] >Presione aqui</C_BUTTON>
+        <C_H1 [id="-h1"] >Titulo 1</C_H1>
+        <C_P [id="-p1"] >
+            Este es un parrafo con lenguaje GCIC
+            otra linea
+            asdasd
+            adasdas
+            asd
+            asd
+        </C_P>
+        <C_SELECT [id="-select1"] [color="yellow"] >
+            <C_OPTION>Option1</C_OPTION>
+            <C_OPTION>Option2</C_OPTION>
+            <C_OPTION>Option3</C_OPTION>
+            <C_OPTION>Option4</C_OPTION>
+        </C_SELECT>
+
+        <C_BR>
+        <C_BR>
+
+        <C_SCRIPTING>
+            ON_LOAD()[]
+
+            PROCESS_ASASAS () [
+                IF ( numero < 5) THEN
+                    INIT {:
+                        integer numero2 = 25;
+                    :} END
+                ELSE
+                    INIT {:
+                        variable = true;
+                        decimal dec = 12.15 + 3;
+
+                        IF ( bool == true ) THEN
+                            INIT {:
+                                salida = true;
+                            :} END
+                        ELSE IF ( variable == "OK" ) THEN
+                            INIT {:
+                                char holi = 'h';
+                            :} END
+                        ELSE
+                            INIT {:
+                                holi = ';';
+                            :} END
+                    :} END
+            ]
+            PROCESS_ASASAS2 () [
+                decimal float = 5 + (3 <= 6 );
+            ]
+            PROCESS_NAME2 () [
+                numero3 = 25;
+
+                decimal deci;
+            ]
+        </C_SCRIPTING>
+
+    </C_BODY>
+
+</C_GCIC>
