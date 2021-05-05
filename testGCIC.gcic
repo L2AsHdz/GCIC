@@ -17,6 +17,7 @@
                     INIT {:
                         decimal lll = 1598.222;
                         string mensaje = "Este es un mensaje";
+                        INSERT (numero, 25, "hola");
                     :} END
             ]
         </C_SCRIPTING>

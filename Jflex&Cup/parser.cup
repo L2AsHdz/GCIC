@@ -118,6 +118,7 @@ non terminal            fullStatement, statement, assignment, expr, mathExpr, in
 non terminal            ifStatement, simpleIf, ifTypes, condition;
 non terminal            repeatStatement, simpleRepeat, varInicio, limit;
 non terminal            whileStatement, simpleWhile;
+non terminal            insertStatement, insertValues, insertValue;
 non terminal            tipo, variables, variable;
 non terminal            values, numero, literal, caracter, bool;
 
@@ -611,6 +612,7 @@ instruction
     |   ifStatement
     |   repeatStatement
     |   whileStatement
+    |   insertStatement
 ;
 
 oneStatement
@@ -719,6 +721,22 @@ simpleWhile
 
 instructionBlock
     ::= INIT OPEN_BRACE COLON instructions COLON CLOSE_BRACE
+;
+
+//**************************************** Instruccion insert
+insertStatement
+    ::= INSERT OPEN_ROUND_BRACKET insertValues CLOSE_ROUND_BRACKET SEMI
+;
+
+insertValues
+    ::= insertValues COMMA insertValue
+    |   insertValue
+;
+
+insertValue
+    ::= literal
+    |   numero
+    |   variable
 ;
 
 //**************************************** Tipos
