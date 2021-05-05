@@ -114,11 +114,12 @@ non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
 non terminal            procesos, process, processBody, instructions, instruction, oneStatement;
-non terminal            fullStatement, statement, assignment, expr, mathExpr, instructionBlock;
+non terminal            fullStatement, statement, assignment, assign, expr, mathExpr, instructionBlock;
 non terminal            ifStatement, simpleIf, ifTypes, condition;
 non terminal            repeatStatement, simpleRepeat, varInicio, limit;
 non terminal            whileStatement, simpleWhile;
 non terminal            insertStatement, insertValues, insertValue;
+non terminal            otherFunctions, specialFunctions, roundBrackets, parameter;
 non terminal            tipo, variables, variable;
 non terminal            values, numero, literal, caracter, bool;
 
@@ -623,8 +624,8 @@ oneStatement
 
 //**************************************** Declaraciones y asignaciones
 fullStatement
-    ::= tipo GLOBAL_MODE variables ASSIGN expr
-    |   tipo variables ASSIGN expr
+    ::= tipo GLOBAL_MODE variables ASSIGN assign
+    |   tipo variables ASSIGN assign
 ;
 
 statement
@@ -633,7 +634,7 @@ statement
 ;
 
 assignment
-    ::= variable ASSIGN expr
+    ::= variable ASSIGN assign
 ;
 
 //**************************************** Sentencia if
@@ -759,6 +760,11 @@ variable
 ;
 
 //**************************************** Expresion de declaracion
+assign
+    ::= expr
+    |   specialFunctions
+;
+
 expr
     ::= expr PLUS expr
     |   expr MINUS expr
@@ -788,6 +794,31 @@ expr
     |   NOT expr
     |   values
     |   variable
+;
+
+//**************************************** Funciones especiales
+specialFunctions
+    ::= ASC parameter
+    |   DESC parameter
+    |   LETPAR_NUM parameter
+    |   LETIMPAR_NUM parameter
+    |   REVERSE parameter
+    |   CARACTER_ALEATORIO roundBrackets
+    |   NUM_ALEATORIO roundBrackets
+    |   ELEMENT_BY_ID parameter
+;
+
+otherFunctions
+    ::= EXIT roundBrackets
+    |   ALERT_INFO parameter
+;
+
+parameter
+    ::= OPEN_ROUND_BRACKET variable CLOSE_ROUND_BRACKET
+;
+
+roundBrackets
+    ::= OPEN_ROUND_BRACKET CLOSE_ROUND_BRACKET
 ;
 
 //**************************************** Valores de finales

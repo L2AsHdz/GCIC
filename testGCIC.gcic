@@ -41,7 +41,7 @@
         <C_SCRIPTING>
             ON_LOAD()[
                 integer numero1, numero2, numero3 = 3.25 + (caracter / float);
-                string palabra = "literal jj";
+                string palabra = REVERSE(literal);
             ]
             !!Comenario
             PROCESS_ASASAS () [
