@@ -9,6 +9,17 @@
 
     <C_BODY [background="red"] >
 
+        <C_SCRIPTING>
+            ON_LOAD() [
+                WHILE (true) THENWHILE infinite = true;
+
+                WHILE (25 > numero) THENWHILE
+                    INIT {:
+                        decimal lll = 1598.222;
+                        string mensaje = "Este es un mensaje";
+                    :} END
+            ]
+        </C_SCRIPTING>
         <C_SPAM [id="$span1"] [color="red"] [font-size="20px"] >Texto span</C_SPAM>
         <C_INPUT [type="text"] [id="_input1"] ></C_INPUT>
         <C_TEXTAREA [cols="4"] [rows="10"] [id="$textA1"]>Holi perras</C_TEXTAREA>

@@ -117,6 +117,7 @@ non terminal            procesos, process, processBody, instructions, instructio
 non terminal            fullStatement, statement, assignment, expr, mathExpr, instructionBlock;
 non terminal            ifStatement, simpleIf, ifTypes, condition;
 non terminal            repeatStatement, simpleRepeat, varInicio, limit;
+non terminal            whileStatement, simpleWhile;
 non terminal            tipo, variables, variable;
 non terminal            values, numero, literal, caracter, bool;
 
@@ -609,6 +610,7 @@ instruction
     ::= oneStatement SEMI
     |   ifStatement
     |   repeatStatement
+    |   whileStatement
 ;
 
 oneStatement
@@ -703,6 +705,16 @@ mathExpr
     |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET TIMES mathExpr
     |   OPEN_ROUND_BRACKET mathExpr CLOSE_ROUND_BRACKET DIVIDE mathExpr
     |   numero
+;
+
+//**************************************** Ciclo while
+whileStatement
+    ::= simpleWhile instructionBlock END
+    |   simpleWhile oneStatement SEMI
+;
+
+simpleWhile
+    ::= WHILE OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET THENWHILE
 ;
 
 instructionBlock
