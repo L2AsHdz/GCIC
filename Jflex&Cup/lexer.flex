@@ -2,9 +2,11 @@ package analizadores.lexico;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.Token;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
+import model.scripting.TipoDato;
+import model.Token;
+import model.TypeToken;
 import static analizadores.sintactico.Sym.*;
 
 import java_cup.runtime.Symbol;
@@ -24,6 +26,10 @@ import java_cup.runtime.Symbol;
 
     private Symbol symbol(int type){
         return new Symbol(type, new Token(yyline, yycolumn, yytext()));
+    }
+
+    private Symbol symbol(int type, TipoDato tipoDato) {
+        return new Symbol(type, new TypeToken(tipoDato, yyline, yycolumn, yytext()));
     }
 
     private void addLexicError(){
@@ -155,20 +161,20 @@ IDVAR = [:letter:][\w]*
 <SCRIPTING> "boolean"       { return symbol(BOOLEAN); }
 <SCRIPTING> "char"          { return symbol(CHAR); }
 <SCRIPTING> "string"        { return symbol(STRING); }
-<SCRIPTING> "true"          { return symbol(TRUE); }
-<SCRIPTING> "false"         { return symbol(FALSE); }
+<SCRIPTING> "true"          { return symbol(TRUE, TipoDato.BOOLEAN); }
+<SCRIPTING> "false"         { return symbol(FALSE, TipoDato.BOOLEAN); }
 
 //* Funciones especiales
-<SCRIPTING> "ASC"                   { return symbol(ASC); }
-<SCRIPTING> "DESC"                  { return symbol(DESC); }
-<SCRIPTING> "LETPAR_NUM"            { return symbol(LETPAR_NUM); }
-<SCRIPTING> "LETIMPAR_NUM"          { return symbol(LETIMPAR_NUM); }
-<SCRIPTING> "REVERSE"               { return symbol(REVERSE); }
-<SCRIPTING> "CARACTER_ALEATORIO"    { return symbol(CARACTER_ALEATORIO); }
-<SCRIPTING> "NUM_ALEATORIO"         { return symbol(NUM_ALEATORIO); }
+<SCRIPTING> "ASC"                   { return symbol(ASC, TipoDato.STRING); }
+<SCRIPTING> "DESC"                  { return symbol(DESC, TipoDato.STRING); }
+<SCRIPTING> "LETPAR_NUM"            { return symbol(LETPAR_NUM, TipoDato.STRING); }
+<SCRIPTING> "LETIMPAR_NUM"          { return symbol(LETIMPAR_NUM, TipoDato.STRING); }
+<SCRIPTING> "REVERSE"               { return symbol(REVERSE, TipoDato.STRING); }
+<SCRIPTING> "CARACTER_ALEATORIO"    { return symbol(CARACTER_ALEATORIO, TipoDato.CHAR); }
+<SCRIPTING> "NUM_ALEATORIO"         { return symbol(NUM_ALEATORIO, TipoDato.INTEGER); }
 <SCRIPTING> "ALERT_INFO"            { return symbol(ALERT_INFO); }
 <SCRIPTING> "EXIT"                  { return symbol(EXIT); }
-<SCRIPTING> "getElementById"        { return symbol(ELEMENT_BY_ID); }
+<SCRIPTING> "getElementById"        { return symbol(ELEMENT_BY_ID, TipoDato.STRING); }
 
 //* Bloques y estructuras de control
 <SCRIPTING> "INIT"          { return symbol(INIT); }
@@ -244,7 +250,7 @@ IDVAR = [:letter:][\w]*
 
 <LITERALS> {
     "\""            { yybegin(SCRIPTING); }
-    [^'\"']+        { System.out.println("Se encontro literal: " + yytext()); return symbol(LITERAL); }
+    [^'\"']+        { return symbol(LITERAL, TipoDato.STRING); }
 }
 
 <VALUE> {URL}                       { return symbol(URL); }
@@ -257,9 +263,9 @@ IDVAR = [:letter:][\w]*
 
 <SCRIPTING> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }
-<SCRIPTING> {ENTERO2}                   { return symbol(ENTERO); }
-<SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL); }
-<SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL); }
+<SCRIPTING> {ENTERO2}                   { return symbol(ENTERO, TipoDato.INTEGER); }
+<SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL, TipoDato.DECIMAL); }
+<SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL, TipoDato.CHAR); }
 //<SCRIPTING> {LITERAL}                   { return symbol(LITERAL); }
 
 [^]                                     { addLexicError(); }

@@ -3,13 +3,15 @@ package analizadores.sintactico;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import model.errores.ErrorAnalisis;
+import model.errores.TipoError;
+import model.scripting.Instruction;
+import model.scripting.Process;
+import model.scripting.Variable;
 import model.tags.body.Body;
 import model.tags.body.Br;
 import model.tags.body.Button;
 import model.tags.body.Div;
-import model.errores.ErrorAnalisis;
-import model.errores.TipoError;
-import model.tags.GCIC;
 import model.tags.body.H1;
 import model.tags.head.Head;
 import model.tags.body.Img;
@@ -17,12 +19,13 @@ import model.tags.body.Input;
 import model.tags.head.Link;
 import model.tags.body.Option;
 import model.tags.body.P;
-import model.tags.Parametro;
 import model.tags.body.Select;
 import model.tags.body.Span;
-import model.tags. Tag;
 import model.tags.body.TextArea;
+import model.tags.GCIC;
 import model.tags.head.Title;
+import model.tags.Parametro;
+import model.tags.Tag;
 import model.Token;
 import java_cup.runtime.Symbol;
 
@@ -35,6 +38,10 @@ parser code{:
     private Stack<List<Tag>> pilaEtiquetas = new Stack();
     private Stack<List<Parametro>> pilaParams = new Stack();
     private Tag gcicTag;
+
+    private List<Process> processList = new ArrayList();
+    private List<Instruction> instructionList = new ArrayList();
+    private List<Variable> variableList = new ArrayList();
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
@@ -114,14 +121,15 @@ non terminal Tag        head, body;
 non terminal String     textTag, color, font, align, type, clase, paramId, size, optionId;
 
 non terminal            procesos, process, processBody, instructions, instruction, oneStatement;
-non terminal            fullStatement, statement, assignment, assign, expr, mathExpr, instructionBlock;
-non terminal            ifStatement, simpleIf, ifTypes, condition;
+non terminal            fullStatement, statement, assignment, assign, instructionBlock;
+non terminal            ifStatement, simpleIf, ifTypes;
 non terminal            repeatStatement, simpleRepeat, varInicio, limit;
 non terminal            whileStatement, simpleWhile;
 non terminal            insertStatement, insertValues, insertValue;
 non terminal            otherFunctions, specialFunctions, roundBrackets, parameter;
-non terminal            tipo, variables, variable;
-non terminal            values, numero, literal, caracter, bool;
+non terminal String     tipo, variables, variable;
+non terminal String     values, numero, literal, caracter, bool;
+non terminal String     expr, condition, mathExpr;
 
 //* Precedencias
 precedence left PLUS, MINUS;
@@ -756,44 +764,44 @@ variables
 ;
 
 variable
-    ::= ID_VAR
+    ::= ID_VAR:v        {:RESULT = v.getLexema();:}
 ;
 
 //**************************************** Expresion de declaracion
 assign
-    ::= expr
+    ::= expr:e              {:System.out.println(e);:}
     |   specialFunctions
 ;
 
 expr
-    ::= expr PLUS expr
-    |   expr MINUS expr
-    |   expr TIMES expr
-    |   expr DIVIDE expr
-    |   expr EQUAL_TO expr
-    |   expr NOT_EQTUAL_TO expr
-    |   expr GREATER_THAN expr
-    |   expr LESS_THAN expr
-    |   expr GREATER_THAN_OR_EQUAL_TO expr
-    |   expr LESS_THAN_OR_EQUAL_TO expr
-    |   expr AND expr
-    |   expr OR expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET PLUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET MINUS expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET TIMES expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET DIVIDE expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET EQUAL_TO expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET GREATER_THAN expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET LESS_THAN expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET AND expr
-    |   OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET OR expr
-    |   NOT expr
-    |   values
-    |   variable
+    ::= expr:e1 PLUS expr:e2                        {:RESULT = e1 + "+" + e2;:}
+    |   expr:e1 MINUS expr:e2                       {:RESULT = e1 + "-" + e2;:}
+    |   expr:e1 TIMES expr:e2                       {:RESULT = e1 + "*" + e2;:}
+    |   expr:e1 DIVIDE expr:e2                      {:RESULT = e1 + "/" + e2;:}
+    |   expr:e1 EQUAL_TO expr:e2                    {:RESULT = e1 + "==" + e2;:}
+    |   expr:e1 NOT_EQTUAL_TO expr:e2               {:RESULT = e1 + "!=" + e2;:}
+    |   expr:e1 GREATER_THAN expr:e2                {:RESULT = e1 + ">" + e2;:}
+    |   expr:e1 LESS_THAN expr:e2                   {:RESULT = e1 + "<" + e2;:}
+    |   expr:e1 GREATER_THAN_OR_EQUAL_TO expr:e2    {:RESULT = e1 + ">=" + e2;:}
+    |   expr:e1 LESS_THAN_OR_EQUAL_TO expr:e2       {:RESULT = e1 + "<=" + e2;:}
+    |   expr:e1 AND expr:e2                         {:RESULT = e1 + "&&" + e2;:}
+    |   expr:e1 OR expr:e2                          {:RESULT = e1 + "||" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET                                       {:RESULT = "(" + e + ")";:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET PLUS expr:e2                         {:RESULT = e1 + "+" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET MINUS expr:e2                        {:RESULT = e1 + "-" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET TIMES expr:e2                        {:RESULT = e1 + "*" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET DIVIDE expr:e2                       {:RESULT = e1 + "/" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET EQUAL_TO expr:e2                     {:RESULT = e1 + "==" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr:e2                {:RESULT = e1 + "!=" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN expr:e2                 {:RESULT = e1 + ">" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN expr:e2                    {:RESULT = e1 + "<" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO expr:e2     {:RESULT = e1 + ">=" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO expr:e2        {:RESULT = e1 + "<=" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET AND expr:e2                          {:RESULT = e1 + "&&" + e2;:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET OR expr:e2                           {:RESULT = e1 + "||" + e2;:}
+    |   NOT expr:e      {:RESULT = "!" + e;:}
+    |   values:v        {:RESULT = v;:}
+    |   variable:v      {:RESULT = v;:}
 ;
 
 //**************************************** Funciones especiales
@@ -823,30 +831,30 @@ roundBrackets
 
 //**************************************** Valores de finales
 values
-    ::= numero
-    |   caracter
-    |   literal
-    |   bool
+    ::= numero:v        {:RESULT = v;:}
+    |   caracter:v      {:RESULT = v;:}
+    |   literal:v       {:RESULT = v;:}
+    |   bool:v          {:RESULT = v;:}
 ;
 
 //**************************************** Valores numericos
 numero
-    ::= ENTERO
-    |   DECIMAL_VAL
+    ::= ENTERO:n        {:RESULT = n.getLexema();:}
+    |   DECIMAL_VAL:n   {:RESULT = n.getLexema();:}
 ;
 
 //**************************************** Caracter
 caracter
-    ::= CHAR_VAL
+    ::= CHAR_VAL:c      {:RESULT = c.getLexema();:}
 ;
 
 //**************************************** Literal
 literal
-    ::= LITERAL
+    ::= LITERAL:l       {:RESULT = l.getLexema();:}
 ;
 
 //**************************************** Valores booleanos
 bool
-    ::= TRUE
-    |   FALSE
+    ::= TRUE:b          {:RESULT = b.getLexema();:}
+    |   FALSE:b         {:RESULT = b.getLexema();:}
 ;
