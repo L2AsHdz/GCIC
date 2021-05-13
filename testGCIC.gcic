@@ -40,13 +40,13 @@
 
         <C_SCRIPTING>
             ON_LOAD()[
-                integer numero1, numero2, numero3 = 3.25 + (caracter / float);
-                string palabra = REVERSE(literal);
+                integer numero1, numero2, numero3 = 3.25 + ('j' / 23.33);
+                string palabra = "REVERSE(literal)";
             ]
             !!Comenario
             PROCESS_ASASAS () [
                 char @global caracter = 'a';
-                boolean isLogic = false + numero1 * (float - caracter);
+                boolean isLogic = false + 6 * (75.56 - 'c');
                 decimal float = 5555;
             ]
         </C_SCRIPTING>
@@ -111,7 +111,7 @@
 
                 REPEAT (as = 33) HUNTIL (limite)
                     INIT {:
-                        IF ( algo != otro) THEN asdasd = ss;
+                        IF ( algo != otro) THEN asdasd = true + 25;
                     :} END
             ]
         </C_SCRIPTING>

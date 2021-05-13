@@ -1721,7 +1721,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 165: break;
           case 24:
-            { return symbol(ENTERO, TipoDato.INTEGER);
+            { return symbol(ENTERO2, TipoDato.INTEGER);
             }
             // fall through
           case 166: break;

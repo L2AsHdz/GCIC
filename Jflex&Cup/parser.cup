@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
+import model.scripting.Expresion;
 import model.scripting.Instruction;
 import model.scripting.Process;
 import model.scripting.Variable;
@@ -28,6 +29,7 @@ import model.tags.head.Title;
 import model.tags.Parametro;
 import model.tags.Tag;
 import model.Token;
+import model.TypeToken;
 import validator.and.AndValidator;
 import validator.divide.DivideValidator;
 import validator.equalto.EqualToValidator;
@@ -67,7 +69,7 @@ parser code{:
     private OperatorValidator notEqualValidator = new NotEqualToValidator();
     private OperatorValidator andValidator = new AndValidator();
     private OperatorValidator orValidator = new OrValidator();
-    private OperatorValidator notValidator = new NotValidator();
+    private NotValidator notValidator = new NotValidator();
     private OperatorValidator greaterValidator = new GreaterThanValidator();
     private OperatorValidator lessValidator = new LessThanValidator();
     private OperatorValidator greaterOrEqualValidator = new GreaterOrEqualValidator();
@@ -114,7 +116,7 @@ terminal Token      URL, COLOR_VALUE, SIZE, WH_VAL, ID_PARAM, NAME_PARAM;
 
 terminal Token      ON_LOAD, GLOBAL_MODE;
 
-terminal Token      INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, TRUE, FALSE;
+terminal Token      INTEGER, DECIMAL, BOOLEAN, CHAR, STRING;
 
 terminal Token      ASC, DESC, LETPAR_NUM, LETIMPAR_NUM, REVERSE, CARACTER_ALEATORIO;
 terminal Token      NUM_ALEATORIO, ALERT_INFO, EXIT, ELEMENT_BY_ID;
@@ -128,7 +130,8 @@ terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_
 
 terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES, DIVIDE;
 
-terminal Token      ENTERO, DECIMAL_VAL, CHAR_VAL, LITERAL, PROCESS_NAME, ID_VAR, TEXT_TAG;
+terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
+terminal TypeToken  ENTERO2, DECIMAL_VAL, CHAR_VAL, LITERAL, TRUE, FALSE;
 
 
 //* No terminales
@@ -158,8 +161,8 @@ non terminal            whileStatement, simpleWhile;
 non terminal            insertStatement, insertValues, insertValue;
 non terminal            otherFunctions, specialFunctions, roundBrackets, parameter;
 non terminal String     tipo, variables, variable;
-non terminal String     values, numero, literal, caracter, bool;
-non terminal String     expr, condition, mathExpr;
+non terminal Expresion  values, numero, literal, caracter, bool;
+non terminal Expresion  expr, condition, mathExpr;
 
 //* Precedencias
 precedence left PLUS, MINUS;
@@ -799,39 +802,45 @@ variable
 
 //**************************************** Expresion de declaracion
 assign
-    ::= expr:e              {:System.out.println(e);:}
+    ::= expr:e {:
+            if (e.getTipo() == null) {
+                System.out.println("Error en ASSIGN");
+            } else {
+                System.out.println("Tipo: " + e.getTipo() + " - Expr: " + e.getText());
+            }
+        :}
     |   specialFunctions
 ;
 
 expr
-    ::= expr:e1 PLUS expr:e2                        {:RESULT = e1 + "+" + e2;:}
-    |   expr:e1 MINUS expr:e2                       {:RESULT = e1 + "-" + e2;:}
-    |   expr:e1 TIMES expr:e2                       {:RESULT = e1 + "*" + e2;:}
-    |   expr:e1 DIVIDE expr:e2                      {:RESULT = e1 + "/" + e2;:}
-    |   expr:e1 EQUAL_TO expr:e2                    {:RESULT = e1 + "==" + e2;:}
-    |   expr:e1 NOT_EQTUAL_TO expr:e2               {:RESULT = e1 + "!=" + e2;:}
-    |   expr:e1 GREATER_THAN expr:e2                {:RESULT = e1 + ">" + e2;:}
-    |   expr:e1 LESS_THAN expr:e2                   {:RESULT = e1 + "<" + e2;:}
-    |   expr:e1 GREATER_THAN_OR_EQUAL_TO expr:e2    {:RESULT = e1 + ">=" + e2;:}
-    |   expr:e1 LESS_THAN_OR_EQUAL_TO expr:e2       {:RESULT = e1 + "<=" + e2;:}
-    |   expr:e1 AND expr:e2                         {:RESULT = e1 + "&&" + e2;:}
-    |   expr:e1 OR expr:e2                          {:RESULT = e1 + "||" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET                                       {:RESULT = "(" + e + ")";:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET PLUS expr:e2                         {:RESULT = e1 + "+" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET MINUS expr:e2                        {:RESULT = e1 + "-" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET TIMES expr:e2                        {:RESULT = e1 + "*" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET DIVIDE expr:e2                       {:RESULT = e1 + "/" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET EQUAL_TO expr:e2                     {:RESULT = e1 + "==" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr:e2                {:RESULT = e1 + "!=" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN expr:e2                 {:RESULT = e1 + ">" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN expr:e2                    {:RESULT = e1 + "<" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO expr:e2     {:RESULT = e1 + ">=" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO expr:e2        {:RESULT = e1 + "<=" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET AND expr:e2                          {:RESULT = e1 + "&&" + e2;:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET OR expr:e2                           {:RESULT = e1 + "||" + e2;:}
-    |   NOT expr:e      {:RESULT = "!" + e;:}
+    ::= expr:e1 PLUS expr:e2                        {:RESULT = plusValidator.validate(e1, e2);:}
+    |   expr:e1 MINUS expr:e2                       {:RESULT = minusValidator.validate(e1, e2);:}
+    |   expr:e1 TIMES expr:e2                       {:RESULT = timesValidator.validate(e1, e2);:}
+    |   expr:e1 DIVIDE expr:e2                      {:RESULT = divideValidator.validate(e1, e2);:}
+    |   expr:e1 EQUAL_TO expr:e2                    {:RESULT = equalValidator.validate(e1, e2);:}
+    |   expr:e1 NOT_EQTUAL_TO expr:e2               {:RESULT = notEqualValidator.validate(e1, e2);:}
+    |   expr:e1 GREATER_THAN expr:e2                {:RESULT = greaterValidator.validate(e1, e2);:}
+    |   expr:e1 LESS_THAN expr:e2                   {:RESULT = lessValidator.validate(e1, e2);:}
+    |   expr:e1 GREATER_THAN_OR_EQUAL_TO expr:e2    {:RESULT = greaterOrEqualValidator.validate(e1, e2);:}
+    |   expr:e1 LESS_THAN_OR_EQUAL_TO expr:e2       {:RESULT = lessOrEqualValidator.validate(e1, e2);:}
+    |   expr:e1 AND expr:e2                         {:RESULT = andValidator.validate(e1, e2);:}
+    |   expr:e1 OR expr:e2                          {:RESULT = orValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET                                       {:RESULT = new Expresion(e.getTipo(), "(" + e.getText() + ")");:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET PLUS expr:e2                         {:RESULT = plusValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET MINUS expr:e2                        {:RESULT = minusValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET TIMES expr:e2                        {:RESULT = timesValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET DIVIDE expr:e2                       {:RESULT = divideValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET EQUAL_TO expr:e2                     {:RESULT = equalValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr:e2                {:RESULT = notEqualValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN expr:e2                 {:RESULT = greaterValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN expr:e2                    {:RESULT = lessValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO expr:e2     {:RESULT = greaterOrEqualValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO expr:e2        {:RESULT = lessOrEqualValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET AND expr:e2                          {:RESULT = andValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET OR expr:e2                           {:RESULT = orValidator.validate(e1, e2);:}
+    |   NOT expr:e      {:RESULT = notValidator.validate(e);:}
     |   values:v        {:RESULT = v;:}
-    |   variable:v      {:RESULT = v;:}
+    |   variable:v      {:RESULT = new Expresion(null, v);:}
 ;
 
 //**************************************** Funciones especiales
@@ -869,22 +878,22 @@ values
 
 //**************************************** Valores numericos
 numero
-    ::= ENTERO:n        {:RESULT = n.getLexema();:}
-    |   DECIMAL_VAL:n   {:RESULT = n.getLexema();:}
+    ::= ENTERO2:n        {:RESULT = new Expresion(n.getType(), n.getLexema());:}
+    |   DECIMAL_VAL:n   {:RESULT = new Expresion(n.getType(), n.getLexema());:}
 ;
 
 //**************************************** Caracter
 caracter
-    ::= CHAR_VAL:c      {:RESULT = c.getLexema();:}
+    ::= CHAR_VAL:c      {:RESULT = new Expresion(c.getType(), c.getLexema());:}
 ;
 
 //**************************************** Literal
 literal
-    ::= LITERAL:l       {:RESULT = l.getLexema();:}
+    ::= LITERAL:l       {:RESULT = new Expresion(l.getType(), l.getLexema());:}
 ;
 
 //**************************************** Valores booleanos
 bool
-    ::= TRUE:b          {:RESULT = b.getLexema();:}
-    |   FALSE:b         {:RESULT = b.getLexema();:}
+    ::= TRUE:b          {:RESULT = new Expresion(b.getType(), b.getLexema());:}
+    |   FALSE:b         {:RESULT = new Expresion(b.getType(), b.getLexema());:}
 ;

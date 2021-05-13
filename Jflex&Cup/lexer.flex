@@ -263,7 +263,7 @@ IDVAR = [:letter:][\w]*
 
 <SCRIPTING> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }
-<SCRIPTING> {ENTERO2}                   { return symbol(ENTERO, TipoDato.INTEGER); }
+<SCRIPTING> {ENTERO2}                   { return symbol(ENTERO2, TipoDato.INTEGER); }
 <SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL, TipoDato.DECIMAL); }
 <SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL, TipoDato.CHAR); }
 //<SCRIPTING> {LITERAL}                   { return symbol(LITERAL); }
