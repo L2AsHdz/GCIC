@@ -24,6 +24,7 @@ import model.tags.body.Input;
 import model.tags.head.Link;
 import model.tags.body.Option;
 import model.tags.body.P;
+import model.tags.body.Scripting;
 import model.tags.body.Select;
 import model.tags.body.Span;
 import model.tags.body.TextArea;
@@ -32,6 +33,20 @@ import model.tags.head.Title;
 import model.tags.Parametro;
 import model.tags.Tag;
 import model.Token;
+import validator.and.AndValidator;
+import validator.divide.DivideValidator;
+import validator.equalto.EqualToValidator;
+import validator.greaterorequal.GreaterOrEqualValidator;
+import validator.greaterthan.GreaterThanValidator;
+import validator.lessorequal.LessOrEqualValidator;
+import validator.lessthan.LessThanValidator;
+import validator.minus.MinusValidator;
+import validator.not.NotValidator;
+import validator.notequalto.NotEqualToValidator;
+import validator.OperatorValidator;
+import validator.or.OrValidator;
+import validator.plus.PlusValidator;
+import validator.times.TimesValidator;
 import java_cup.runtime.Symbol;
 import java_cup.runtime.XMLElement;
 
@@ -1052,6 +1067,21 @@ public class Parser extends java_cup.runtime.lr_parser {
     private List<Process> processList = new ArrayList();
     private List<Instruction> instructionList = new ArrayList();
     private List<Variable> variableList = new ArrayList();
+    private Scripting script = new Scripting();
+
+    private OperatorValidator plusValidator = new PlusValidator();
+    private OperatorValidator minusValidator = new MinusValidator();
+    private OperatorValidator timesValidator = new TimesValidator();
+    private OperatorValidator divideValidator = new DivideValidator();
+    private OperatorValidator equalValidator = new EqualToValidator();
+    private OperatorValidator notEqualValidator = new NotEqualToValidator();
+    private OperatorValidator andValidator = new AndValidator();
+    private OperatorValidator orValidator = new OrValidator();
+    private OperatorValidator notValidator = new NotValidator();
+    private OperatorValidator greaterValidator = new GreaterThanValidator();
+    private OperatorValidator lessValidator = new LessThanValidator();
+    private OperatorValidator greaterOrEqualValidator = new GreaterOrEqualValidator();
+    private OperatorValidator lessOrEqualValidator = new LessOrEqualValidator();
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;

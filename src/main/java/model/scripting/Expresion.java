@@ -16,6 +16,10 @@ public class Expresion {
         this.text = text;
     }
 
+    public Expresion(TipoDato tipo) {
+        this.tipo = tipo;
+    }
+
     public TipoDato getTipo() {
         return tipo;
     }

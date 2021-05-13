@@ -10,16 +10,13 @@ public class Variable {
     
     private String id;
     private TipoDato type;
-    private String valor;
+    private boolean hasValue;
     private String modo;
-    private String process;
 
-    public Variable(String id, TipoDato type, String valor, String modo, String process) {
+    public Variable(String id, TipoDato type, boolean hasValue) {
         this.id = id;
         this.type = type;
-        this.valor = valor;
-        this.modo = modo;
-        this.process = process;
+        this.hasValue = hasValue;
     }
 
     public String getId() {
@@ -38,12 +35,12 @@ public class Variable {
         this.type = type;
     }
 
-    public String getValor() {
-        return valor;
+    public boolean isHasValue() {
+        return hasValue;
     }
 
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setHasValue(boolean hasValue) {
+        this.hasValue = hasValue;
     }
 
     public String getModo() {
@@ -52,13 +49,5 @@ public class Variable {
 
     public void setModo(String modo) {
         this.modo = modo;
-    }
-
-    public String getProcess() {
-        return process;
-    }
-
-    public void setProcess(String process) {
-        this.process = process;
     }
 }

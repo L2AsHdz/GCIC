@@ -28,6 +28,9 @@ public class Scripting extends Tag {
         this.procesos = procesos;
     }
 
+    public Scripting() {
+    }
+
     public List<Process> getProcesos() {
         return procesos;
     }
