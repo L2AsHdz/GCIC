@@ -11,14 +11,13 @@
 
         <C_SCRIPTING>
             ON_LOAD() [
-                WHILE (true) THENWHILE infinite = true;
+                decimal lll = 1598.222;
+                integer numero1, numero2, numero3, numero4 = 25 + (3< 55);
+                string mensaje = "Este es un mensaje";
 
-                WHILE (25 > numero) THENWHILE
-                    INIT {:
-                        decimal lll = 1598.222;
-                        string mensaje = "Este es un mensaje";
-                        INSERT (numero, 25, "hola");
-                    :} END
+                decimal float = numero1 * numero2 - ('s' - 25.3);
+
+                char caracter = numero1 + float * 'd';
             ]
         </C_SCRIPTING>
         <C_SPAM [id="$span1"] [color="red"] [font-size="20px"] >Texto span</C_SPAM>
@@ -40,14 +39,6 @@
 
         <C_SCRIPTING>
             ON_LOAD()[
-                integer numero1, numero2, numero3 = 3.25 + ('j' / 23.33);
-                string palabra = "REVERSE(literal)";
-            ]
-            !!Comenario
-            PROCESS_ASASAS () [
-                char @global caracter = 'a';
-                boolean isLogic = false + 6 * (75.56 - 'c');
-                decimal float = 5555;
             ]
         </C_SCRIPTING>
 
@@ -73,46 +64,7 @@
         <C_BR>
 
         <C_SCRIPTING>
-            ON_LOAD()[]
-
-            PROCESS_ASASAS () [
-                IF ( numero < 5) THEN
-                    INIT {:
-                        integer numero2 = 25;
-                    :} END
-                ELSE
-                    INIT {:
-                        variable = true;
-                        decimal dec = 12.15 + 3;
-
-                        IF ( bool == true ) THEN
-                            INIT {:
-                                salida = true;
-                            :} END
-                        ELSE IF ( variable == "OK" ) THEN
-                            INIT {:
-                                char holi = 'h';
-                            :} END
-                        ELSE
-                            INIT {:
-                                holi = ';';
-                            :} END
-                    :} END
-            ]
-            PROCESS_ASASAS2 () [
-                decimal float = 5 + (3 <= 6 );
-            ]
-            PROCESS_NAME2 () [
-                numero3 = 25;
-
-                decimal deci;
-
-                REPEAT (integer i = 0) HUNTIL (2 + 10) holi = 23;
-
-                REPEAT (as = 33) HUNTIL (limite)
-                    INIT {:
-                        IF ( algo != otro) THEN asdasd = true + 25;
-                    :} END
+            ON_LOAD()[
             ]
         </C_SCRIPTING>
 

@@ -156,11 +156,11 @@ IDVAR = [:letter:][\w]*
 <SCRIPTING> "@global"       { return symbol(GLOBAL_MODE); }
 
 //* Tipos de datos
-<SCRIPTING> "integer"       { return symbol(INTEGER); }
-<SCRIPTING> "decimal"       { return symbol(DECIMAL); }
-<SCRIPTING> "boolean"       { return symbol(BOOLEAN); }
-<SCRIPTING> "char"          { return symbol(CHAR); }
-<SCRIPTING> "string"        { return symbol(STRING); }
+<SCRIPTING> "integer"       { return symbol(INTEGER, TipoDato.INTEGER); }
+<SCRIPTING> "decimal"       { return symbol(DECIMAL, TipoDato.DECIMAL); }
+<SCRIPTING> "boolean"       { return symbol(BOOLEAN, TipoDato.BOOLEAN); }
+<SCRIPTING> "char"          { return symbol(CHAR, TipoDato.CHAR); }
+<SCRIPTING> "string"        { return symbol(STRING, TipoDato.STRING); }
 <SCRIPTING> "true"          { return symbol(TRUE, TipoDato.BOOLEAN); }
 <SCRIPTING> "false"         { return symbol(FALSE, TipoDato.BOOLEAN); }
 

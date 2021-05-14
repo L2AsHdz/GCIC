@@ -11,7 +11,6 @@ public class Variable {
     private String id;
     private TipoDato type;
     private boolean hasValue;
-    private String modo;
 
     public Variable(String id, TipoDato type, boolean hasValue) {
         this.id = id;
@@ -35,19 +34,11 @@ public class Variable {
         this.type = type;
     }
 
-    public boolean isHasValue() {
+    public boolean getHasValue() {
         return hasValue;
     }
 
     public void setHasValue(boolean hasValue) {
         this.hasValue = hasValue;
-    }
-
-    public String getModo() {
-        return modo;
-    }
-
-    public void setModo(String modo) {
-        this.modo = modo;
     }
 }

@@ -64,7 +64,7 @@ public class Sym {
   public static final int C_TEXTAREA = 9;
   public static final int OPEN_BRACKET = 100;
   public static final int CLASS = 31;
-  public static final int ALERT_INFO = 87;
+  public static final int ALERT_INFO = 88;
   public static final int C_DIV = 12;
   public static final int NUMBER = 62;
   public static final int C_HEAD = 3;
@@ -109,7 +109,7 @@ public class Sym {
   public static final int EQUAL_TO = 113;
   public static final int HREF = 19;
   public static final int OR = 119;
-  public static final int EXIT = 88;
+  public static final int EXIT = 89;
   public static final int error = 1;
   public static final int TEXT_TAG = 129;
   public static final int IF = 92;
@@ -142,7 +142,7 @@ public class Sym {
   public static final int AND = 120;
   public static final int C_BUTTON = 15;
   public static final int LETPAR_NUM = 82;
-  public static final int ELEMENT_BY_ID = 89;
+  public static final int ELEMENT_BY_ID = 87;
   public static final int GREEN = 47;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -232,9 +232,9 @@ public class Sym {
   "REVERSE",
   "CARACTER_ALEATORIO",
   "NUM_ALEATORIO",
+  "ELEMENT_BY_ID",
   "ALERT_INFO",
   "EXIT",
-  "ELEMENT_BY_ID",
   "INIT",
   "END",
   "IF",

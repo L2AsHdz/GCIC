@@ -1986,7 +1986,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 218: break;
           case 77:
-            { return symbol(CHAR);
+            { return symbol(CHAR, TipoDato.CHAR);
             }
             // fall through
           case 219: break;
@@ -2146,7 +2146,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 250: break;
           case 109:
-            { return symbol(STRING);
+            { return symbol(STRING, TipoDato.STRING);
             }
             // fall through
           case 251: break;
@@ -2201,17 +2201,17 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 261: break;
           case 120:
-            { return symbol(BOOLEAN);
+            { return symbol(BOOLEAN, TipoDato.BOOLEAN);
             }
             // fall through
           case 262: break;
           case 121:
-            { return symbol(DECIMAL);
+            { return symbol(DECIMAL, TipoDato.DECIMAL);
             }
             // fall through
           case 263: break;
           case 122:
-            { return symbol(INTEGER);
+            { return symbol(INTEGER, TipoDato.INTEGER);
             }
             // fall through
           case 264: break;
