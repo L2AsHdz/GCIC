@@ -1192,6 +1192,12 @@ public class Lexer implements java_cup.runtime.Scanner {
         return new Symbol(type, new TypeToken(tipoDato, yyline, yycolumn, yytext()));
     }
 
+    private Symbol symbol(int type, TipoDato tipoDato, String text) {
+        String textLiteral = text + "\"";
+        literal = new StringBuilder();
+        return new Symbol(type, new TypeToken(tipoDato, yyline, yycolumn, textLiteral));
+    }
+
     private void addLexicError(){
         String descripcion = "El simbolo no pertenece al lenguaje";
         errores.add(new ErrorAnalisis(yytext(), yyline+1, yycolumn+1, TipoError.LEXICO, descripcion));
@@ -1681,7 +1687,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 157: break;
           case 16:
-            { yybegin(LITERALS);
+            { literal.append("\""); yybegin(LITERALS);
             }
             // fall through
           case 158: break;
@@ -1771,12 +1777,12 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 175: break;
           case 34:
-            { return symbol(LITERAL, TipoDato.STRING);
+            { literal.append(yytext());
             }
             // fall through
           case 176: break;
           case 35:
-            { yybegin(SCRIPTING);
+            { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString());
             }
             // fall through
           case 177: break;

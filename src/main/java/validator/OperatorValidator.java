@@ -11,7 +11,7 @@ import model.scripting.TipoDato;
  */
 public abstract class OperatorValidator {
     
-    protected Expresion expr;
+    protected Expresion expr = new Expresion(null);
 
     public abstract Expresion validate(Expresion expr1, Expresion expr2);
     

@@ -2970,7 +2970,7 @@ currentProcess = p.getLexema();
 
         if (errores.isEmpty()) {
             varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            System.out.println(t.name() + "@global" + varsToAssign.toString());
+            System.out.println(t.name() + " @global" + varsToAssign.toString());
             varsToAssign = new ArrayList();
         } else {
             errores.forEach(e -> System.out.println(e));

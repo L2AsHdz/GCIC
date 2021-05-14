@@ -32,6 +32,7 @@ public class GCICAnalyzer {
             parser = new Parser(lexer);
             parser.parse();
         } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
     }
 

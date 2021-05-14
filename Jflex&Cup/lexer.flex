@@ -32,6 +32,12 @@ import java_cup.runtime.Symbol;
         return new Symbol(type, new TypeToken(tipoDato, yyline, yycolumn, yytext()));
     }
 
+    private Symbol symbol(int type, TipoDato tipoDato, String text) {
+        String textLiteral = text + "\"";
+        literal = new StringBuilder();
+        return new Symbol(type, new TypeToken(tipoDato, yyline, yycolumn, textLiteral));
+    }
+
     private void addLexicError(){
         String descripcion = "El simbolo no pertenece al lenguaje";
         errores.add(new ErrorAnalisis(yytext(), yyline+1, yycolumn+1, TipoError.LEXICO, descripcion));
@@ -226,7 +232,7 @@ IDVAR = [:letter:][\w]*
     ","             { return symbol(COMMA); }
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
-    "\""            { yybegin(LITERALS); }
+    "\""            { literal.append("\""); yybegin(LITERALS); }
 
     //* Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
@@ -249,8 +255,8 @@ IDVAR = [:letter:][\w]*
 }
 
 <LITERALS> {
-    "\""            { yybegin(SCRIPTING); }
-    [^'\"']+        { return symbol(LITERAL, TipoDato.STRING); }
+    "\""            { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString()); }
+    [^'\"']+        { literal.append(yytext()); }
 }
 
 <VALUE> {URL}                       { return symbol(URL); }

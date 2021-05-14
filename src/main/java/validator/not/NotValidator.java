@@ -21,11 +21,13 @@ public class NotValidator extends OperatorValidator {
     }
     
     public Expresion validate(Expresion expr1) {
-        switch (expr1.getTipo()) {
-            case BOOLEAN -> setExpresion(BOOLEAN);
-            default -> setExpresion(null);
+        if (expr1.getTipo() != null) {
+            switch (expr1.getTipo()) {
+                case BOOLEAN -> setExpresion(BOOLEAN);
+                default -> setExpresion(null);
+            }
+            expr.setText("!" + expr1.getText());
         }
-        expr.setText("!" + expr1.getText());
 
         return expr;
     }

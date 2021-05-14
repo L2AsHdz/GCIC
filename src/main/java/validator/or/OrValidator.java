@@ -18,11 +18,13 @@ public class OrValidator extends OperatorValidator {
 
     @Override
     public Expresion validate(Expresion expr1, Expresion expr2) {
-        switch (expr1.getTipo()) {
-            case BOOLEAN    -> setTipos(expr2, new TipoDato[]{null,  null, null, null, BOOLEAN});
-            default         -> setTipos(expr2, new TipoDato[]{null,  null, null, null, null});
+        if (expr1.getTipo() != null && expr2.getTipo() != null) {
+            switch (expr1.getTipo()) {
+                case BOOLEAN    -> setTipos(expr2, new TipoDato[]{null,  null, null, null, BOOLEAN});
+                default         -> setTipos(expr2, new TipoDato[]{null,  null, null, null, null});
+            }
+            expr.setText(expr1.getText() + "||" + expr2.getText());
         }
-        expr.setText(expr1.getText() + "||" + expr2.getText());
 
         return expr;
     }
