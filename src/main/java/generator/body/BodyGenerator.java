@@ -11,6 +11,7 @@ import model.tags.body.H1;
 import model.tags.body.Img;
 import model.tags.body.Input;
 import model.tags.body.P;
+import model.tags.body.Scripting;
 import model.tags.body.Select;
 import model.tags.body.Span;
 import model.tags.body.TextArea;
@@ -80,6 +81,10 @@ public class BodyGenerator extends Generator {
                 P pp = (P) e;
                 Generator pG = new PGenerator(pp);
                 addLine(pG.generate(), 0);
+            } else if (e instanceof Scripting) {
+                Scripting s = (Scripting) e;
+                Generator scriptG = new ScriptingGenerator(s);
+                addLine(scriptG.generate(), 0);
             }
         });
     }

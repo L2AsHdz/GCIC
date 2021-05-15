@@ -1,5 +1,7 @@
 package model.scripting.statement;
 
+import java.util.List;
+import model.scripting.Instruction;
 import model.scripting.TipoDato;
 
 /**
@@ -8,11 +10,17 @@ import model.scripting.TipoDato;
  * @time 19:57:43
  * @author asael
  */
-public class SimpleStatement implements Statement {
+public class SimpleStatement implements Instruction {
 
     private TipoDato type;
     private boolean isGlobal;
-    private String variables[];
+    private List<String> variables;
+
+    public SimpleStatement(TipoDato type, boolean isGlobal, List<String> variables) {
+        this.type = type;
+        this.isGlobal = isGlobal;
+        this.variables = variables;
+    }
 
     public SimpleStatement() {
     }
@@ -33,11 +41,11 @@ public class SimpleStatement implements Statement {
         this.isGlobal = isGlobal;
     }
 
-    public String[] getVariables() {
+    public List<String> getVariables() {
         return variables;
     }
 
-    public void setVariables(String[] variables) {
+    public void setVariables(List<String> variables) {
         this.variables = variables;
     }
 }

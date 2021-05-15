@@ -13,6 +13,9 @@ import model.errores.TipoError;
 import model.scripting.Expresion;
 import model.scripting.Instruction;
 import model.scripting.Process;
+import model.scripting.statement.Assignment;
+import model.scripting.statement.FullStatement;
+import model.scripting.statement.SimpleStatement;
 import model.scripting.TipoDato;
 import model.scripting.Variable;
 import model.tags.body.Body;
@@ -1071,11 +1074,11 @@ public class Parser extends java_cup.runtime.lr_parser {
     private Stack<List<Parametro>> pilaParams = new Stack();
     private Tag gcicTag;
 
+    private Process onLoad = null;
     private List<Process> processList = new ArrayList();
     private List<Instruction> instructionList = new ArrayList();
     private List<Variable> variableList = new ArrayList();
     private List<String> varsToAssign = new ArrayList();
-    private Scripting script = new Scripting();
 
     private OperatorValidator plusValidator = new PlusValidator();
     private OperatorValidator minusValidator = new MinusValidator();
@@ -1509,7 +1512,11 @@ class CUP$Parser$actions {
           case 28: // nameTagBody ::= C_SCRIPTING GREATER_THAN procesos LESS_THAN DIVIDE C_SCRIPTING 
             {
               Object RESULT =null;
-
+		
+            etiquetas.add(new Scripting(onLoad, processList));
+            onLoad = null;
+            processList = new ArrayList();
+        
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("nameTagBody",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2759,7 +2766,15 @@ currentProcess = p.getLexema();
 		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		Token p = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
-
+		
+            if (onLoad == null) {
+                onLoad = new Process(p.getLexema(), instructionList);
+            } else {
+                System.out.println("Error semantico, solo puede haber un onload");
+            }
+            instructionList = new ArrayList();
+            variableList = new ArrayList();
+        
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("process",57, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2785,7 +2800,12 @@ currentProcess = p.getLexema();
 		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		Token p = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
-
+		
+            //Validar que no se repita el nombre del proceso
+            processList.add(new Process(p.getLexema(), instructionList));
+            instructionList = new ArrayList();
+            variableList = new ArrayList();
+        
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("process",57, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2914,8 +2934,7 @@ currentProcess = p.getLexema();
 
                 if (errores.isEmpty()) {
                     varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    System.out.println(t.name() + "@global" + varsToAssign.toString() + "=" + a.getText());
-                    varsToAssign = new ArrayList();
+                    instructionList.add(new FullStatement(t, true, varsToAssign, a.getText()));
                 } else {
                     errores.forEach(e -> System.out.println(e));
                 }
@@ -2923,6 +2942,7 @@ currentProcess = p.getLexema();
                 System.out.println(errorVar);
                 errorVar = "";
             }
+            varsToAssign = new ArrayList();
         
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("fullStatement",62, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2944,8 +2964,7 @@ currentProcess = p.getLexema();
 
                 if (errores.isEmpty()) {
                     varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    System.out.println(t.name() + varsToAssign.toString() + "=" + a.getText());
-                    varsToAssign = new ArrayList();
+                    instructionList.add(new FullStatement(t, false, varsToAssign, a.getText()));
                 } else {
                     errores.forEach(e -> System.out.println(e));
                 }
@@ -2953,6 +2972,7 @@ currentProcess = p.getLexema();
                 System.out.println(errorVar);
                 errorVar = "";
             }
+            varsToAssign = new ArrayList();
         
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("fullStatement",62, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2970,11 +2990,11 @@ currentProcess = p.getLexema();
 
         if (errores.isEmpty()) {
             varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            System.out.println(t.name() + " @global" + varsToAssign.toString());
-            varsToAssign = new ArrayList();
+            instructionList.add(new SimpleStatement(t, true, varsToAssign));
         } else {
             errores.forEach(e -> System.out.println(e));
         }
+        varsToAssign = new ArrayList();
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("statement",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2992,11 +3012,11 @@ currentProcess = p.getLexema();
 
         if (errores.isEmpty()) {
             varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            System.out.println(t.name() + varsToAssign.toString());
-            varsToAssign = new ArrayList();
+            instructionList.add(new SimpleStatement(t, false, varsToAssign));
         } else {
             errores.forEach(e -> System.out.println(e));
         }
+        varsToAssign = new ArrayList();
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("statement",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -3017,7 +3037,7 @@ currentProcess = p.getLexema();
                 String error = assignValidator.validate(variableList, v, a);
 
                 if (error.isEmpty()) {
-                    System.out.print(v + "=" + a.getText());
+                    instructionList.add(new Assignment(v, a.getText()));
                 } else {
                     System.out.println(error);
                 }

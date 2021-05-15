@@ -8,6 +8,9 @@ import model.errores.TipoError;
 import model.scripting.Expresion;
 import model.scripting.Instruction;
 import model.scripting.Process;
+import model.scripting.statement.Assignment;
+import model.scripting.statement.FullStatement;
+import model.scripting.statement.SimpleStatement;
 import model.scripting.TipoDato;
 import model.scripting.Variable;
 import model.tags.body.Body;
@@ -49,7 +52,6 @@ import validator.times.TimesValidator;
 import validator.VariableValidator;
 import java_cup.runtime.Symbol;
 
-
 parser code{:
 
     private final List<ErrorAnalisis> errores = new ArrayList();
@@ -60,11 +62,11 @@ parser code{:
     private Stack<List<Parametro>> pilaParams = new Stack();
     private Tag gcicTag;
 
+    private Process onLoad = null;
     private List<Process> processList = new ArrayList();
     private List<Instruction> instructionList = new ArrayList();
     private List<Variable> variableList = new ArrayList();
     private List<String> varsToAssign = new ArrayList();
-    private Scripting script = new Scripting();
 
     private OperatorValidator plusValidator = new PlusValidator();
     private OperatorValidator minusValidator = new MinusValidator();
@@ -324,7 +326,11 @@ nameTagBody
             etiquetas.add(div);
         :}
 
-    |   C_SCRIPTING GREATER_THAN procesos LESS_THAN DIVIDE C_SCRIPTING
+    |   C_SCRIPTING GREATER_THAN procesos LESS_THAN DIVIDE C_SCRIPTING {:
+            etiquetas.add(new Scripting(onLoad, processList));
+            onLoad = null;
+            processList = new ArrayList();
+        :}
 ;
 
 inicioSelect
@@ -646,8 +652,21 @@ procesos
 ;
 
 process
-    ::= ON_LOAD:p {:currentProcess = p.getLexema();:} processBody
-    |   PROCESS_NAME:p {:currentProcess = p.getLexema();:} processBody
+    ::= ON_LOAD:p {:currentProcess = p.getLexema();:} processBody {:
+            if (onLoad == null) {
+                onLoad = new Process(p.getLexema(), instructionList);
+            } else {
+                System.out.println("Error semantico, solo puede haber un onload");
+            }
+            instructionList = new ArrayList();
+            variableList = new ArrayList();
+        :}
+    |   PROCESS_NAME:p {:currentProcess = p.getLexema();:} processBody {:
+            //Validar que no se repita el nombre del proceso
+            processList.add(new Process(p.getLexema(), instructionList));
+            instructionList = new ArrayList();
+            variableList = new ArrayList();
+        :}
 ;
 
 processBody
@@ -683,8 +702,7 @@ fullStatement
 
                 if (errores.isEmpty()) {
                     varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    System.out.println(t.name() + "@global" + varsToAssign.toString() + "=" + a.getText());
-                    varsToAssign = new ArrayList();
+                    instructionList.add(new FullStatement(t, true, varsToAssign, a.getText()));
                 } else {
                     errores.forEach(e -> System.out.println(e));
                 }
@@ -692,6 +710,7 @@ fullStatement
                 System.out.println(errorVar);
                 errorVar = "";
             }
+            varsToAssign = new ArrayList();
         :}
     |   tipo:t variables ASSIGN assign:a {:
             if (errorVar.isEmpty()) {
@@ -699,8 +718,7 @@ fullStatement
 
                 if (errores.isEmpty()) {
                     varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    System.out.println(t.name() + varsToAssign.toString() + "=" + a.getText());
-                    varsToAssign = new ArrayList();
+                    instructionList.add(new FullStatement(t, false, varsToAssign, a.getText()));
                 } else {
                     errores.forEach(e -> System.out.println(e));
                 }
@@ -708,6 +726,7 @@ fullStatement
                 System.out.println(errorVar);
                 errorVar = "";
             }
+            varsToAssign = new ArrayList();
         :}
 ;
 
@@ -717,22 +736,22 @@ statement
 
         if (errores.isEmpty()) {
             varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            System.out.println(t.name() + " @global" + varsToAssign.toString());
-            varsToAssign = new ArrayList();
+            instructionList.add(new SimpleStatement(t, true, varsToAssign));
         } else {
             errores.forEach(e -> System.out.println(e));
         }
+        varsToAssign = new ArrayList();
     :}
 |   tipo:t variables {:
         List<String> errores = varValidator.validate(variableList, varsToAssign);
 
         if (errores.isEmpty()) {
             varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            System.out.println(t.name() + varsToAssign.toString());
-            varsToAssign = new ArrayList();
+            instructionList.add(new SimpleStatement(t, false, varsToAssign));
         } else {
             errores.forEach(e -> System.out.println(e));
         }
+        varsToAssign = new ArrayList();
     :}
 ;
 
@@ -742,7 +761,7 @@ assignment
                 String error = assignValidator.validate(variableList, v, a);
 
                 if (error.isEmpty()) {
-                    System.out.print(v + "=" + a.getText());
+                    instructionList.add(new Assignment(v, a.getText()));
                 } else {
                     System.out.println(error);
                 }

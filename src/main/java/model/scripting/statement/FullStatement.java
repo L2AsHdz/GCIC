@@ -1,5 +1,7 @@
 package model.scripting.statement;
 
+import java.util.List;
+import model.scripting.Instruction;
 import model.scripting.TipoDato;
 
 /**
@@ -8,12 +10,19 @@ import model.scripting.TipoDato;
  * @time 19:48:22
  * @author asael
  */
-public class FullStatement implements Statement {
+public class FullStatement implements Instruction {
 
     private TipoDato type;
     private boolean isGlobal;
-    private String variables[];
+    private List<String> variables;
     private String expresion;
+
+    public FullStatement(TipoDato type, boolean isGlobal, List<String> variables, String expresion) {
+        this.type = type;
+        this.isGlobal = isGlobal;
+        this.variables = variables;
+        this.expresion = expresion;
+    }
 
     public FullStatement() {
     }
@@ -34,11 +43,11 @@ public class FullStatement implements Statement {
         this.isGlobal = isGlobal;
     }
 
-    public String[] getVariables() {
+    public List<String> getVariables() {
         return variables;
     }
 
-    public void setVariables(String[] variables) {
+    public void setVariables(List<String> variables) {
         this.variables = variables;
     }
 
