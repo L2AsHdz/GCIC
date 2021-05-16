@@ -28,7 +28,7 @@
                         char caracter = numero1 + float * 'd';
                         IF ( numero1 < 5) THEN
                             INIT {:
-                                integer numero2 = 25;
+                                numero2 = 25;
                             :} END
                         ELSE IF ( lll < 25 ) THEN integer newNum = numero1 * numero2;
                         ELSE

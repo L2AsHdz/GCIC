@@ -32,7 +32,7 @@ public class VariableValidator {
             expr.setText("La variable " + variableName + " no tiene un valor asignado");
         } else {
             expr.setTipo(var.getType());
-            expr.setText("getValue(" + variableName + ", " + proceso + ")");
+            expr.setText("getValue('" + variableName + "', '" + proceso + "')");
         }
 
         return expr;

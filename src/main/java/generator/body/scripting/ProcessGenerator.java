@@ -44,21 +44,32 @@ public class ProcessGenerator extends Generator {
         instructions.forEach(i -> {
             if (i instanceof FullStatement) {
                 FullStatement fs = (FullStatement) i;
-                htmlCode.append(fs.getType()).append(" ").append(fs.isIsGlobal())
-                        .append(" ").append(fs.getVariables().toString())
-                        .append(" = ").append(fs.getExpresion()).append("\n");
+                String global = (fs.isIsGlobal()) ? "@global" : "-";
+                fs.getVariables().forEach(v -> {
+                    htmlCode.append("\tvars.push(new Var('").append(fs.getType().name().toLowerCase())
+                            .append("', '").append(v).append("', ").append(fs.getExpresion())
+                            .append(", '").append(global).append("', '").append(process.getName())
+                            .append("', 1").append("));\n");
+                });
             } else if (i instanceof SimpleStatement) {
                 SimpleStatement ss = (SimpleStatement) i;
-                htmlCode.append(ss.getType()).append(" ").append(ss.isIsGlobal())
-                        .append(" ").append(ss.getVariables().toString()).append("\n");
+                String global = (ss.isIsGlobal()) ? "@global" : "-";
+                ss.getVariables().forEach(v -> {
+                    htmlCode.append("\tvars.push(new Var('").append(ss.getType().name().toLowerCase())
+                            .append("', '").append(v).append("', ").append("null")
+                            .append(", '").append(global).append("', '").append(process.getName())
+                            .append("', 1").append("));\n");
+                });
             } else if (i instanceof Assignment) {
                 Assignment a = (Assignment) i;
-                htmlCode.append(a.getVariable()).append(" = ").append(a.getExpresion()).append("\n");
+                htmlCode.append("\tsetValue('").append(a.getVariable()).append("' , '")
+                        .append(process.getName())
+                        .append("', ").append(a.getExpresion()).append(");\n");
             } else if (i instanceof IfStatement) {
                 IfStatement is = (IfStatement) i;
-                htmlCode.append("if (").append(is.getCondition()).append(") {\n");
+                htmlCode.append("\tif (").append(is.getCondition()).append(") {\n");
                 generateInstructions(is.getInstructions());
-                htmlCode.append("\n} ");
+                htmlCode.append("\n\t} ");
                 if (!is.getIfTypes().isEmpty()) {
                     Collections.reverse(is.getIfTypes());
                     is.getIfTypes().forEach(it -> {
@@ -66,12 +77,12 @@ public class ProcessGenerator extends Generator {
                             ElseIfStatement elseIf = (ElseIfStatement) it;
                             htmlCode.append("else if (").append(elseIf.getCondition()).append(") {\n");
                             generateInstructions(elseIf.getInstructions());
-                            htmlCode.append("\n} ");
+                            htmlCode.append("\n\t} ");
                         } else if (it instanceof ElseStatement) {
                             ElseStatement elseS = (ElseStatement) it;
                             htmlCode.append("else {\n");
                             generateInstructions(elseS.getInstructions());
-                            addLine("\n}", 0);
+                            addLine("\n\t}", 0);
                         }
                     });
                 }

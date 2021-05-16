@@ -72,6 +72,7 @@ parser code{:
     private List<Variable> variableList = new ArrayList();
     private List<String> varsToAssign = new ArrayList();
     private List<IfType> ifTypesList = new ArrayList();
+    private Stack<List<IfType>> pilaIfTypes = new Stack();
     private Stack<List<Instruction>> pilaInstructions = new Stack();
     private String errorCondition = "";
     private Stack<String> pilaConditions = new Stack();
@@ -690,10 +691,15 @@ instructions
 
 instruction
     ::= oneStatement SEMI
-    |   ifStatement {:
+    |   {:
+            pilaIfTypes.push(ifTypesList);
+            ifTypesList = new ArrayList();
+        :}
+        ifStatement {:
             if (errorCondition.isEmpty()) {
                 IfStatement ifSt = new IfStatement(pilaConditions.pop(), instructionList, ifTypesList);
                 instructionList = pilaInstructions.pop();
+                ifTypesList = pilaIfTypes.pop();
                 instructionList.add(ifSt);
             } else {
                 instructionList = pilaInstructions.pop();
