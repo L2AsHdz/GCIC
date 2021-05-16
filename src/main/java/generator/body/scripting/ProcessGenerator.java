@@ -35,6 +35,7 @@ public class ProcessGenerator extends Generator {
 
         htmlCode.append("function ").append(process.getName()).append("() {\n");
         generateInstructions(process.getInstructions());
+        addLine("updateTableData();", 0);
         addLine("}", 0);
 
         return htmlCode.toString();

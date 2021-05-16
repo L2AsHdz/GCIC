@@ -1,6 +1,7 @@
 package generator;
 
 import generator.body.BodyGenerator;
+import generator.body.scripting.TableHtmlCode;
 import model.tags.GCIC;
 import model.tags.body.Body;
 import model.tags.head.Head;
@@ -40,6 +41,8 @@ public class HtmlGenerator extends Generator {
 
         //body
         addLine("<body style=\"background:"+((Body) gcic.getBody()).getParameterValue("background")+"\">", 1);
+        addLine(TableHtmlCode.getCode(), 2);
+        addLine("<script src=\"/GCIC/js/CodeJS.js\"></script>", 2);
         //addLine("<div class=\"container-fluid\">", 2);
         //addLine("<div class=\"row\">", 3);
         //addLine("<div class=\"col-2\"></div>", 4);

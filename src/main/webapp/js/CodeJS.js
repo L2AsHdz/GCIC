@@ -10,6 +10,8 @@ class Var {
 }
 
 let vars = new Array();
+vars.push(new Var('integer', 'num', null, '-', 'ON_LOAD', 1));
+updateTableData();
 
 function setValue(id, process, val) {
     let variable = vars.find(e => e.id == id && e.process == process);
@@ -66,41 +68,20 @@ function LETIMPAR_NUM(str) {
     return array.join("");
 }
 
-function crear(){
-    let tabla="<table class=\"table table-bordered table-dark\">";
-
-    tabla+="<tr><th>ID</th><th>TIPO</th><th>VALOR</th><th>CONTEXTO</th>";
-    variables.forEach(a => {
-        tabla+="<tr><td>"+a.id+"</td>";
-			if(a.tipo !=null){
-				tabla += "<td>"+a.tipo+"</td>";
-			}else{
-				tabla += "<td>----</td>";
-			}
-			tabla+="<td>"+a.valor+"</td><td>"+a.contexto+"</td>";
+function updateTableData(){
+    let tableBody = document.querySelector('#tableBody');
+    tableBody.innerHTML = "";
+    let content = new Array();
+    vars.forEach((e, i) => {
+        content.push("<tr>");
+        content.push("\t<td>" + (i + 1) + "</td>");
+        content.push("\t<td>" + e.type + "</td>");
+        content.push("\t<td>" + e.id + "</td>");
+        content.push("\t<td>" + e.val + "</td>");
+        content.push("\t<td>" + e.mode + "</td>");
+        content.push("\t<td>" + e.process + "</td>");
+        content.push("\t<td>" + e.noExec + "</td>");
+        content.push("</tr>");
     });
-    tabla+="</table>";
-    document.getElementById("tabla").innerHTML=tabla;
+    tableBody.innerHTML = content.join("");
 }
-function crear2() {
-    document.getElementById("tabla").innerHTML="";
-}
-crear();
-
-
-<tr>
-    <td>${status.count}</td>
-    <td>${form.id}</td>
-    <td>${form.nombre}</td>
-    <td>${form.titulo}</td>
-    <td>${form.tema}</td>
-    <td>${form.fechaCreacion}</td>
-    <td>
-        <button type="button" class="btn btn-outline-info" onclick="copyTC('http://localhost:8080/${pageContext.request.contextPath}/builder?id=${form.id}');">Copiar link</button>
-    </td>
-    <td>
-        <a href="${pageContext.request.contextPath}/export?id=${form.id}" class="btn btn-secondary">
-            <i class="fas fa-file-export"></i> Exportar
-        </a>
-    </td>
-</tr>
