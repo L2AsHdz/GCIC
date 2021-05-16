@@ -219,6 +219,8 @@ IDVAR = [:letter:][\w]*
 
 <VALUE> {
     "\""            { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
+    "("             { return symbol(OPEN_ROUND_BRACKET); }
+    ")"             { return symbol(CLOSE_ROUND_BRACKET); }
 }
 
 <SCRIPTING> {
@@ -263,6 +265,7 @@ IDVAR = [:letter:][\w]*
 <VALUE> {COLOR}                     { return symbol(COLOR_VALUE); }
 <VALUE> {SIZE}                      { return symbol(SIZE); }
 <VALUE> {WH_VAL}                    { return symbol(WH_VAL); }
+<VALUE> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <VALUE> {IDPARAM}                   { return symbol(ID_PARAM); }
 <VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
 <VALUE> {ENTERO}                    { return symbol(ENTERO); }

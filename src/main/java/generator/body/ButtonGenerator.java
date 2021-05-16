@@ -23,7 +23,9 @@ public class ButtonGenerator extends TextTagGenerator {
         
         htmlCode.append("<button type=\"button\" class=\"btn\" ");
         htmlCode.append("style=\"").append(getStyles()).append("\" ");
-        htmlCode.append("id=\"").append(button.getParameterValue("id")).append("\">");
+        htmlCode.append("id=\"").append(button.getParameterValue("id"));
+        htmlCode.append("\" onclick=\"").append(button.getParameterValue("onclick"));
+        htmlCode.append("();\" >");
         htmlCode.append(button.getText());
         htmlCode.append("</button>");
 

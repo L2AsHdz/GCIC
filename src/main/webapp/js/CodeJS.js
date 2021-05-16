@@ -23,6 +23,20 @@ function getValue(id, process) {
     return variable.val;
 }
 
+function increaseNoExec(id, process) {
+    let variable = vars.find(e => e.id == id && e.process == process);
+    variable.noExec = variable.noExec + 1;
+}
+
+function addVar(type, id, val, mode, process, noExec) {
+    if(vars.find(e => e.id == id && e.process == process) == undefined) {
+        vars.push(new Var(type, id, val, mode, process, noExec));
+    } else {
+        let variable = vars.find(e => e.id == id && e.process == process);
+        variable.val = val;
+    }
+}
+
 function CARACTER_ALEATORIO() {
     let code = Math.floor(Math.random() * (126 - 33)) + 33;
     return String.fromCharCode(code);
@@ -84,4 +98,12 @@ function updateTableData(){
         content.push("</tr>");
     });
     tableBody.innerHTML = content.join("");
+}
+
+function increaseNoExecs(process) {
+    vars.forEach(e => {
+        if (e.process == process) {
+            increaseNoExec(e.id, process);
+        }
+    });
 }

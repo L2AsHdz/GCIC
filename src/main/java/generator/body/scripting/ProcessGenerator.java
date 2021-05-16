@@ -35,6 +35,9 @@ public class ProcessGenerator extends Generator {
 
         htmlCode.append("function ").append(process.getName()).append("() {\n");
         generateInstructions(process.getInstructions());
+        if (!process.getName().equalsIgnoreCase("ON_LOAD")) {
+            addLine("increaseNoExecs(\"" + process.getName() + "\");", 0);
+        }
         addLine("updateTableData();", 0);
         addLine("}", 0);
 
@@ -47,19 +50,19 @@ public class ProcessGenerator extends Generator {
                 FullStatement fs = (FullStatement) i;
                 String global = (fs.isIsGlobal()) ? "@global" : "-";
                 fs.getVariables().forEach(v -> {
-                    htmlCode.append("\tvars.push(new Var('").append(fs.getType().name().toLowerCase())
+                    htmlCode.append("\taddVar('").append(fs.getType().name().toLowerCase())
                             .append("', '").append(v).append("', ").append(fs.getExpresion())
                             .append(", '").append(global).append("', '").append(process.getName())
-                            .append("', 1").append("));\n");
+                            .append("', 0").append(");\n");
                 });
             } else if (i instanceof SimpleStatement) {
                 SimpleStatement ss = (SimpleStatement) i;
                 String global = (ss.isIsGlobal()) ? "@global" : "-";
                 ss.getVariables().forEach(v -> {
-                    htmlCode.append("\tvars.push(new Var('").append(ss.getType().name().toLowerCase())
+                    htmlCode.append("\taddVar('").append(ss.getType().name().toLowerCase())
                             .append("', '").append(v).append("', ").append("null")
                             .append(", '").append(global).append("', '").append(process.getName())
-                            .append("', 1").append("));\n");
+                            .append("', 0").append(");\n");
                 });
             } else if (i instanceof Assignment) {
                 Assignment a = (Assignment) i;

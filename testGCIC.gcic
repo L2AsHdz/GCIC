@@ -72,7 +72,7 @@
         </C_SCRIPTING>
 
         <C_IMG [id="-img1"] [src="https://images.unsplash.com/photo-1429042007245-890c9e2603af"] [width="300px"] [height="200px"] ></C_IMG>
-        <C_BUTTON [id="-button1"] >Presione aqui</C_BUTTON>
+        <C_BUTTON [id="-button1"] [onclick="PROCESS_IJIJIJ()"]>Presione aqui</C_BUTTON>
         <C_H1 [id="-h1"] >Titulo 1</C_H1>
         <C_P [id="-p1"] >
             Este es un parrafo con lenguaje GCIC

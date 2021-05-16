@@ -19,6 +19,7 @@ public class Button extends TextTag {
     private void initParametros(List<Parametro> parametros) {
         super.parametros.add(new Parametro("color", "white"));
         super.parametros.add(new Parametro("background", "black"));
+        super.parametros.add(new Parametro("onclick", ""));
 
         parametros.forEach(p -> {
             Parametro aux = find(p.getName());

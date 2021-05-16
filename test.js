@@ -19,41 +19,46 @@ function getValue(id, process) {
     return variable.val;
 }
 
+function increaseNoExec(id, process) {
+    let variable = vars.find(e => e.id == id && e.process == process);
+    variable.noExec = variable.noExec + 1;
+    console.log("aumentando", variable.id, variable.process);
+}
 
+function addVar(type, id, val, mode, process, noExec) {
+    if(vars.find(e => e.id == id && e.process == process) == undefined) {
+        vars.push(new Var(type, id, val, mode, process, noExec));
+    } else {
+        let variable = vars.find(e => e.id == id && e.process == process);
+        variable.val = val;
+    }
+}
+
+function increaseNoExecs(process) {
+    vars.forEach(e => {
+        if (e.process == process) {
+            increaseNoExec(e.id, process);
+        }
+    });
+}
 
 let vars = new Array();
 
-/*vars.push(new Var('integer', 'numero', 26 * 78, '@global', 'p1', 1));
-vars.push(new Var('string', 'cadena', "hola"+" mundo", '-', 'p2', 1));
-vars.push(new Var('string', 'cadena2', ", Java-JS", '-', 'p2', 1));
-vars.push(new Var('integer', 'numero2', 100, '@global', 'p1', 1));
-vars.push(new Var('integer', 'numero3', getValue('numero', 'p1') / getValue('numero2', 'p1'), '@global', 'p1', 1));
-vars.push(new Var('integer', 'cadena3', getValue('cadena', 'p2') + getValue('cadena2', 'p2'), '@global', 'p2', 1));
-vars.push(new Var('integer', 'cadena4', null, '@global', 'p2', 1));
-vars.push(new Var('integer', 'numero2', 25+(3<55 && 25>100), '-', 'ON_LOAD', 1));*/
+addVar('integer', 'num', null, '-', 'ON_LOAD', 1);
+addVar('integer', 'num', null, '-', 'ON_LOAD2', 1);
+//addVar('decimal', 'lll', 1598.222, '-', 'ON_LOAD', 1);
+/*vars.push(addVar('integer', 'numero1', 25 + (3 < 55), '-', 'ON_LOAD', 1));
+vars.push(addVar('integer', 'numero2', 25 + (3 < 55), '-', 'ON_LOAD', 1));
+vars.push(addVar('integer', 'numero3', 25 + (3 < 55), '-', 'ON_LOAD', 1));
+vars.push(addVar('integer', 'numero4', 25 + (3 < 55), '-', 'ON_LOAD', 1));*/
+//addVar('string', 'mensaje', "Este es un mensaje", '-', 'ON_LOAD', 1);
 
-vars.push(new Var('integer', 'num', null, '-', 'ON_LOAD', 1));
-vars.push(new Var('decimal', 'lll', 1598.222, '-', 'ON_LOAD', 1));
-vars.push(new Var('integer', 'numero1', 25 + (3 < 55), '-', 'ON_LOAD', 1));
-vars.push(new Var('integer', 'numero2', 25 + (3 < 55), '-', 'ON_LOAD', 1));
-vars.push(new Var('integer', 'numero3', 25 + (3 < 55), '-', 'ON_LOAD', 1));
-vars.push(new Var('integer', 'numero4', 25 + (3 < 55), '-', 'ON_LOAD', 1));
-vars.push(new Var('string', 'mensaje', "Este es un mensaje", '-', 'ON_LOAD', 1));
+//vars.push(new Var('decimal', 'float', getValue('numero1', 'ON_LOAD') * getValue('numero2', 'ON_LOAD') - ('s'.charCodeAt(0) - 25.3), '-', 'ON_LOAD', 1));
 
-vars.push(new Var('decimal', 'float', getValue('numero1', 'ON_LOAD') * getValue('numero2', 'ON_LOAD') - ('s'.charCodeAt(0) - 25.3), '-', 'ON_LOAD', 1));
-
-console.log(getValue('float', 'ON_LOAD'));
-console.log(NUM_ALEATORIO());
-console.log(CARACTER_ALEATORIO());
-console.log(ASC("hola"));
-console.log(DESC("hola"));
-console.log(REVERSE("hola"));
-console.log(getValue('mensaje', 'ON_LOAD'));
-setValue('mensaje', 'ON_LOAD', "Este es un mensaje con mas palabas jasjsjsjsjs");
-console.log(getValue('mensaje', 'ON_LOAD'));
-console.log(LETPAR_NUM(getValue('mensaje', 'ON_LOAD')));
-console.log(LETIMPAR_NUM(getValue('mensaje', 'ON_LOAD')));
-
+increaseNoExecs("ON_LOAD");
+increaseNoExecs("ON_LOAD");
+increaseNoExecs("ON_LOAD");
+console.log(vars);
 
 function CARACTER_ALEATORIO() {
     let code = Math.floor(Math.random() * (126 - 33)) + 33;
