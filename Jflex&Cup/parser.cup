@@ -6,6 +6,10 @@ import java.util.Stack;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
 import model.scripting.Expresion;
+import model.scripting.ifstatement.ElseIfStatement;
+import model.scripting.ifstatement.ElseStatement;
+import model.scripting.ifstatement.IfStatement;
+import model.scripting.ifstatement.IfType;
 import model.scripting.Instruction;
 import model.scripting.Process;
 import model.scripting.statement.Assignment;
@@ -67,6 +71,10 @@ parser code{:
     private List<Instruction> instructionList = new ArrayList();
     private List<Variable> variableList = new ArrayList();
     private List<String> varsToAssign = new ArrayList();
+    private List<IfType> ifTypesList = new ArrayList();
+    private Stack<List<Instruction>> pilaInstructions = new Stack();
+    private String errorCondition = "";
+    private Stack<String> pilaConditions = new Stack();
 
     private OperatorValidator plusValidator = new PlusValidator();
     private OperatorValidator minusValidator = new MinusValidator();
@@ -682,7 +690,17 @@ instructions
 
 instruction
     ::= oneStatement SEMI
-    |   ifStatement
+    |   ifStatement {:
+            if (errorCondition.isEmpty()) {
+                IfStatement ifSt = new IfStatement(pilaConditions.pop(), instructionList, ifTypesList);
+                instructionList = pilaInstructions.pop();
+                instructionList.add(ifSt);
+            } else {
+                instructionList = pilaInstructions.pop();
+                System.out.println("Error condicion: " + errorCondition);
+                errorCondition = "";
+            }
+        :}
     |   repeatStatement
     |   whileStatement
     |   insertStatement
@@ -707,7 +725,7 @@ fullStatement
                     errores.forEach(e -> System.out.println(e));
                 }
             } else {
-                System.out.println(errorVar);
+                System.out.println("Error assing: " + errorVar);
                 errorVar = "";
             }
             varsToAssign = new ArrayList();
@@ -723,7 +741,7 @@ fullStatement
                     errores.forEach(e -> System.out.println(e));
                 }
             } else {
-                System.out.println(errorVar);
+                System.out.println("Error assing: " + errorVar);
                 errorVar = "";
             }
             varsToAssign = new ArrayList();
@@ -766,7 +784,7 @@ assignment
                     System.out.println(error);
                 }
             } else {
-                System.out.println(errorVar);
+                System.out.println("Error assing: " + errorVar);
                 errorVar = "";
             }
         :}
@@ -779,37 +797,70 @@ ifStatement
 ;
 
 simpleIf
-    ::= IF OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET THEN
+    ::= IF OPEN_ROUND_BRACKET condition:c CLOSE_ROUND_BRACKET THEN {:
+            if (c.getTipo() == null) {
+                errorCondition = "La condicion contiene una operacion entre tipos no valida";
+                c.setText(errorCondition);
+            }
+            pilaConditions.push(c.getText());
+            pilaInstructions.push(instructionList);
+            instructionList = new ArrayList();
+        :}
 ;
 
 ifTypes
-    ::= ELSE instructionBlock END
-    |   ELSE oneStatement SEMI
-    |   ELSE ifStatement
+    ::= ELSE {:
+            pilaInstructions.push(instructionList);
+            instructionList = new ArrayList();
+        :}
+        instructionBlock END {:
+            ifTypesList.add(new ElseStatement(instructionList));
+            instructionList = pilaInstructions.pop();
+        :}
+    |   ELSE {:
+            pilaInstructions.push(instructionList);
+            instructionList = new ArrayList();
+        :}
+        oneStatement SEMI {:
+            ifTypesList.add(new ElseStatement(instructionList));
+            instructionList = pilaInstructions.pop();
+        :}
+    |   ELSE ifStatement {:
+            ifTypesList.add(new ElseIfStatement(pilaConditions.pop(), instructionList));
+            instructionList = pilaInstructions.pop();
+        :}
     |
 ;
 
 condition
-    ::= condition EQUAL_TO condition
-    |   condition NOT_EQTUAL_TO condition
-    |   condition GREATER_THAN condition
-    |   condition LESS_THAN condition
-    |   condition GREATER_THAN_OR_EQUAL_TO condition
-    |   condition LESS_THAN_OR_EQUAL_TO condition
-    |   condition AND condition
-    |   condition OR condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET EQUAL_TO condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET NOT_EQTUAL_TO condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET GREATER_THAN condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET LESS_THAN condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET AND condition
-    |   OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET OR condition
-    |   NOT condition
-    |   values
-    |   variable
+    ::= condition:c1 EQUAL_TO condition:c2                          {:RESULT = equalValidator.validate(c1, c2);:}
+    |   condition:c1 NOT_EQTUAL_TO condition:c2                     {:RESULT = notEqualValidator.validate(c1, c2);:}
+    |   condition:c1 GREATER_THAN condition:c2                      {:RESULT = greaterValidator.validate(c1, c2);:}
+    |   condition:c1 LESS_THAN condition:c2                         {:RESULT = lessValidator.validate(c1, c2);:}
+    |   condition:c1 GREATER_THAN_OR_EQUAL_TO condition:c2          {:RESULT = greaterOrEqualValidator.validate(c1, c2);:}
+    |   condition:c1 LESS_THAN_OR_EQUAL_TO condition:c2             {:RESULT = lessOrEqualValidator.validate(c1, c2);:}
+    |   condition:c1 AND condition:c2                               {:RESULT = andValidator.validate(c1, c2);:}
+    |   condition:c1 OR condition:c2                                {:RESULT = orValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c CLOSE_ROUND_BRACKET
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET EQUAL_TO condition:c2                       {:RESULT = equalValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO condition:c2                  {:RESULT = notEqualValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET GREATER_THAN condition:c2                   {:RESULT = greaterValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET LESS_THAN condition:c2                      {:RESULT = lessValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO condition:c2       {:RESULT = greaterOrEqualValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO condition:c2          {:RESULT = lessOrEqualValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET AND condition:c2                            {:RESULT = andValidator.validate(c1, c2);:}
+    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET OR condition:c2                             {:RESULT = orValidator.validate(c1, c2);:}
+    |   NOT condition:c     {:RESULT = notValidator.validate(c);:}
+    |   values:v            {:RESULT = v;:}
+    |   variable:v {:
+        Expresion tempExpr = varValidator.validate(variableList, v, currentProcess);
+
+        if (tempExpr.getTipo() == null) {
+            errorCondition = tempExpr.getText();
+        }
+
+        RESULT = tempExpr;
+    :}
 ;
 
 //**************************************** Ciclo repeat

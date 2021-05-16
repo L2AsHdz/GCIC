@@ -21,7 +21,7 @@ let editorLib = {
         //Options
         codeEditor.setOptions({
             fontFamily: 'Inconsolata',
-            fontSize: '14pt',
+            fontSize: '12pt',
             printMarginColumn: 100
         });
     }

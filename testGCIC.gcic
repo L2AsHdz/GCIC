@@ -15,13 +15,36 @@
                 decimal lll = 1598.222;
                 integer numero1, numero2, numero3, numero4 = 25 + (3< 55);
                 string mensaje = "Este es un mensaje";
-                string otroMensaje = "Nuevo mensaje" + mensaje;
-                decimal float = numero1 * numero2 - ('s' - 25.3);
-                char caracter = numero1 + float * 'd';
 
                 integer num2 = 10 * num;
 
                 string asc = DESC(mensaje);
+
+                IF ( numero1 < 5) THEN
+                    INIT {:
+                        integer numero2 = 25;
+                        string otroMensaje = "Nuevo mensaje" + mensaje;
+                        decimal float = numero1 * numero2 - ('s' - 25.3);
+                        char caracter = numero1 + float * 'd';
+                        IF ( numero1 < 5) THEN
+                            INIT {:
+                                integer numero2 = 25;
+                            :} END
+                        ELSE IF ( lll < 25 ) THEN integer newNum = numero1 * numero2;
+                        ELSE
+                            INIT {:
+                                string cadena = "Esta es una cadena";
+                            :} END
+                    :} END
+                ELSE IF ( mensaje == "OK" ) THEN
+                    INIT {:
+                        char @global holi = 'h';
+                    :} END
+                ELSE IF ( lll < 25 ) THEN integer newNum = numero1 * numero2;
+                ELSE
+                    INIT {:
+                        string cadena = "Esta es una cadena";
+                    :} END
             ]
         </C_SCRIPTING>
         <C_SPAM [id="$span1"] [color="red"] [font-size="20px"] >Texto span</C_SPAM>
@@ -42,6 +65,8 @@
         </C_DIV>
 
         <C_SCRIPTING>
+            ON_LOAD()[
+            ]
             ON_LOAD()[
             ]
         </C_SCRIPTING>
