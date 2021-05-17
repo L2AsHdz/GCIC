@@ -3,6 +3,7 @@ package generator.body.scripting;
 import generator.Generator;
 import java.util.Collections;
 import java.util.List;
+import model.scripting.Function;
 import model.scripting.Instruction;
 import model.scripting.Process;
 import model.scripting.ifstatement.ElseIfStatement;
@@ -92,6 +93,9 @@ public class ProcessGenerator extends Generator {
                     });
                 }
                 addLine("", 0);
+            } else if (i instanceof Function) {
+                Function f = (Function) i;
+                htmlCode.append("\n").append(f.getName()).append(f.getParameter()).append(";\n");
             }
         });
     }

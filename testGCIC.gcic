@@ -99,6 +99,20 @@
                 boolean flag = true;
 
                 string valueText = getElementById('input2');
+
+                IF ( valueText == "show") THEN
+                    INIT {:
+                        string mensaje = "Este es un mensaje con CLC";
+                        ALERT_INFO(mensaje);
+                    :} END
+                IF ( valueText == "exit" ) THEN
+                    INIT {:
+                        EXIT();
+                    :} END
+                IF ( valueText == "redirect" ) THEN
+                    INIT {:
+                        REDIRECT();
+                    :} END
             ]
         </C_SCRIPTING>
 

@@ -6,6 +6,7 @@ import java.util.Stack;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
 import model.scripting.Expresion;
+import model.scripting.Function;
 import model.scripting.ifstatement.ElseIfStatement;
 import model.scripting.ifstatement.ElseStatement;
 import model.scripting.ifstatement.IfStatement;
@@ -1014,9 +1015,9 @@ specialFunctions
 ;
 
 otherFunctions
-    ::= EXIT roundBrackets
-    |   ALERT_INFO parameter
-    |   REDIRECT roundBrackets
+    ::= EXIT:of roundBrackets                   {:instructionList.add(new Function(of.getLexema(), "()"));:}
+    |   ALERT_INFO:of parameter:p               {:instructionList.add(new Function("alert", "(" + p + ")"));:}
+    |   REDIRECT:of roundBrackets               {:instructionList.add(new Function(of.getLexema(), "()"));:}
 ;
 
 parameter

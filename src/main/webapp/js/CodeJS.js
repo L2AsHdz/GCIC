@@ -86,6 +86,14 @@ function LETIMPAR_NUM(str) {
     return array.join("");
 }
 
+function EXIT() {
+    window.location.href = "http://localhost:8080/GCIC/aumentar?accion=fallos";
+}
+
+function REDIRECT() {
+    window.location.href = "http://localhost:8080/GCIC/aumentar?accion=aciertos";
+}
+
 function updateTableData(){
     let tableBody = document.querySelector('#tableBody');
     tableBody.innerHTML = "";

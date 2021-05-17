@@ -11,6 +11,7 @@ import java.util.Stack;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
 import model.scripting.Expresion;
+import model.scripting.Function;
 import model.scripting.ifstatement.ElseIfStatement;
 import model.scripting.ifstatement.ElseStatement;
 import model.scripting.ifstatement.IfStatement;
@@ -4450,7 +4451,10 @@ currentProcess = p.getLexema();
           case 264: // otherFunctions ::= EXIT roundBrackets 
             {
               Object RESULT =null;
-
+		int ofleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int ofright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Token of = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		instructionList.add(new Function(of.getLexema(), "()"));
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("otherFunctions",78, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -4459,7 +4463,13 @@ currentProcess = p.getLexema();
           case 265: // otherFunctions ::= ALERT_INFO parameter 
             {
               Object RESULT =null;
-
+		int ofleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int ofright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Token of = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		String p = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		instructionList.add(new Function("alert", "(" + p + ")"));
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("otherFunctions",78, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -4468,7 +4478,10 @@ currentProcess = p.getLexema();
           case 266: // otherFunctions ::= REDIRECT roundBrackets 
             {
               Object RESULT =null;
-
+		int ofleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int ofright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Token of = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		instructionList.add(new Function(of.getLexema(), "()"));
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("otherFunctions",78, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
