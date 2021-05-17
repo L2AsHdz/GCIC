@@ -52,11 +52,10 @@ import java_cup.runtime.Symbol;
 ENTERO = (0|([1-9][0-9]*))
 ENTERO2 = (0|(-)?([1-9][0-9]*))
 DECIMAL = (0|(-)?([1-9][0-9]*)(\.(0|([0-9]*[1-9]){1,4})))
-CHAR = ("\'"[^"\'"]"\'")
 
 //* Regexs for comments
 LINE_COMMENT = "!!"[^\n]*
-BLOCK_COMMENT = "<!--"[^EOF]*"-->"
+BLOCK_COMMENT = "<!--"~"-->"
 
 //* Regexs for parameters
 URL = (https?:\/\/)?([\da-z\.-]+)\.([\/\w \.-]*)*\/?
@@ -68,13 +67,13 @@ NAMEPARAM = [:letter:][\w $-]*
 
 PROCESS_NAME = "PROCESS_"[\w]*
 IDVAR = [:letter:][\w]*
-DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 
 %state TAG
 %state PARAMETER
 %state VALUE
 %state SCRIPTING
 %state LITERALS
+%state DATOSCRIPTING
 %state OTHER
 
 %%
@@ -215,12 +214,12 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 
 <PARAMETER> {
     "]"             { yybegin(TAG); return symbol(CLOSE_BRACKET); }
-    "\""            { yybegin(VALUE); return symbol(QOUTE_MARK); }
+    ("\""|"‘"|"’")  { yybegin(VALUE); return symbol(QOUTE_MARK); }
     "="             { return symbol(ASSIGN); }
 }
 
 <VALUE> {
-    "\""            { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
+    ("\""|"‘"|"’")  { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
     "("             { return symbol(OPEN_ROUND_BRACKET); }
     ")"             { return symbol(CLOSE_ROUND_BRACKET); }
 }
@@ -236,7 +235,8 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
     ","             { return symbol(COMMA); }
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
-    "\""            { literal.append("\""); yybegin(LITERALS); }
+    ("\""|"‘"|"’")  { literal.append("\""); yybegin(LITERALS); }
+    ("'"|"‘"|"’")   { yybegin(DATOSCRIPTING); }
 
     //* Operadores relacionales
     "=="            { return symbol(EQUAL_TO); }
@@ -259,8 +259,14 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 }
 
 <LITERALS> {
-    "\""            { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString()); }
+    ("\""|"‘"|"’")  { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString()); }
     [^'\"']+        { literal.append(yytext()); }
+}
+
+<DATOSCRIPTING> {
+    ("'"|"‘"|"’")       { yybegin(SCRIPTING); }
+    [^"'""‘""’"]{1}     { return symbol(CHAR_VAL, TipoDato.CHAR); }
+    [^"'""‘""’"][^"'""‘""’"]+    { return symbol(DATOSCRIPT); }
 }
 
 <VALUE> {URL}                       { return symbol(URL); }
@@ -276,7 +282,5 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 <SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }
 <SCRIPTING> {ENTERO2}                   { return symbol(ENTERO2, TipoDato.INTEGER); }
 <SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL, TipoDato.DECIMAL); }
-<SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL, TipoDato.CHAR); }
-<SCRIPTING> {DATOSCRIPT}                { return symbol(DATOSCRIPT); }
 
 [^]                                     { addLexicError(); }

@@ -960,7 +960,6 @@ variable
 //**************************************** Expresion de declaracion
 assign
     ::= expr:a              {:RESULT = a;:}
-    |   specialFunctions:a  {:RESULT = a;:}
 ;
 
 expr
@@ -1000,6 +999,7 @@ expr
 
             RESULT = tempExpr;
         :}
+    |   specialFunctions: sf    {:RESULT = sf;:}
 ;
 
 //**************************************** Funciones especiales
@@ -1021,20 +1021,15 @@ otherFunctions
 ;
 
 parameter
-    ::= OPEN_ROUND_BRACKET variable:v CLOSE_ROUND_BRACKET {:
-            Expresion tempExpr = varValidator.validate(variableList, v, currentProcess);
-
-            if (tempExpr.getTipo() == null) {
-                errorVar = tempExpr.getText();
-            } else if (tempExpr.getTipo() != TipoDato.STRING) {
+    ::= OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET {:
+            if (e.getTipo() != TipoDato.STRING) {
                 errorVar = "El tipo del parametro debe de ser tipo string";
             }
-
-            RESULT = tempExpr.getText();
+            RESULT = e.getText();
         :}
 
     |   OPEN_ROUND_BRACKET DATOSCRIPT:d CLOSE_ROUND_BRACKET {:
-            RESULT = d.getLexema();
+            RESULT = "'" + d.getLexema() + "'";
         :}
 ;
 
@@ -1058,7 +1053,7 @@ numero
 
 //**************************************** Caracter
 caracter
-    ::= CHAR_VAL:c      {:RESULT = new Expresion(c.getType(), c.getLexema());:}
+    ::= CHAR_VAL:c      {:RESULT = new Expresion(c.getType(), "'" + c.getLexema() + "'");:}
 ;
 
 //**************************************** Literal
