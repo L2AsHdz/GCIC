@@ -33,11 +33,12 @@ public class ProcessGenerator extends Generator {
     public String generate() {
         htmlCode = new StringBuilder();
 
+        if (process.getName().contains("ON_LOAD")) {
+            addLine(process.getName() + "();", 0);
+        }
         htmlCode.append("function ").append(process.getName()).append("() {\n");
         generateInstructions(process.getInstructions());
-        if (!process.getName().equalsIgnoreCase("ON_LOAD")) {
-            addLine("increaseNoExecs(\"" + process.getName() + "\");", 0);
-        }
+        addLine("increaseNoExecs(\"" + process.getName() + "\");", 0);
         addLine("updateTableData();", 0);
         addLine("}", 0);
 

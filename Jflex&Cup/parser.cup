@@ -96,6 +96,7 @@ parser code{:
 
     private String currentProcess;
     private String errorVar = "";
+    private int countOnLoad = 0;
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
@@ -664,9 +665,9 @@ procesos
 ;
 
 process
-    ::= ON_LOAD:p {:currentProcess = p.getLexema();:} processBody {:
+    ::= ON_LOAD:p {:currentProcess = p.getLexema() + ++countOnLoad;:} processBody {:
             if (onLoad == null) {
-                onLoad = new Process(p.getLexema(), instructionList);
+                onLoad = new Process(p.getLexema() + countOnLoad++, instructionList);
             } else {
                 System.out.println("Error semantico, solo puede haber un onload");
             }

@@ -12,9 +12,9 @@
         <C_SCRIPTING>
             ON_LOAD() [
                 integer num;
-                decimal lll = 1598.222;
+                decimal @global lll = 1598.222;
                 integer numero1, numero2, numero3, numero4 = 25 + (3< 55);
-                string mensaje = "Este es un mensaje";
+                string @global mensaje = "Este es un mensaje";
 
                 integer num2 = 10 * num;
 
@@ -66,6 +66,7 @@
 
         <C_SCRIPTING>
             ON_LOAD()[
+                decimal lll = 1598.222;
             ]
             ON_LOAD()[
             ]

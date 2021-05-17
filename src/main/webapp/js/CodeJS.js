@@ -10,7 +10,6 @@ class Var {
 }
 
 let vars = new Array();
-vars.push(new Var('integer', 'num', null, '-', 'ON_LOAD', 1));
 updateTableData();
 
 function setValue(id, process, val) {
@@ -32,8 +31,10 @@ function addVar(type, id, val, mode, process, noExec) {
     if(vars.find(e => e.id == id && e.process == process) == undefined) {
         vars.push(new Var(type, id, val, mode, process, noExec));
     } else {
-        let variable = vars.find(e => e.id == id && e.process == process);
-        variable.val = val;
+        if (mode == "-") {
+            let variable = vars.find(e => e.id == id && e.process == process);
+            variable.val = val;
+        }
     }
 }
 

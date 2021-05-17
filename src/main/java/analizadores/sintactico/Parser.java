@@ -1119,6 +1119,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     private String currentProcess;
     private String errorVar = "";
+    private int countOnLoad = 0;
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
@@ -2789,7 +2790,7 @@ class CUP$Parser$actions {
 		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Token p = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-currentProcess = p.getLexema();
+currentProcess = p.getLexema() + ++countOnLoad;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("NT$0",94, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2805,7 +2806,7 @@ currentProcess = p.getLexema();
 		Token p = (Token)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
             if (onLoad == null) {
-                onLoad = new Process(p.getLexema(), instructionList);
+                onLoad = new Process(p.getLexema() + countOnLoad++, instructionList);
             } else {
                 System.out.println("Error semantico, solo puede haber un onload");
             }
