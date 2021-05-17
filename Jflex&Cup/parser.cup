@@ -61,10 +61,12 @@ parser code{:
 
     private final List<ErrorAnalisis> errores = new ArrayList();
     private List<Parametro> parametros = new ArrayList();
+    private List<String> tagIds = new ArrayList();
     private List<Tag> etiquetas = new ArrayList();
     private List<Tag> etiquetasHead = new ArrayList();
     private Stack<List<Tag>> pilaEtiquetas = new Stack();
     private Stack<List<Parametro>> pilaParams = new Stack();
+    private String link;
     private Tag gcicTag;
 
     private Process onLoad = null;
@@ -105,6 +107,15 @@ parser code{:
 
     public Tag getGCIC() {
         return this.gcicTag;
+    }
+
+    private boolean canAdded(String id) {
+        for (String i: tagIds) {
+            if (i.equals(id)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void syntax_error(Symbol s) {
@@ -201,6 +212,7 @@ precedence left NOT;
 //**************************************** Etiqueta GCIC
 gcic
     ::= LESS_THAN C_GCIC paramsGCIC GREATER_THAN textTag head:h body:b LESS_THAN SLASH C_GCIC GREATER_THAN textTag {:
+        parametros = pilaParams.pop();
         gcicTag = new GCIC(h, b, parametros);
         parametros = new ArrayList();
     :}
@@ -226,10 +238,14 @@ optionParamGCIC
 
 //**************************************** Etiqueta HEAD
 head
-    ::= LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag {:
-        RESULT = new Head(etiquetasHead);
-        etiquetasHead = new ArrayList();
-    :}
+    ::= {:
+            pilaParams.push(parametros);
+            parametros = new ArrayList();
+        :}
+        LESS_THAN C_HEAD GREATER_THAN textTag headTags LESS_THAN SLASH C_HEAD GREATER_THAN textTag {:
+            RESULT = new Head(etiquetasHead);
+            etiquetasHead = new ArrayList();
+        :}
 ;
 
 headTags
@@ -254,6 +270,7 @@ link
 href
     ::= OPEN_BRACKET HREF:n ASSIGN QOUTE_MARK URL:v QOUTE_MARK CLOSE_BRACKET {:
         parametros.add(new Parametro(n.getLexema(), v.getLexema()));
+        link = v.getLexema();
     :}
 ;
 
@@ -595,7 +612,12 @@ optionTextParam
 //**************************************** Parametros frecuentes
 paramId
     ::= ID:n ASSIGN QOUTE_MARK optionId:v QOUTE_MARK {:
-        parametros.add(new Parametro(n.getLexema(), v));
+        if (canAdded(v)) {
+            parametros.add(new Parametro(n.getLexema(), v));
+            tagIds.add(v);
+        } else {
+            System.out.println("Error semantico, id repetido");
+        }
     :}
 ;
 
@@ -676,8 +698,18 @@ process
             variableList = new ArrayList();
         :}
     |   PROCESS_NAME:p {:currentProcess = p.getLexema();:} processBody {:
-            //Validar que no se repita el nombre del proceso
-            processList.add(new Process(p.getLexema(), instructionList));
+            boolean exists = false;
+
+            for (Process pp:  processList) {
+                if (pp.getName().equals(p.getLexema())) {
+                    exists = true;
+                }
+            }
+            if (exists) {
+                System.out.println("Error, proceso ya existe");
+            } else {
+                processList.add(new Process(p.getLexema(), instructionList));
+            }
             instructionList = new ArrayList();
             variableList = new ArrayList();
         :}
@@ -1017,7 +1049,7 @@ specialFunctions
 otherFunctions
     ::= EXIT:of roundBrackets                   {:instructionList.add(new Function(of.getLexema(), "()"));:}
     |   ALERT_INFO:of parameter:p               {:instructionList.add(new Function("alert", "(" + p + ")"));:}
-    |   REDIRECT:of roundBrackets               {:instructionList.add(new Function(of.getLexema(), "()"));:}
+    |   REDIRECT:of roundBrackets               {:instructionList.add(new Function(of.getLexema(), "(\"" + link + "\")"));:}
 ;
 
 parameter
@@ -1029,6 +1061,11 @@ parameter
         :}
 
     |   OPEN_ROUND_BRACKET DATOSCRIPT:d CLOSE_ROUND_BRACKET {:
+            if (canAdded(d.getLexema())) {
+                System.out.println("No existe una etiqueta con el id especificado");
+                tagIds.forEach(i -> System.out.println(i));
+                System.out.println(d.getLexema());
+            }
             RESULT = "'" + d.getLexema() + "'";
         :}
 ;

@@ -4,7 +4,7 @@
     <C_HEAD>
         <C_LINK
             !! El link al que redirige mi captcha
-            [href= "https://www.google.com"]>
+            [href=  “https://www.mclibre.org/consultar/htmlcss/html/html-etiquetas.html”]>
         </C_LINK>
         !! El título de mi página
         <C_TITLE> Mi primer Captcha Matemático</C_TITLE>
@@ -43,6 +43,7 @@
                 string mensaje_fallo = "El captcha no fue validado intente otra vez";
                 string mensaje_acierto = "El captcha fue validado";
                 string mensaje_final = "El captcha no logró ser validado :( intente mas tarde";
+                ALERT_INFO(REVERSE("hola perros" + mensaje_final));
 
                 !! Validacion del numero de oportunidades restantes
                 IF (contador_fallas == 0) THEN

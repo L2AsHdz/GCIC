@@ -90,8 +90,8 @@ function EXIT() {
     window.location.href = "http://localhost:8080/GCIC/aumentar?accion=fallos";
 }
 
-function REDIRECT() {
-    window.location.href = "http://localhost:8080/GCIC/aumentar?accion=aciertos";
+function REDIRECT(link) {
+    window.location.href = link;
 }
 
 function updateTableData(){

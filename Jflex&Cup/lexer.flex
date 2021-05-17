@@ -214,12 +214,12 @@ IDVAR = [:letter:][\w]*
 
 <PARAMETER> {
     "]"             { yybegin(TAG); return symbol(CLOSE_BRACKET); }
-    ("\""|"‘"|"’")  { yybegin(VALUE); return symbol(QOUTE_MARK); }
+    ("\""|"“"|"”")  { yybegin(VALUE); return symbol(QOUTE_MARK); }
     "="             { return symbol(ASSIGN); }
 }
 
 <VALUE> {
-    ("\""|"‘"|"’")  { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
+    ("\""|"“"|"”")  { yybegin(PARAMETER); return symbol(QOUTE_MARK); }
     "("             { return symbol(OPEN_ROUND_BRACKET); }
     ")"             { return symbol(CLOSE_ROUND_BRACKET); }
 }
@@ -235,7 +235,7 @@ IDVAR = [:letter:][\w]*
     ","             { return symbol(COMMA); }
     ":"             { return symbol(COLON); }
     ";"             { return symbol(SEMI); }
-    ("\""|"‘"|"’")  { literal.append("\""); yybegin(LITERALS); }
+    ("\""|"“"|"”")  { literal.append("\""); yybegin(LITERALS); }
     ("'"|"‘"|"’")   { yybegin(DATOSCRIPTING); }
 
     //* Operadores relacionales
@@ -259,7 +259,7 @@ IDVAR = [:letter:][\w]*
 }
 
 <LITERALS> {
-    ("\""|"‘"|"’")  { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString()); }
+    ("\""|"“"|"”")  { yybegin(SCRIPTING); return symbol(LITERAL, TipoDato.STRING, literal.toString()); }
     [^'\"']+        { literal.append(yytext()); }
 }
 
