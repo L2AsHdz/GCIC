@@ -98,12 +98,13 @@
                 char caracter = 'f';
                 boolean flag = true;
 
-                string valueText = getElementById('input2');
+                string valueText = getElemenById('input2');
 
                 IF ( valueText == "show") THEN
                     INIT {:
                         string mensaje = "Este es un mensaje con CLC";
                         ALERT_INFO(mensaje);
+                        flag = false;
                     :} END
                 IF ( valueText == "exit" ) THEN
                     INIT {:
@@ -112,6 +113,11 @@
                 IF ( valueText == "redirect" ) THEN
                     INIT {:
                         REDIRECT();
+                    :} END
+                IF ( flag ) THEN
+                    INIT {:
+                        string mensaje2 = "Los booleanos funcionan!!!";
+                        ALERT_INFO(mensaje2);
                     :} END
             ]
         </C_SCRIPTING>

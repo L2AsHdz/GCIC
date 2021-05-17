@@ -4442,7 +4442,7 @@ currentProcess = p.getLexema();
 		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		String p = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		RESULT = new Expresion(sf.getType(), "document." + sf.getLexema() + "(" + p + ").value");
+		RESULT = new Expresion(sf.getType(), "document.getElementById(" + p + ").value");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("specialFunctions",93, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

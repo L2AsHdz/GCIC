@@ -1011,7 +1011,7 @@ specialFunctions
     |   REVERSE:sf parameter:p                  {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "(" + p + ")");:}
     |   CARACTER_ALEATORIO:sf roundBrackets     {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "()");:}
     |   NUM_ALEATORIO:sf roundBrackets          {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "()");:}
-    |   ELEMENT_BY_ID:sf parameter:p            {:RESULT = new Expresion(sf.getType(), "document." + sf.getLexema() + "(" + p + ").value");:}
+    |   ELEMENT_BY_ID:sf parameter:p            {:RESULT = new Expresion(sf.getType(), "document.getElementById(" + p + ").value");:}
 ;
 
 otherFunctions

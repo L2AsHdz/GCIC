@@ -104,3 +104,6 @@ function LETIMPAR_NUM(str) {
     });
     return array.join("");
 }
+
+console.log('‘'.charCodeAt(0));
+console.log('’‘'.charCodeAt(0));

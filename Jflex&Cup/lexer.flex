@@ -64,7 +64,7 @@ COLOR = #([a-fA-F0-9]{6}|[a-fA-F0-9]{3})
 SIZE = {ENTERO}(px)
 WH_VAL = {ENTERO}("%")
 IDPARAM = [_$-][\w$-]*
-NAMEPARAM = [:letter:][\w]*
+NAMEPARAM = [:letter:][\w $-]*
 
 PROCESS_NAME = "PROCESS_"[\w]*
 IDVAR = [:letter:][\w]*
@@ -182,7 +182,7 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 <SCRIPTING> "ALERT_INFO"            { return symbol(ALERT_INFO); }
 <SCRIPTING> "EXIT"                  { return symbol(EXIT); }
 <SCRIPTING> "REDIRECT"              { return symbol(REDIRECT); }
-<SCRIPTING> "getElementById"        { return symbol(ELEMENT_BY_ID, TipoDato.STRING); }
+<SCRIPTING> "getElemenById"        { return symbol(ELEMENT_BY_ID, TipoDato.STRING); }
 
 //* Bloques y estructuras de control
 <SCRIPTING> "INIT"          { return symbol(INIT); }
@@ -269,8 +269,8 @@ DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 <VALUE> {WH_VAL}                    { return symbol(WH_VAL); }
 <VALUE> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <VALUE> {IDPARAM}                   { return symbol(ID_PARAM); }
-<VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
 <VALUE> {ENTERO}                    { return symbol(ENTERO); }
+<VALUE> {NAMEPARAM}                 { return symbol(NAME_PARAM); }
 
 <SCRIPTING> {PROCESS_NAME}              { return symbol(PROCESS_NAME); }
 <SCRIPTING> {IDVAR}                     { return symbol(ID_VAR); }

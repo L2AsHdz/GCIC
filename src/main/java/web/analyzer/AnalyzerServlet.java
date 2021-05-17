@@ -53,6 +53,7 @@ public class AnalyzerServlet extends HttpServlet {
     }
     
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         String inputText = request.getParameter("inputText");
         analyzer = new GCICAnalyzer(inputText);
         analyzer.analyze();
