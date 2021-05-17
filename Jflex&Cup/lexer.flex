@@ -68,6 +68,7 @@ NAMEPARAM = [:letter:][\w]*
 
 PROCESS_NAME = "PROCESS_"[\w]*
 IDVAR = [:letter:][\w]*
+DATOSCRIPT = ("\'"([:letter:]|[_$-])([\w$-]*)"\'")
 
 %state TAG
 %state PARAMETER
@@ -180,6 +181,7 @@ IDVAR = [:letter:][\w]*
 <SCRIPTING> "NUM_ALEATORIO"         { return symbol(NUM_ALEATORIO, TipoDato.INTEGER); }
 <SCRIPTING> "ALERT_INFO"            { return symbol(ALERT_INFO); }
 <SCRIPTING> "EXIT"                  { return symbol(EXIT); }
+<SCRIPTING> "REDIRECT"              { return symbol(REDIRECT); }
 <SCRIPTING> "getElementById"        { return symbol(ELEMENT_BY_ID, TipoDato.STRING); }
 
 //* Bloques y estructuras de control
@@ -275,6 +277,6 @@ IDVAR = [:letter:][\w]*
 <SCRIPTING> {ENTERO2}                   { return symbol(ENTERO2, TipoDato.INTEGER); }
 <SCRIPTING> {DECIMAL}                   { return symbol(DECIMAL_VAL, TipoDato.DECIMAL); }
 <SCRIPTING> {CHAR}                      { return symbol(CHAR_VAL, TipoDato.CHAR); }
-//<SCRIPTING> {LITERAL}                   { return symbol(LITERAL); }
+<SCRIPTING> {DATOSCRIPT}                { return symbol(DATOSCRIPT); }
 
 [^]                                     { addLexicError(); }

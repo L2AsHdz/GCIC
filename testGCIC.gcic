@@ -53,7 +53,7 @@
 
         <C_DIV [id="-div1"] [color="red"] >
             <C_SPAM [font-family="Verdana"] [id="$span2"] >Este en un span</C_SPAM>
-            <C_INPUT [id="_input2"] ></C_INPUT>
+            <C_INPUT [id="input2"] ></C_INPUT>
             <C_DIV [id="-div2"]>
                 <C_SELECT [id="-select2"] [color="yellow"] >
                     <C_OPTION>Option1</C_OPTION>
@@ -73,7 +73,7 @@
         </C_SCRIPTING>
 
         <C_IMG [id="-img1"] [src="https://images.unsplash.com/photo-1429042007245-890c9e2603af"] [width="300px"] [height="200px"] ></C_IMG>
-        <C_BUTTON [id="-button1"] [onclick="PROCESS_IJIJIJ()"]>Presione aqui</C_BUTTON>
+        <C_BUTTON [id="-button1"] [onclick="PROCESS_TEST()"]>Presione aqui</C_BUTTON>
         <C_H1 [id="-h1"] >Titulo 1</C_H1>
         <C_P [id="-p1"] >
             Este es un parrafo con lenguaje GCIC
@@ -94,18 +94,11 @@
         <C_BR>
 
         <C_SCRIPTING>
-            PROCESS_IJIJIJ()[
-                integer num;
-                decimal lll = 1598.222;
-                integer numero1, numero2, numero3, numero4 = 25 + (3< 55);
-                string mensaje = "Este es un mensaje";
-                string otroMensaje = "Nuevo mensaje" + mensaje;
-                decimal float = numero1 * numero2 - ('s' - 25.3);
-                char caracter = numero1 + float * 'd';
+            PROCESS_TEST()[
+                char caracter = 'f';
+                boolean flag = true;
 
-                integer num2 = 10 * num;
-
-                string asc = DESC(mensaje);
+                string valueText = getElementById('input2');
             ]
         </C_SCRIPTING>
 

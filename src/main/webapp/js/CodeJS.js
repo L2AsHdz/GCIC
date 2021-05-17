@@ -39,7 +39,10 @@ function addVar(type, id, val, mode, process, noExec) {
 }
 
 function CARACTER_ALEATORIO() {
-    let code = Math.floor(Math.random() * (126 - 33)) + 33;
+    let code = Math.floor(Math.random() * (122 - 65)) + 65;
+    while (code >=91 && code <=96) {
+        code = Math.floor(Math.random() * (122 - 65)) + 65;
+    }
     return String.fromCharCode(code);
 }
 

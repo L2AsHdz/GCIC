@@ -126,7 +126,7 @@ parser code{:
 terminal Token      C_GCIC, C_HEAD, C_TITLE, C_LINK, C_BODY, C_SPAM, C_INPUT, C_TEXTAREA, C_SELECT;
 terminal Token      C_OPTION, C_DIV, C_IMG, C_BR, C_BUTTON, C_H1, C_P, C_SCRIPTING;
 
-terminal Token      HREF, BACKGROUND, COLOR, FONT, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
+terminal Token      HREF, BACKGROUND, COLOR, FONT_SIZE, FONT_FAMILY, TEXT_ALIGN;
 terminal Token      TYPE, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
 
 terminal Token      BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, PURPLE;
@@ -142,18 +142,18 @@ terminal Token      ON_LOAD, GLOBAL_MODE;
 terminal TypeToken  INTEGER, DECIMAL, BOOLEAN, CHAR, STRING;
 
 terminal TypeToken  ASC, DESC, LETPAR_NUM, LETIMPAR_NUM, REVERSE, CARACTER_ALEATORIO, NUM_ALEATORIO, ELEMENT_BY_ID;
-terminal Token      ALERT_INFO, EXIT;
+terminal Token      ALERT_INFO, EXIT, REDIRECT;
 
 terminal Token      INIT, END, IF, THEN, ELSE, REPEAT, HUNTIL, WHILE, THENWHILE, INSERT;
 
 terminal Token      OPEN_BRACKET, CLOSE_BRACKET, OPEN_ROUND_BRACKET, CLOSE_ROUND_BRACKET, COMMA;
-terminal Token      OPEN_BRACE, CLOSE_BRACE, SLASH, ASSIGN, QOUTE_MARK, SINGLE_QUOTES, COLON, SEMI;
+terminal Token      OPEN_BRACE, CLOSE_BRACE, SLASH, ASSIGN, QOUTE_MARK, COLON, SEMI;
 
 terminal Token      EQUAL_TO, NOT_EQTUAL_TO, LESS_THAN, GREATER_THAN, LESS_THAN_OR_EQUAL_TO, GREATER_THAN_OR_EQUAL_TO;
 
 terminal Token      OR, AND, NOT, PLUS, MINUS, TIMES, DIVIDE;
 
-terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG;
+terminal Token      ENTERO, PROCESS_NAME, ID_VAR, TEXT_TAG, DATOSCRIPT;
 terminal TypeToken  ENTERO2, DECIMAL_VAL, CHAR_VAL, LITERAL, TRUE, FALSE;
 
 
@@ -720,6 +720,7 @@ oneStatement
     ::= fullStatement
     |   statement
     |   assignment
+    |   otherFunctions
 ;
 
 //**************************************** Declaraciones y asignaciones
@@ -1009,12 +1010,13 @@ specialFunctions
     |   REVERSE:sf parameter:p                  {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "(" + p + ")");:}
     |   CARACTER_ALEATORIO:sf roundBrackets     {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "()");:}
     |   NUM_ALEATORIO:sf roundBrackets          {:RESULT = new Expresion(sf.getType(), sf.getLexema() + "()");:}
-    |   ELEMENT_BY_ID:sf parameter:p            //Falta analisis lexico de esta parte
+    |   ELEMENT_BY_ID:sf parameter:p            {:RESULT = new Expresion(sf.getType(), "document." + sf.getLexema() + "(" + p + ").value");:}
 ;
 
 otherFunctions
     ::= EXIT roundBrackets
     |   ALERT_INFO parameter
+    |   REDIRECT roundBrackets
 ;
 
 parameter
@@ -1028,6 +1030,10 @@ parameter
             }
 
             RESULT = tempExpr.getText();
+        :}
+
+    |   OPEN_ROUND_BRACKET DATOSCRIPT:d CLOSE_ROUND_BRACKET {:
+            RESULT = d.getLexema();
         :}
 ;
 
