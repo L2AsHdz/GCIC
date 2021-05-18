@@ -1,11 +1,14 @@
 package web.captcha;
 
+import datos.CaptchaDAO;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Captcha;
 
 /**
  *
@@ -15,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/captcha")
 public class CaptchaServlet extends HttpServlet {
+    
+    private CaptchaDAO captchaDAO = new CaptchaDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,8 +36,9 @@ public class CaptchaServlet extends HttpServlet {
         
         switch (accion) {
             case "listar" -> {
-                String PATH_CAPTCHAS = "/home/asael/NetBeansProjects/GCIC/src/main/webapp/captchas/";
-                
+                List<Captcha> captchas = (List<Captcha>) captchaDAO.getObject();
+                request.setAttribute("captchas", captchas);
+                request.getRequestDispatcher("listadoCaptchas.jsp").forward(request, response);
             }
             case "use" -> {}
         }

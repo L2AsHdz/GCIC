@@ -16,10 +16,9 @@ public class Captcha {
     private String faults;
     private String lastDate;
 
-    public Captcha(String id, String name, String link, String use, String hits, String faults, String lastDate) {
+    public Captcha(String id, String name, String use, String hits, String faults, String lastDate) {
         this.id = id;
         this.name = name;
-        this.link = link;
         this.use = use;
         this.hits = hits;
         this.faults = faults;
@@ -35,6 +34,7 @@ public class Captcha {
 
     public void setId(String id) {
         this.id = id;
+        setLink("http://localhost:8080/GCIC/captcha?accion=redirect&id=" + id);
     }
 
     public String getName() {

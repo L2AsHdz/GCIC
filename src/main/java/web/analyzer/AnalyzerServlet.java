@@ -64,7 +64,6 @@ public class AnalyzerServlet extends HttpServlet {
             }
             captchas.add(new Captcha(gcic.getParameterValue("id"),
                     gcic.getParameterValue("name"),
-                    "http://localhost:8080/GCIC/captcha?accion=redirect&id=" + gcic.getParameterValue("id"),
                     "0", "0", "0", LocalDate.now().toString()));
 
             captchaDAO.create(captchas);
