@@ -12,7 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import model.tags.GCIC;
 import static controller.FileController.saveFile;
 import static controller.FileController.createDirectory;
+import datos.CaptchaDAO;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import model.Captcha;
 import model.errores.ErrorAnalisis;
 
 /**
@@ -25,6 +29,7 @@ import model.errores.ErrorAnalisis;
 public class AnalyzerServlet extends HttpServlet {
 
     private GCICAnalyzer analyzer;
+    private final CaptchaDAO captchaDAO = new CaptchaDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -50,6 +55,20 @@ public class AnalyzerServlet extends HttpServlet {
             Generator htmlGenerator = new HtmlGenerator(gcic);
             createDirectory(PATH_CAPTCHAS);
             saveFile(PATH_CAPTCHAS + gcic.getParameterValue("id") + ".html", htmlGenerator.generate());
+
+            List<Captcha> captchas;
+            if (!captchaDAO.exists()) {
+                captchas = new ArrayList();
+            } else {
+                captchas = captchaDAO.getObject();
+            }
+            captchas.add(new Captcha(gcic.getParameterValue("id"),
+                    gcic.getParameterValue("name"),
+                    "http://localhost:8080/GCIC/captcha?accion=redirect&id=" + gcic.getParameterValue("id"),
+                    "0", "0", "0", LocalDate.now().toString()));
+
+            captchaDAO.create(captchas);
+
             request.setAttribute("vars", analyzer.getVariables());
         } else {
             request.setAttribute("errores", errores);

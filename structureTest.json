@@ -1,0 +1,36 @@
+{
+    "captchas" : [
+        {
+            "id" : "holi",
+            "name": "captcha 1",
+            "use":  "25",
+            "hits":  "20",
+            "faults": "15",
+            "lastDate": "2021-05-18"
+        },
+        {
+            "id" : "holi2",
+            "name": "captcha 1",
+            "use":  "25",
+            "hits": "20",
+            "faults": "15",
+            "lastDate": "2021-05-18"
+        },
+        {
+            "id" : "holi3",
+            "name": "captcha 1",
+            "use":  "25",
+            "hits": "20",
+            "faults": "15",
+            "lastDate": "2021-05-18"
+        },
+        {
+            "id" : "holi3",
+            "name": "captcha 1",
+            "use":  "25",
+            "hits": "20",
+            "faults": "15",
+            "lastDate": "2021-05-18"
+        }
+    ]
+}
