@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import model.errores.ErrorAnalisis;
+import model.scripting.VariableTS;
 import model.tags.GCIC;
 
 /**
@@ -44,5 +45,9 @@ public class GCICAnalyzer {
         errores.addAll(lexer.getErrores());
         errores.addAll(parser.getErrores());
         return errores;
+    }
+    
+    public List<VariableTS> getVariables() {
+        return parser.getVariables();
     }
 }

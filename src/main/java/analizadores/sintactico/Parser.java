@@ -24,6 +24,7 @@ import model.scripting.statement.FullStatement;
 import model.scripting.statement.SimpleStatement;
 import model.scripting.TipoDato;
 import model.scripting.Variable;
+import model.scripting.VariableTS;
 import model.tags.body.Body;
 import model.tags.body.Br;
 import model.tags.body.Button;
@@ -998,6 +999,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     private List<Process> processList = new ArrayList();
     private List<Instruction> instructionList = new ArrayList();
     private List<Variable> variableList = new ArrayList();
+    private List<VariableTS> variableListGlobal = new ArrayList();
     private List<String> varsToAssign = new ArrayList();
     private List<IfType> ifTypesList = new ArrayList();
     private Stack<List<IfType>> pilaIfTypes = new Stack();
@@ -1028,6 +1030,10 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     public List<ErrorAnalisis> getErrores() {
         return this.errores;
+    }
+
+    public List<VariableTS> getVariables() {
+        return this.variableListGlobal;
     }
 
     public Tag getGCIC() {
@@ -2966,7 +2972,10 @@ currentProcess = p.getLexema();
                 List<String> erroresA = assignValidator.validate(variableList, varsToAssign, t.getType(), a);
 
                 if (errores.isEmpty()) {
-                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), true)));
+                    varsToAssign.forEach(v -> {
+                        variableList.add(new Variable(v, t.getType(), true));
+                        variableListGlobal.add(new VariableTS(v, t.getType(), "@global", currentProcess));
+                    });
                     instructionList.add(new FullStatement(t.getType(), true, varsToAssign, a.getText()));
                 } else {
                     erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
@@ -2996,7 +3005,10 @@ currentProcess = p.getLexema();
                 List<String> erroresA = assignValidator.validate(variableList, varsToAssign, t.getType(), a);
 
                 if (errores.isEmpty()) {
-                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), true)));
+                    varsToAssign.forEach(v -> {
+                        variableList.add(new Variable(v, t.getType(), true));
+                        variableListGlobal.add(new VariableTS(v, t.getType(), "-", currentProcess));
+                    });
                     instructionList.add(new FullStatement(t.getType(), false, varsToAssign, a.getText()));
                 } else {
                     erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
@@ -3022,7 +3034,10 @@ currentProcess = p.getLexema();
         List<String> erroresA = varValidator.validate(variableList, varsToAssign);
 
         if (errores.isEmpty()) {
-            varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), false)));
+            varsToAssign.forEach(v -> {
+                variableList.add(new Variable(v, t.getType(), false));
+                variableListGlobal.add(new VariableTS(v, t.getType(), "@global", currentProcess));
+            });
             instructionList.add(new SimpleStatement(t.getType(), true, varsToAssign));
         } else {
             erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
@@ -3044,7 +3059,10 @@ currentProcess = p.getLexema();
         List<String> erroresA = varValidator.validate(variableList, varsToAssign);
 
         if (errores.isEmpty()) {
-            varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), false)));
+            varsToAssign.forEach(v -> {
+                variableList.add(new Variable(v, t.getType(), false));
+                variableListGlobal.add(new VariableTS(v, t.getType(), "-", currentProcess));
+            });
             instructionList.add(new SimpleStatement(t.getType(), false, varsToAssign));
         } else {
             erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));

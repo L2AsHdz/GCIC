@@ -67,10 +67,66 @@
                 <div class="row">
                     <div class="col-1"></div>
                     <div class="col-10">
+                        <c:if test="${!empty(vars)}">
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                No se han encontrado errores y se ha generado el captcha exitosamente!  
+                                <a href="#" class="alert-link">   Ir al captcha</a>.
+                            </div>
+                        </c:if>
                         <div class="form-group border">
                             <c:choose>
-                                <c:when test="${!empty(info)}">
-                            <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>${info}</textarea>
+                                <c:when test="${!empty(vars)}">
+                            <div style="height: 225px; width: 100%; overflow-y: scroll;">
+                                <table class="table table-bordered table-dark">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Posicion</th>
+                                            <th>Tipo</th>
+                                            <th>Identificador</th>
+                                            <th>Modo</th>
+                                            <th>Proceso</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="v" items="${vars}" varStatus="status">
+                                            <tr>
+                                                <td>${status.count}</td>
+                                                <td>${v.tipo}</td>
+                                                <td>${v.id}</td>
+                                                <td>${v.mode}</td>
+                                                <td>${v.process}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                                </c:when>
+                                <c:when test="${!empty(errores)}">
+                            <div style="height: 225px; width: 100%; overflow-y: scroll;">
+                                <table class="table table-bordered table-dark">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Tipo error</th>
+                                            <th>Linea</th>
+                                            <th>Columna</th>
+                                            <th>Descripcion</th>
+                                            <th>Posible solucion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="e" items="${errores}">
+                                            <tr>
+                                                <td>${e.tipoError}</td>
+                                                <td>${e.linea}</td>
+                                                <td>${e.columna}</td>
+                                                <td>${e.descripcion}</td>
+                                                <td>${e.solucion}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
                                 </c:when>
                                 <c:otherwise>
                             <textarea rows="10" class="form-control bg-dark text-white" name="areaInfo" readonly>Aqui se mostrara informacion sobre el estado del analisis del codigo GCIC</textarea>

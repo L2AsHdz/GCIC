@@ -25,7 +25,6 @@ import model.errores.ErrorAnalisis;
 public class AnalyzerServlet extends HttpServlet {
 
     private GCICAnalyzer analyzer;
-    StringBuilder text;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,7 +43,6 @@ public class AnalyzerServlet extends HttpServlet {
         analyzer.analyze();
 
         List<ErrorAnalisis> errores = analyzer.getErrores();
-        text = new StringBuilder();
 
         if (errores.isEmpty()) {
             GCIC gcic = analyzer.getGcic();
@@ -52,21 +50,14 @@ public class AnalyzerServlet extends HttpServlet {
             Generator htmlGenerator = new HtmlGenerator(gcic);
             createDirectory(PATH_CAPTCHAS);
             saveFile(PATH_CAPTCHAS + gcic.getParameterValue("id") + ".html", htmlGenerator.generate());
-            text.append("Captcha generado correctamente");
+            request.setAttribute("vars", analyzer.getVariables());
         } else {
-            errores.forEach(e -> {
-                addLine(e.getDescripcion() + " - " + e.getSolucion());
-            });
+            request.setAttribute("errores", errores);
         }
 
         request.setAttribute("inputText", inputText);
-        request.setAttribute("info", text.toString());
 
         request.getRequestDispatcher("index.jsp").forward(request, response);
 
-    }
-
-    private void addLine(String s) {
-        text.append(s).append("\n");
     }
 }
