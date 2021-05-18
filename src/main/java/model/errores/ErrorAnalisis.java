@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class ErrorAnalisis implements Serializable {
 
+    private String lexema;
     private int linea;
     private int columna;
     private TipoError tipoError;
@@ -63,5 +64,13 @@ public class ErrorAnalisis implements Serializable {
 
     public void setSolucion(String solucion) {
         this.solucion = solucion;
+    }
+
+    public String getLexema() {
+        return lexema;
+    }
+
+    public void setLexema(String lexema) {
+        this.lexema = lexema;
     }
 }

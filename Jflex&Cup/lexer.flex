@@ -39,9 +39,24 @@ import java_cup.runtime.Symbol;
     }
 
     private void addLexicError(){
-        String descripcion = "EL caracter " + yytext() + " no es valido";
+        String descripcion = "La palabra " + yytext() + " no es valida";
         String solucion = "Revisar las palabras aceptadas por el lenguaje";
-        errores.add(new ErrorAnalisis(yyline+1, yycolumn+1, TipoError.LEXICO, descripcion, solucion));
+        ErrorAnalisis errorA = new ErrorAnalisis(yyline + 1, yycolumn + 1, TipoError.LEXICO, descripcion, solucion);
+        errorA.setLexema(yytext());
+
+        if (!errores.isEmpty()) {
+            ErrorAnalisis e = errores.get(errores.size() - 1);
+
+            if ((errorA.getColumna() - e.getColumna()) == 1) {
+                e.setLexema(e.getLexema() + errorA.getLexema());
+                e.setColumna(errorA.getColumna());
+                e.setDescripcion("La palabra " + e.getLexema() + " no es valida");
+            }else {
+                errores.add(errorA);
+            }
+        } else {
+            errores.add(errorA);
+        }
     }
 
     public List<ErrorAnalisis> getErrores() {

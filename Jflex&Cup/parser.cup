@@ -1,9 +1,11 @@
 package analizadores.sintactico;
 
+import datos.CaptchaDAO;
 import generator.NameTokenGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import model.Captcha;
 import model.errores.ErrorAnalisis;
 import model.errores.TipoError;
 import model.scripting.Expresion;
@@ -61,6 +63,7 @@ import java_cup.runtime.Symbol;
 
 parser code{:
 
+    private final CaptchaDAO captchaDAO = new CaptchaDAO();
     private final List<ErrorAnalisis> errores = new ArrayList();
     private List<Parametro> parametros = new ArrayList();
     private List<String> tagIds = new ArrayList();
@@ -118,6 +121,23 @@ parser code{:
     }
 
     private boolean canAdded(String id) {
+        for (String i: tagIds) {
+            if (i.equals(id)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean canAdded2(String id) {
+
+        if (captchaDAO.exists()) {
+            for (Captcha c: captchaDAO.getObject()) {
+                if (c.getId().equals(id)) {
+                    return false;
+                }
+            }
+        }
         for (String i: tagIds) {
             if (i.equals(id)) {
                 return false;
@@ -228,8 +248,6 @@ gcic
         gcicTag = new GCIC(h, b, parametros);
         parametros = new ArrayList();
     :}
-
-    |   GREATER_THAN textTag
 ;
 
 //**************************************** Parametros GCIC
@@ -247,12 +265,16 @@ optionParamGCIC
         parametros.add(new Parametro(n.getLexema(), v.getLexema()));
     :}
     |   ID:n ASSIGN QOUTE_MARK optionId:v QOUTE_MARK {:
-        if (canAdded(v)) {
-            parametros.add(new Parametro(n.getLexema(), v));
-            idCaptcha = v;
-            tagIds.add(v);
+        if (canAdded2(v)) {
+            if (canAdded(v)) {
+                parametros.add(new Parametro(n.getLexema(), v));
+                idCaptcha = v;
+                tagIds.add(v);
+            } else {
+                errores.add(new ErrorAnalisis(n.getLinea(), n.getColumna(), TipoError.SEMANTICO, "El id especificado esta repetido", "Cambie el id"));
+            }
         } else {
-            errores.add(new ErrorAnalisis(n.getLinea(), n.getColumna(), TipoError.SEMANTICO, "El id especificado esta repetido", "Cambie el nombre del id"));
+            errores.add(new ErrorAnalisis(n.getLinea(), n.getColumna(), TipoError.SEMANTICO, "Ya existe un captcha con el id ingresado", "Cambie el id"));
         }
     :}
 ;
@@ -268,6 +290,8 @@ head
             RESULT = new Head(etiquetasHead);
             etiquetasHead = new ArrayList();
         :}
+
+    |   error textTag
 ;
 
 headTags
@@ -303,6 +327,8 @@ body
         RESULT = new Body(etiquetas, parametros);
         parametros = new ArrayList();
     :}
+
+    |   error textTag
 ;
 
 bodyTags
@@ -769,6 +795,8 @@ instruction
     |   repeatStatement
     |   whileStatement
     |   insertStatement
+    |   error SEMI
+    |   error END
 ;
 
 oneStatement
