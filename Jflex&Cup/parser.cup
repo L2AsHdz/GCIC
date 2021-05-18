@@ -198,7 +198,7 @@ non terminal            otherFunctions, roundBrackets;
 non terminal String     variables, variable, parameter;
 non terminal TipoDato   tipo;
 non terminal Expresion  values, numero, literal, caracter, bool;
-non terminal Expresion  expr, condition, mathExpr, assign, specialFunctions;
+non terminal Expresion  expr, mathExpr, assign, specialFunctions;
 
 //* Precedencias
 precedence left PLUS, MINUS;
@@ -841,9 +841,12 @@ ifStatement
 ;
 
 simpleIf
-    ::= IF OPEN_ROUND_BRACKET condition:c CLOSE_ROUND_BRACKET THEN {:
+    ::= IF OPEN_ROUND_BRACKET expr:c CLOSE_ROUND_BRACKET THEN {:
             if (c.getTipo() == null) {
                 errorCondition = "La condicion contiene una operacion entre tipos no valida";
+                c.setText(errorCondition);
+            } else if (c.getTipo() != TipoDato.BOOLEAN) {
+                errorCondition = "El tipo que retorna la expresion debe ser booleano";
                 c.setText(errorCondition);
             }
             pilaConditions.push(c.getText());
@@ -874,37 +877,6 @@ ifTypes
             instructionList = pilaInstructions.pop();
         :}
     |
-;
-
-condition
-    ::= condition:c1 EQUAL_TO condition:c2                          {:RESULT = equalValidator.validate(c1, c2);:}
-    |   condition:c1 NOT_EQTUAL_TO condition:c2                     {:RESULT = notEqualValidator.validate(c1, c2);:}
-    |   condition:c1 GREATER_THAN condition:c2                      {:RESULT = greaterValidator.validate(c1, c2);:}
-    |   condition:c1 LESS_THAN condition:c2                         {:RESULT = lessValidator.validate(c1, c2);:}
-    |   condition:c1 GREATER_THAN_OR_EQUAL_TO condition:c2          {:RESULT = greaterOrEqualValidator.validate(c1, c2);:}
-    |   condition:c1 LESS_THAN_OR_EQUAL_TO condition:c2             {:RESULT = lessOrEqualValidator.validate(c1, c2);:}
-    |   condition:c1 AND condition:c2                               {:RESULT = andValidator.validate(c1, c2);:}
-    |   condition:c1 OR condition:c2                                {:RESULT = orValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c CLOSE_ROUND_BRACKET
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET EQUAL_TO condition:c2                       {:RESULT = equalValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO condition:c2                  {:RESULT = notEqualValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET GREATER_THAN condition:c2                   {:RESULT = greaterValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET LESS_THAN condition:c2                      {:RESULT = lessValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO condition:c2       {:RESULT = greaterOrEqualValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO condition:c2          {:RESULT = lessOrEqualValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET AND condition:c2                            {:RESULT = andValidator.validate(c1, c2);:}
-    |   OPEN_ROUND_BRACKET condition:c1 CLOSE_ROUND_BRACKET OR condition:c2                             {:RESULT = orValidator.validate(c1, c2);:}
-    |   NOT condition:c     {:RESULT = notValidator.validate(c);:}
-    |   values:v            {:RESULT = v;:}
-    |   variable:v {:
-        Expresion tempExpr = varValidator.validate(variableList, v, currentProcess);
-
-        if (tempExpr.getTipo() == null) {
-            errorCondition = tempExpr.getText();
-        }
-
-        RESULT = tempExpr;
-    :}
 ;
 
 //**************************************** Ciclo repeat
@@ -947,7 +919,7 @@ whileStatement
 ;
 
 simpleWhile
-    ::= WHILE OPEN_ROUND_BRACKET condition CLOSE_ROUND_BRACKET THENWHILE
+    ::= WHILE OPEN_ROUND_BRACKET expr CLOSE_ROUND_BRACKET THENWHILE
 ;
 
 instructionBlock
@@ -991,38 +963,26 @@ variable
 
 //**************************************** Expresion de declaracion
 assign
-    ::= expr:a              {:RESULT = a;:}
+    ::= expr:a              {:System.out.println(a.getTipo()); RESULT = a;:}
 ;
 
 expr
-    ::= expr:e1 PLUS expr:e2                        {:RESULT = plusValidator.validate(e1, e2);:}
-    |   expr:e1 MINUS expr:e2                       {:RESULT = minusValidator.validate(e1, e2);:}
-    |   expr:e1 TIMES expr:e2                       {:RESULT = timesValidator.validate(e1, e2);:}
-    |   expr:e1 DIVIDE expr:e2                      {:RESULT = divideValidator.validate(e1, e2);:}
-    |   expr:e1 EQUAL_TO expr:e2                    {:RESULT = equalValidator.validate(e1, e2);:}
-    |   expr:e1 NOT_EQTUAL_TO expr:e2               {:RESULT = notEqualValidator.validate(e1, e2);:}
-    |   expr:e1 GREATER_THAN expr:e2                {:RESULT = greaterValidator.validate(e1, e2);:}
-    |   expr:e1 LESS_THAN expr:e2                   {:RESULT = lessValidator.validate(e1, e2);:}
-    |   expr:e1 GREATER_THAN_OR_EQUAL_TO expr:e2    {:RESULT = greaterOrEqualValidator.validate(e1, e2);:}
-    |   expr:e1 LESS_THAN_OR_EQUAL_TO expr:e2       {:RESULT = lessOrEqualValidator.validate(e1, e2);:}
-    |   expr:e1 AND expr:e2                         {:RESULT = andValidator.validate(e1, e2);:}
-    |   expr:e1 OR expr:e2                          {:RESULT = orValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET                                       {:RESULT = new Expresion(e.getTipo(), "(" + e.getText() + ")");:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET PLUS expr:e2                         {:RESULT = plusValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET MINUS expr:e2                        {:RESULT = minusValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET TIMES expr:e2                        {:RESULT = timesValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET DIVIDE expr:e2                       {:RESULT = divideValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET EQUAL_TO expr:e2                     {:RESULT = equalValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET NOT_EQTUAL_TO expr:e2                {:RESULT = notEqualValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN expr:e2                 {:RESULT = greaterValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN expr:e2                    {:RESULT = lessValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET GREATER_THAN_OR_EQUAL_TO expr:e2     {:RESULT = greaterOrEqualValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET LESS_THAN_OR_EQUAL_TO expr:e2        {:RESULT = lessOrEqualValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET AND expr:e2                          {:RESULT = andValidator.validate(e1, e2);:}
-    |   OPEN_ROUND_BRACKET expr:e1 CLOSE_ROUND_BRACKET OR expr:e2                           {:RESULT = orValidator.validate(e1, e2);:}
-    |   NOT expr:e      {:RESULT = notValidator.validate(e);:}
-    |   values:v        {:RESULT = v;:}
-    |   variable:v      {:
+    ::= expr:e1 PLUS expr:e2                                {:RESULT = plusValidator.validate(e1, e2);:}
+    |   expr:e1 MINUS expr:e2                               {:RESULT = minusValidator.validate(e1, e2);:}
+    |   expr:e1 TIMES expr:e2                               {:RESULT = timesValidator.validate(e1, e2);:}
+    |   expr:e1 DIVIDE expr:e2                              {:RESULT = divideValidator.validate(e1, e2);:}
+    |   expr:e1 EQUAL_TO expr:e2                            {:RESULT = equalValidator.validate(e1, e2);:}
+    |   expr:e1 NOT_EQTUAL_TO expr:e2                       {:RESULT = notEqualValidator.validate(e1, e2);:}
+    |   expr:e1 GREATER_THAN expr:e2                        {:RESULT = greaterValidator.validate(e1, e2);:}
+    |   expr:e1 LESS_THAN expr:e2                           {:RESULT = lessValidator.validate(e1, e2);:}
+    |   expr:e1 GREATER_THAN_OR_EQUAL_TO expr:e2            {:RESULT = greaterOrEqualValidator.validate(e1, e2);:}
+    |   expr:e1 LESS_THAN_OR_EQUAL_TO expr:e2               {:RESULT = lessOrEqualValidator.validate(e1, e2);:}
+    |   expr:e1 AND expr:e2                                 {:RESULT = andValidator.validate(e1, e2);:}
+    |   expr:e1 OR expr:e2                                  {:RESULT = orValidator.validate(e1, e2);:}
+    |   OPEN_ROUND_BRACKET expr:e CLOSE_ROUND_BRACKET       {:RESULT = new Expresion(e.getTipo(), "(" + e.getText() + ")");:}
+    |   NOT expr:e                                          {:RESULT = notValidator.validate(e);:}
+    |   values:v                                            {:RESULT = v;:}
+    |   variable:v                                          {:
             Expresion tempExpr = varValidator.validate(variableList, v, currentProcess);
 
             if (tempExpr.getTipo() == null) {
@@ -1063,8 +1023,6 @@ parameter
     |   OPEN_ROUND_BRACKET DATOSCRIPT:d CLOSE_ROUND_BRACKET {:
             if (canAdded(d.getLexema())) {
                 System.out.println("No existe una etiqueta con el id especificado");
-                tagIds.forEach(i -> System.out.println(i));
-                System.out.println(d.getLexema());
             }
             RESULT = "'" + d.getLexema() + "'";
         :}

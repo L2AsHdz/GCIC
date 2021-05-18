@@ -30,17 +30,17 @@ public class NotEqualToValidator extends OperatorValidator {
             switch (expr1.getTipo()) {
                 case INTEGER -> {
                     switch (expr2.getTipo()) {
-                        case CHAR -> expr.setText(expr1.getText() + "!=" + expr2.getText() + ".charCodeAt(0)");
-                        default   -> expr.setText(expr1.getText() + "!=" + expr2.getText());
+                        case CHAR -> expr.setText("(" + expr1.getText() + "!=" + expr2.getText() + ".charCodeAt(0)" + ")");
+                        default   -> expr.setText("(" + expr1.getText() + "!=" + expr2.getText() + ")");
                     }
                 }
                 case CHAR -> {
                     switch (expr2.getTipo()) {
-                        case INTEGER -> expr.setText(expr1.getText() + ".charCodeAt(0)" + "!=" + expr2.getText());
-                        default      -> expr.setText(expr1.getText() + "!=" + expr2.getText());
+                        case INTEGER -> expr.setText("(" + expr1.getText() + ".charCodeAt(0)" + "!=" + expr2.getText() + ")");
+                        default      -> expr.setText("(" + expr1.getText() + "!=" + expr2.getText() + ")");
                     }
                 }
-                default -> expr.setText(expr1.getText() + "==" + expr2.getText());
+                default -> expr.setText("(" + expr1.getText() + "==" + expr2.getText() + ")");
             }
         }
 

@@ -23,7 +23,7 @@ public class AndValidator extends OperatorValidator {
                 case BOOLEAN    -> setTipos(expr2, new TipoDato[]{null,  null, null, null, BOOLEAN});
                 default         -> setTipos(expr2, new TipoDato[]{null,  null, null, null, null});
             }
-            expr.setText(expr1.getText() + "&&" + expr2.getText());
+            expr.setText("(" + expr1.getText() + "&&" + expr2.getText() + ")");
         }
 
         return expr;

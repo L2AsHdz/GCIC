@@ -44,6 +44,7 @@
                 string mensaje_acierto = "El captcha fue validado";
                 string mensaje_final = "El captcha no logró ser validado :( intente mas tarde";
                 ALERT_INFO(REVERSE("hola perros" + mensaje_final));
+                integer pruebaa = 25 + (5 + 3) < 8 + 6;
 
                 !! Validacion del numero de oportunidades restantes
                 IF (contador_fallas == 0) THEN
@@ -63,6 +64,12 @@
                     INIT {:
                         ALERT_INFO(mensaje_fallo);
                         contador_fallas = contador_fallas - 1;
+                    :} END
+
+
+                IF ((contador_fallas + 5) == 9) THEN
+                    INIT {:
+                        ALERT_INFO("Ahuevo funciona la expr como condition");
                     :} END
             ]
         </C_SCRIPTING>
