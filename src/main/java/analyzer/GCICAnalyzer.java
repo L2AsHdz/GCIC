@@ -3,6 +3,7 @@ package analyzer;
 import analizadores.lexico.Lexer;
 import analizadores.sintactico.Parser;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import model.errores.ErrorAnalisis;
 import model.tags.GCIC;
@@ -18,8 +19,7 @@ public class GCICAnalyzer {
     private String inputText;
     private Lexer lexer;
     private Parser parser;
-    private GCIC gcic;
-    private List<ErrorAnalisis> errores;
+    private List<ErrorAnalisis> errores = new ArrayList();
 
     public GCICAnalyzer(String inputText) {
         this.inputText = inputText;
@@ -41,6 +41,8 @@ public class GCICAnalyzer {
     }
 
     public List<ErrorAnalisis> getErrores() {
+        errores.addAll(lexer.getErrores());
+        errores.addAll(parser.getErrores());
         return errores;
     }
 }

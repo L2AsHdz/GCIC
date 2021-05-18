@@ -8,29 +8,21 @@ import java.io.Serializable;
  */
 public class ErrorAnalisis implements Serializable {
 
-    private String lexema;
     private int linea;
     private int columna;
     private TipoError tipoError;
     private String descripcion;
+    private String solucion;
 
-    public ErrorAnalisis(String lexema, int linea, int columna, TipoError tipoError, String descripcion) {
-        this.lexema = lexema;
+    public ErrorAnalisis(int linea, int columna, TipoError tipoError, String descripcion, String solucion) {
         this.linea = linea;
         this.columna = columna;
         this.tipoError = tipoError;
         this.descripcion = descripcion;
+        this.solucion = solucion;
     }
 
     public ErrorAnalisis() {
-    }
-
-    public String getLexema() {
-        return lexema;
-    }
-
-    public void setLexema(String lexema) {
-        this.lexema = lexema;
     }
 
     public int getLinea() {
@@ -63,5 +55,13 @@ public class ErrorAnalisis implements Serializable {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getSolucion() {
+        return solucion;
+    }
+
+    public void setSolucion(String solucion) {
+        this.solucion = solucion;
     }
 }

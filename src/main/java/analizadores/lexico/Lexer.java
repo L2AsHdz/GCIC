@@ -1295,10 +1295,14 @@ public class Lexer implements java_cup.runtime.Scanner {
     }
 
     private void addLexicError(){
-        String descripcion = "El simbolo no pertenece al lenguaje";
-        errores.add(new ErrorAnalisis(yytext(), yyline+1, yycolumn+1, TipoError.LEXICO, descripcion));
+        String descripcion = "EL caracter " + yytext() + " no es valido";
+        String solucion = "Revisar las palabras aceptadas por el lenguaje";
+        errores.add(new ErrorAnalisis(yyline+1, yycolumn+1, TipoError.LEXICO, descripcion, solucion));
     }
 
+    public List<ErrorAnalisis> getErrores() {
+        return this.errores;
+    }
 
 
   /**

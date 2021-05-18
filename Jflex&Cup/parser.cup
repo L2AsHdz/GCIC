@@ -1,5 +1,6 @@
 package analizadores.sintactico;
 
+import generator.NameTokenGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -120,9 +121,10 @@ parser code{:
 
     public void syntax_error(Symbol s) {
         Token t = (Token) s.value;
-        StringBuilder descripcion = new StringBuilder("Se esperaba: ");
-        expected_token_ids().forEach(x -> descripcion.append(symbl_name_from_id(x)).append(", "));
-        errores.add(new ErrorAnalisis(t.getLexema(), t.getLinea(), t.getColumna(), TipoError.SINTACTICO, descripcion.toString()));
+        String descripcion = "Error en: " + t.getLexema();
+        StringBuilder solucion = new StringBuilder("Se esperaba ");
+        expected_token_ids().forEach(x -> solucion.append(NameTokenGenerator.getName(x)).append(", "));
+        errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SINTACTICO, descripcion, solucion.toString()));
         System.out.println(t.getLexema() + ", linea: " + t.getLinea() + ", col: " + t.getColumna() + ", descripcion: " + descripcion.toString());
     }
 
@@ -131,6 +133,9 @@ parser code{:
         System.out.println("Error irrecuperable " + t.getLexema());
     }
 
+    protected int error_sync_size() {
+        return 1;
+    }
 :}
 
 //* Terminales
