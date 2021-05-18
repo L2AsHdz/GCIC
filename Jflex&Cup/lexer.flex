@@ -78,7 +78,6 @@ IDVAR = [:letter:][\w]*
 %state SCRIPTING
 %state LITERALS
 %state DATOSCRIPTING
-%state OTHER
 
 %%
 

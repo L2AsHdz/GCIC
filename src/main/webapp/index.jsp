@@ -71,7 +71,6 @@
                             <div class="alert alert-success alert-dismissible fade show">
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 No se han encontrado errores y se ha generado el captcha exitosamente!  
-                                <a href="#" class="alert-link">   Ir al captcha</a>.
                             </div>
                         </c:if>
                         <div class="form-group border">

@@ -86,12 +86,12 @@ function LETIMPAR_NUM(str) {
     return array.join("");
 }
 
-function EXIT() {
-    window.location.href = "http://localhost:8080/GCIC/aumentar?accion=fallos";
+function EXIT(idCaptcha) {
+    window.location.href = "http://localhost:8080/GCIC/captcha?accion=faults&id="+idCaptcha;
 }
 
-function REDIRECT(link) {
-    window.location.href = link;
+function REDIRECT(link, idCaptcha) {
+    window.location.href = "http://localhost:8080/GCIC/captcha?accion=hits&id="+idCaptcha + "&link="+link;
 }
 
 function updateTableData(){

@@ -69,6 +69,7 @@ parser code{:
     private Stack<List<Tag>> pilaEtiquetas = new Stack();
     private Stack<List<Parametro>> pilaParams = new Stack();
     private String link;
+    private String idCaptcha;
     private Tag gcicTag;
 
     private Process onLoad = null;
@@ -245,7 +246,15 @@ optionParamGCIC
     ::= NAME:n ASSIGN QOUTE_MARK NAME_PARAM:v QOUTE_MARK {:
         parametros.add(new Parametro(n.getLexema(), v.getLexema()));
     :}
-    |   paramId
+    |   ID:n ASSIGN QOUTE_MARK optionId:v QOUTE_MARK {:
+        if (canAdded(v)) {
+            parametros.add(new Parametro(n.getLexema(), v));
+            idCaptcha = v;
+            tagIds.add(v);
+        } else {
+            errores.add(new ErrorAnalisis(n.getLinea(), n.getColumna(), TipoError.SEMANTICO, "El id especificado esta repetido", "Cambie el nombre del id"));
+        }
+    :}
 ;
 
 
@@ -1033,9 +1042,9 @@ specialFunctions
 ;
 
 otherFunctions
-    ::= EXIT:of roundBrackets                   {:instructionList.add(new Function(of.getLexema(), "()"));:}
+    ::= EXIT:of roundBrackets                   {:instructionList.add(new Function(of.getLexema(), "(\"" + idCaptcha + "\")"));:}
     |   ALERT_INFO:of parameter:p               {:instructionList.add(new Function("alert", "(" + p + ")"));:}
-    |   REDIRECT:of roundBrackets               {:instructionList.add(new Function(of.getLexema(), "(\"" + link + "\")"));:}
+    |   REDIRECT:of roundBrackets               {:instructionList.add(new Function(of.getLexema(), "(\"" + link + "\", \"" + idCaptcha + "\")"));:}
 ;
 
 parameter
