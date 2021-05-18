@@ -195,13 +195,13 @@ non terminal String     textTag, color, font, align, type, clase, paramId, size,
 
 non terminal            procesos, process, processBody, instructions, instruction, oneStatement;
 non terminal            fullStatement, statement, assignment, instructionBlock;
-non terminal            ifStatement, simpleIf, ifTypes;
+non terminal Token      ifStatement, simpleIf, ifTypes;
 non terminal            repeatStatement, simpleRepeat, varInicio, limit;
 non terminal            whileStatement, simpleWhile;
 non terminal            insertStatement, insertValues, insertValue;
 non terminal            otherFunctions, roundBrackets;
 non terminal String     variables, variable, parameter;
-non terminal TipoDato   tipo;
+non terminal TypeToken  tipo;
 non terminal Expresion  values, numero, literal, caracter, bool;
 non terminal Expresion  expr, mathExpr, assign, specialFunctions;
 
@@ -221,6 +221,8 @@ gcic
         gcicTag = new GCIC(h, b, parametros);
         parametros = new ArrayList();
     :}
+
+    |   GREATER_THAN textTag
 ;
 
 //**************************************** Parametros GCIC
@@ -621,7 +623,7 @@ paramId
             parametros.add(new Parametro(n.getLexema(), v));
             tagIds.add(v);
         } else {
-            System.out.println("Error semantico, id repetido");
+            errores.add(new ErrorAnalisis(n.getLinea(), n.getColumna(), TipoError.SEMANTICO, "El id especificado esta repetido", "Cambie el nombre del id"));
         }
     :}
 ;
@@ -697,7 +699,7 @@ process
             if (onLoad == null) {
                 onLoad = new Process(p.getLexema() + countOnLoad++, instructionList);
             } else {
-                System.out.println("Error semantico, solo puede haber un onload");
+                errores.add(new ErrorAnalisis(p.getLinea(), p.getColumna(), TipoError.SEMANTICO, "Hay ma de un proceso ON_LOAD", "Deje solo un metodo ON_LOAD en el proceso"));
             }
             instructionList = new ArrayList();
             variableList = new ArrayList();
@@ -711,7 +713,7 @@ process
                 }
             }
             if (exists) {
-                System.out.println("Error, proceso ya existe");
+                errores.add(new ErrorAnalisis(p.getLinea(), p.getColumna(), TipoError.SEMANTICO, "El proceso con el nombre especificado ya existe", "Cambie el nombre del proceso"));
             } else {
                 processList.add(new Process(p.getLexema(), instructionList));
             }
@@ -737,7 +739,7 @@ instruction
             pilaIfTypes.push(ifTypesList);
             ifTypesList = new ArrayList();
         :}
-        ifStatement {:
+        ifStatement:i {:
             if (errorCondition.isEmpty()) {
                 IfStatement ifSt = new IfStatement(pilaConditions.pop(), instructionList, ifTypesList);
                 instructionList = pilaInstructions.pop();
@@ -745,7 +747,7 @@ instruction
                 instructionList.add(ifSt);
             } else {
                 instructionList = pilaInstructions.pop();
-                System.out.println("Error condicion: " + errorCondition);
+                errores.add(new ErrorAnalisis(i.getLinea(), i.getColumna(), TipoError.SEMANTICO, errorCondition, "Verifique la condicion ingresada"));
                 errorCondition = "";
             }
         :}
@@ -765,32 +767,32 @@ oneStatement
 fullStatement
     ::= tipo:t GLOBAL_MODE variables ASSIGN assign:a {:
             if (errorVar.isEmpty()) {
-                List<String> errores = assignValidator.validate(variableList, varsToAssign, t, a);
+                List<String> erroresA = assignValidator.validate(variableList, varsToAssign, t.getType(), a);
 
                 if (errores.isEmpty()) {
-                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    instructionList.add(new FullStatement(t, true, varsToAssign, a.getText()));
+                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), true)));
+                    instructionList.add(new FullStatement(t.getType(), true, varsToAssign, a.getText()));
                 } else {
-                    errores.forEach(e -> System.out.println(e));
+                    erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
                 }
             } else {
-                System.out.println("Error assing: " + errorVar);
+                errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, errorVar, "Verifique la declaracion"));
                 errorVar = "";
             }
             varsToAssign = new ArrayList();
         :}
     |   tipo:t variables ASSIGN assign:a {:
             if (errorVar.isEmpty()) {
-                List<String> errores = assignValidator.validate(variableList, varsToAssign, t, a);
+                List<String> erroresA = assignValidator.validate(variableList, varsToAssign, t.getType(), a);
 
                 if (errores.isEmpty()) {
-                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t, true)));
-                    instructionList.add(new FullStatement(t, false, varsToAssign, a.getText()));
+                    varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), true)));
+                    instructionList.add(new FullStatement(t.getType(), false, varsToAssign, a.getText()));
                 } else {
-                    errores.forEach(e -> System.out.println(e));
+                    erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
                 }
             } else {
-                System.out.println("Error assing: " + errorVar);
+                errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, errorVar, "Verifique la declaracion"));
                 errorVar = "";
             }
             varsToAssign = new ArrayList();
@@ -799,41 +801,41 @@ fullStatement
 
 statement
 ::= tipo:t GLOBAL_MODE variables {:
-        List<String> errores = varValidator.validate(variableList, varsToAssign);
+        List<String> erroresA = varValidator.validate(variableList, varsToAssign);
 
         if (errores.isEmpty()) {
-            varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            instructionList.add(new SimpleStatement(t, true, varsToAssign));
+            varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), false)));
+            instructionList.add(new SimpleStatement(t.getType(), true, varsToAssign));
         } else {
-            errores.forEach(e -> System.out.println(e));
+            erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
         }
         varsToAssign = new ArrayList();
     :}
 |   tipo:t variables {:
-        List<String> errores = varValidator.validate(variableList, varsToAssign);
+        List<String> erroresA = varValidator.validate(variableList, varsToAssign);
 
         if (errores.isEmpty()) {
-            varsToAssign.forEach(v -> variableList.add(new Variable(v, t, false)));
-            instructionList.add(new SimpleStatement(t, false, varsToAssign));
+            varsToAssign.forEach(v -> variableList.add(new Variable(v, t.getType(), false)));
+            instructionList.add(new SimpleStatement(t.getType(), false, varsToAssign));
         } else {
-            errores.forEach(e -> System.out.println(e));
+            erroresA.forEach(e -> errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, e, "Verifique la declaracion")));
         }
         varsToAssign = new ArrayList();
     :}
 ;
 
 assignment
-    ::= variable:v ASSIGN assign:a {:
+    ::= variable:v ASSIGN:t assign:a {:
             if (errorVar.isEmpty()) {
                 String error = assignValidator.validate(variableList, v, a);
 
                 if (error.isEmpty()) {
                     instructionList.add(new Assignment(v, a.getText()));
                 } else {
-                    System.out.println(error);
+                    errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, error, "Verifique la asignacion"));
                 }
             } else {
-                System.out.println("Error assing: " + errorVar);
+                errores.add(new ErrorAnalisis(t.getLinea(), t.getColumna(), TipoError.SEMANTICO, errorVar, "Verifique la asignacion"));
                 errorVar = "";
             }
         :}
@@ -841,12 +843,12 @@ assignment
 
 //**************************************** Sentencia if
 ifStatement
-    ::= simpleIf instructionBlock END ifTypes
-    |   simpleIf oneStatement SEMI ifTypes
+    ::= simpleIf:i instructionBlock END ifTypes   {:RESULT = i;:}
+    |   simpleIf:i oneStatement SEMI ifTypes      {:RESULT = i;:}
 ;
 
 simpleIf
-    ::= IF OPEN_ROUND_BRACKET expr:c CLOSE_ROUND_BRACKET THEN {:
+    ::= IF:i OPEN_ROUND_BRACKET expr:c CLOSE_ROUND_BRACKET THEN {:
             if (c.getTipo() == null) {
                 errorCondition = "La condicion contiene una operacion entre tipos no valida";
                 c.setText(errorCondition);
@@ -857,6 +859,7 @@ simpleIf
             pilaConditions.push(c.getText());
             pilaInstructions.push(instructionList);
             instructionList = new ArrayList();
+            RESULT = i;
         :}
 ;
 
@@ -949,11 +952,11 @@ insertValue
 
 //**************************************** Tipos
 tipo
-    ::= INTEGER:t   {:RESULT = t.getType();:}
-    |   STRING:t    {:RESULT = t.getType();:}
-    |   BOOLEAN:t   {:RESULT = t.getType();:}
-    |   CHAR:t      {:RESULT = t.getType();:}
-    |   DECIMAL:t   {:RESULT = t.getType();:}
+    ::= INTEGER:t   {:RESULT = t;:}
+    |   STRING:t    {:RESULT = t;:}
+    |   BOOLEAN:t   {:RESULT = t;:}
+    |   CHAR:t      {:RESULT = t;:}
+    |   DECIMAL:t   {:RESULT = t;:}
 ;
 
 //**************************************** Variables
@@ -968,7 +971,7 @@ variable
 
 //**************************************** Expresion de declaracion
 assign
-    ::= expr:a              {:System.out.println(a.getTipo()); RESULT = a;:}
+    ::= expr:a              {:RESULT = a;:}
 ;
 
 expr
@@ -1028,6 +1031,7 @@ parameter
     |   OPEN_ROUND_BRACKET DATOSCRIPT:d CLOSE_ROUND_BRACKET {:
             if (canAdded(d.getLexema())) {
                 System.out.println("No existe una etiqueta con el id especificado");
+                errores.add(new ErrorAnalisis(d.getLinea(), d.getColumna(), TipoError.SEMANTICO, "No existe una etiqueta con el id especificado", "Ingrese un id de una etiqueta existente"));
             }
             RESULT = "'" + d.getLexema() + "'";
         :}
